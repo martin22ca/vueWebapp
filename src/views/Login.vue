@@ -1,8 +1,18 @@
 <template>
     <div class="gradient">
+        <v-dialog v-model="showDialog" width="auto">
+            <v-card title="Login Error" rounded="xl">
+                <v-card-text >
+                    {{ showError }}
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="primary" block @click="showDialog = false">Cerrar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <div class="container">
             <div class="left">
-                <h1>Login</h1>
+                <h1 class="h1Log">Login</h1>
                 <form @submit.prevent="submit">
                     <v-text-field class="mr-4" variant="outlined" v-model="username.value.value"
                         :error-messages="username.errorMessage.value" label="Username" prepend-inner-icon="mdi-account"
@@ -29,7 +39,7 @@
                 </form>
             </div>
             <div class="right">
-                <h1>Colegio del Espiritu Santo</h1>
+                <h1 class="h1Log">Colegio del Espiritu Santo</h1>
                 <img :width="250" cover src="../assets/logo.png" />
             </div>
         </div>
@@ -43,11 +53,11 @@ import * as Yup from "yup";
 import { checkLoged } from '@/plugins/auth';
 import { useField, useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue';
 
 export default {
     data: () => ({
         visible: false,
-        visibleC: false,
         errorVal: false,
         error: '',
 
@@ -68,7 +78,9 @@ export default {
 
         const username = useField('username');
         const password = useField('password');
-        const router = useRouter()
+        const router = useRouter();
+        const showError = ref('');
+        const showDialog = ref(false);
 
         const submit = handleSubmit(async (values) => {
             try {
@@ -84,11 +96,12 @@ export default {
                     router.push({
                         name: 'Home',
                     })
-                } else {
-                    alert(JSON.stringify(result.status));
+
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error.response.data.message)
+                showError.value = error.response.data.message
+                showDialog.value = true;
             }
         });
 
@@ -96,9 +109,11 @@ export default {
 
             username,
             password,
+            showDialog,
             submit,
             handleReset,
-            errors
+            errors,
+            showError
         };
     },
 
@@ -120,8 +135,11 @@ p {
     background: linear-gradient(190deg, rgba(0, 0, 0, 1) 80%, rgba(47, 47, 47, 1) 80%, rgb(173, 173, 173) 100%);
 }
 
-h1 {
-    margin: 10px;
+.h1Log {
+    padding: 10px;
+    text-align: center;
+    text-decoration: underline;
+    padding-bottom: 15px;
 }
 
 @keyframes blink {
@@ -160,7 +178,7 @@ h1 {
     padding: 2rem;
     border-top-right-radius: 5%;
     border-bottom-right-radius: 5%;
-    background: rgb(var(--v-theme-secondary));
+    background: rgb(var(--v-theme-surface-lighter-2));
     color: rgb(var(--v-theme-on-secondary));
 }
 </style>

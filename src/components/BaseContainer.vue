@@ -1,11 +1,15 @@
 <template>
+  <SideBar />
   <div class="containerB">
     <TopBar />
     <v-sheet class="pl-5 pb-3" prepend-icon="mdi-account" color="surface">
-      <h2 style="padding-left: 5px;"> <v-icon icon="mdi-account" class="pr-2"/>{{ this.firstName }}, {{ this.lastName }}</h2>
-      <h3 class="subBase"> {{ this.email }}</h3>
+      <h2 style="padding-left: 5px;">
+        <v-icon icon="mdi-account" class="pr-2" />{{ this.firstName }}, {{ this.lastName }}
+      </h2>
+      <h3 class="subBase">
+        {{ this.email }}
+      </h3>
     </v-sheet>
-    <SideBar />
     <slot></slot>
     <Footer />
   </div>
@@ -40,7 +44,6 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgb(var(--v-theme-surface));
-
 }
 
 .text {

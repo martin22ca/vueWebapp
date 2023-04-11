@@ -1,7 +1,7 @@
 <template>
     <div class="Top">
         <v-toolbar color="background">
-            <h1>{{ pageTitle }}</h1>
+            <h1 class="h1Top">{{ pageTitle }}</h1>
         </v-toolbar>
     </div>
 </template>
@@ -26,7 +26,7 @@ export default {
     margin-bottom: 30px;
 }
 
-h1 {
+.h1Top {
     font-weight: bold;
     padding-left: 50px;
     padding-top: 15px;

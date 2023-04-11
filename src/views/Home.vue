@@ -21,14 +21,14 @@
                                 leido</v-btn>
                             <div style="float: right;">
                                 <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="pa-2 mb-2" rounded="lg"
-                                    @click="markAsRead(message.id)"></v-btn>
+                                    @click="deleteMessage(message.id)"></v-btn>
                             </div>
                         </v-card-actions>
                     </v-card>
                 </div>
             </div>
             <div class="right-panel">
-                <h3><v-icon icon="mdi-table-network" class="pa-8" />Clases</h3>
+                <h3><v-icon icon="mdi-table-network" class="pa-8" />Asistencias Hoy</h3>
                 <div class="classesContainer">
                     <div v-if="classes.length === 0">
                         <h3>No hay classes asignadas.</h3>
@@ -122,6 +122,29 @@ export default {
                     const messageIndex = this.messages.findIndex(message => message.id === id);
                     if (messageIndex !== -1) {
                         this.messages[messageIndex].viewd = true;
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async deleteMessage(id) {
+            const accessToken = store.get('accessToken');
+
+            try {
+                let result = await axios({
+                    method: 'put',
+                    timeout: 2000,
+                    url: 'http://192.168.0.62:3001/messages/delete',
+                    params: {
+                        'accessToken': accessToken,
+                        'idMessage': id
+                    }
+                })
+                if (result.status == 200) {
+                    const messageIndex = this.messages.findIndex(message => message.id === id);
+                    if (messageIndex !== -1) {
+                        this.messages.splice(messageIndex, 1)
                     }
                 }
             } catch (error) {

@@ -1,14 +1,27 @@
 <template>
     <BaseContainer>
         <div class="classContainer">
-            <v-toolbar flat>
-                <v-toolbar-title>Asistencias dia: <strong>{{ currentDate }}</strong></v-toolbar-title>
-            </v-toolbar>
-            <v-data-table :headers="headers" :items="desserts" class="elevation-1">
-                <template v-slot:item.calories="{ item }">
-                    <v-chip :color="getColor(item.raw.calories)">
-                        {{ item.raw.calories }}
-                    </v-chip>
+            <v-card class="pt-2 pb-2" variant="tonal">
+                <v-card-title>
+                    <h3 style="padding: 5px;">
+                        Asistencias dia: <strong>{{ currentDate }}</strong>
+                    </h3>
+                    <h3 style="padding: 5px;">
+                        Curso: <strong>{{ classYear }}-"{{ classSection }}"</strong>
+                    </h3>
+                </v-card-title>
+                <v-spacer></v-spacer>
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
+                    class="pl-5 pr-5" variant="outlined"></v-text-field>
+            </v-card>
+            <v-data-table :headers="headers" :items="items" class="elevation-1" density="compact" :search="search">
+                <template v-slot:item.moreInfo="{}">
+                    <v-btn rounded="true">
+                        Mas Info
+                    </v-btn>
+                </template>
+                <template v-slot:item.present="{ item }">
+                    <v-checkbox-btn v-model="item.value.present" disabled />
                 </template>
             </v-data-table>
         </div>
@@ -19,35 +32,57 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
+import store from 'storejs';
 import { checkAuth } from '@/plugins/auth';
 import { useRouter } from 'vue-router';
+import axios from 'axios'
 
 export default {
     name: 'Home',
     data() {
         return {
             currDate: '',
+            classId: useStore().state.classId,
+            classYear: useStore().state.classYear,
+            classSection: useStore().state.classSection,
+
+            search: '',
             headers: [
-                {
-                    title: 'Nombre',
-                    align: 'start',
-                    sortable: true,
-                    key: 'firstName',
-                },
-                { title: 'Apellido', key: 'lastName' },
-                { title: 'Fat (g)', key: 'fat' },
-                { title: 'Carbs (g)', key: 'carbs' },
-                { title: 'Protein (g)', key: 'protein' },
-                { title: 'Iron (%)', key: 'iron' },
+                { title: 'id', key: 'idStud', align: 'start', width: '5%' },
+                { title: 'Apellido', key: 'lastName', sortable: true, align: 'center', width: '20%' },
+                { title: 'Nombre', key: 'firstName', align: 'center', width: '20%' },
+                { title: 'Present', key: 'present', align: 'center', width: '5%' },
+                { title: 'Hora entrada', key: 'time', align: 'center', width: '10%' },
+                { title: 'Picture', key: 'picture', sortable: false, align: 'center' },
+                { title: '', key: 'moreInfo', sortable: false, align: 'end', width: '8%' },
             ],
-
-            storage: useStore()
-
+            items: [
+                {
+                    idStud: 1,
+                    firstName: 'Jose',
+                    lastName: 'Argelio',
+                    present: false,
+                    time: null,
+                    picture: null,
+                },
+                {
+                    idStud: 2,
+                    firstName: 'Martin',
+                    lastName: 'Caceres',
+                    present: true,
+                    time: 4.3,
+                    picture: '1%',
+                },
+            ],
         }
     },
     beforeCreate() {
         checkAuth()
-    }, setup() {
+    },
+    mounted() {
+        this.fetchAttendences();
+    },
+    setup() {
         const store = useStore()
         const router = useRouter()
         const sect = store.state.classSection
@@ -57,7 +92,7 @@ export default {
                 name: 'Home',
             })
         }
-        store.commit('setPageTitle', { title: 'Asistencias', subtitle: "Curso " + store.state.classYear + "-'" + store.state.classSection + "'" })
+        store.commit('setPageTitle', { title: 'Asistencias', })
         const date = new Date();
 
         let day = date.getDate();
@@ -72,8 +107,29 @@ export default {
         currentDate() {
             return this.$store.state.currentDate
         }
+
     },
     methods: {
+        async fetchAttendences() {
+            const accessToken = store.get('accessToken');
+
+
+            try {
+                let result = await axios({
+                    method: 'get',
+                    timeout: 2000,
+                    url: "http://192.168.0.62:3001/attendence",
+                    params: {
+                        'accessToken': accessToken,
+                        'classId': this.classId
+                    }
+                })
+                if (result.status == 200)
+                    this.messages = result.data.messages;
+            } catch (error) {
+                console.log(error)
+            }
+        },
     },
     components: { BaseContainer, VDataTable, }
 }
