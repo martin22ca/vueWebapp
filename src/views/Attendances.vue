@@ -7,7 +7,7 @@
                         <v-col cols="4">
                             <v-sheet>
                                 <h3 style="padding: 5px;">
-                                    Dia: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
+                                    Diagit: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
                                 </h3>
                             </v-sheet>
                         </v-col>
