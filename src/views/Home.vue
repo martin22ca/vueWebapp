@@ -9,16 +9,14 @@
                 </div>
                 <div v-else class="scroll">
                     <v-card v-for="message in messages" :key="message.id" :title="message.title"
-                        subtitle="Mensaje de aistencia" :text="message.info"
-                        :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" :color='surface - lighter - 1'
-                        class="ma-2" variant="tonal"
+                        subtitle="Mensaje de aistencia" :text="message.info" 
+                        :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-2" variant="tonal"
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
                         <div class="msgText">{{ message.message }} </div>
                         <div>{{ message.info }}</div>
                         <v-card-actions style="display: block;">
-                            <v-btn :color="primary" variant="tonal" @click="markAsRead(message.id)"
-                                v-if="!message.viewd" class="ma-2 ">marcar como
-                                leido</v-btn>
+                            <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
+                                class="ma-2 ">marcar como leido</v-btn>
                             <div style="float: right;">
                                 <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="pa-2 mb-2" rounded="lg"
                                     @click="deleteMessage(message.id)"></v-btn>
@@ -35,14 +33,20 @@
                     </div>
                     <div v-else class="scroll">
                         <v-row>
-                            <v-col v-for="schoolClass in classes" :key="schoolClass.id" cols="12" sm="6" md="4" lg="3">
+                            <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
                                 <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
-                                    class="ma-2" subtitle="Curso Secundario" :text="schoolClass.school_section"
-                                    color="surface-lighter-2" rounded="true">
+                                    class="ma-2" subtitle="Curso Secundario" color="surface-lighter-2" rounded="true">
+                                    <h4 class="classText"> Estudiantes presentes: <v-chip> {{ schoolClass.present }}
+                                        </v-chip></h4>
+                                    <h4 class="classText"> Estudiantes Totales: <v-chip>{{ schoolClass.total }} </v-chip>
+                                    </h4>
+                                    <h4 class="classText"> Porcentaje: <v-chip
+                                            :color="getColor(schoolClass.present, schoolClass.total)">
+                                            {{ Math.round(100 * schoolClass.present / schoolClass.total) }} </v-chip></h4>
                                     <v-card-actions>
-                                        <v-btn variant="outlined"
-                                            @click="viewClass(schoolClass.id, schoolClass.school_year, schoolClass.school_section)">Ver
-                                            curso</v-btn>
+                                        <v-btn variant="tonal" color="primary"
+                                            @click="viewClass(schoolClass.sc, schoolClass.school_year, schoolClass.school_section)">Ver
+                                            Asistencias</v-btn>
                                     </v-card-actions>
                                 </v-card>
                             </v-col>
@@ -55,12 +59,12 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 import store from 'storejs';
-import axios from 'axios'
+import { axiosClient } from '@/plugins/axiosClient';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
-import { useRouter } from 'vue-router';
 
 
 export default {
@@ -77,8 +81,8 @@ export default {
         checkAuth()
     },
     mounted() {
-        this.fetchMessages();
         this.fetchClasses();
+        this.fetchMessages();
     },
     setup() {
         const store = useStore()
@@ -90,10 +94,10 @@ export default {
             const id = store.get('userId')
 
             try {
-                let result = await axios({
+                let result = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: "http://192.168.0.62:3001/messages",
+                    url: "/messages",
                     params: {
                         'accessToken': accessToken,
                         'userId': id
@@ -109,10 +113,10 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axios({
+                let result = await axiosClient({
                     method: 'put',
                     timeout: 2000,
-                    url: 'http://192.168.0.62:3001/messages/viewd',
+                    url: '/messages/viewd',
                     params: {
                         'accessToken': accessToken,
                         'idMessage': id
@@ -132,10 +136,10 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axios({
+                let result = await axiosClient({
                     method: 'put',
                     timeout: 2000,
-                    url: 'http://192.168.0.62:3001/messages/delete',
+                    url: '/messages/delete',
                     params: {
                         'accessToken': accessToken,
                         'idMessage': id
@@ -156,10 +160,10 @@ export default {
             const id = store.get('userId')
 
             try {
-                let result = await axios({
+                let result = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: "http://192.168.0.62:3001/classes",
+                    url: "/classes/home",
                     params: {
                         'accessToken': accessToken,
                         'userId': id
@@ -173,9 +177,14 @@ export default {
         }, async viewClass(id, year, section) {
             this.storage.commit('setClass', { classId: id, year: year, section: section })
             this.$router.push({
-                name: 'Classes',
+                name: 'Attendances',
             })
 
+        }, getColor(present, total) {
+            const percent = present / total * 100
+            if (percent < 30) return 'red'
+            else if (percent < 50) return 'orange'
+            else return 'green'
         },
     },
     components: { BaseContainer }
@@ -216,5 +225,10 @@ export default {
      font-size: 16px;
      line-height: 1.5;
      padding-left: 20px;
+ }
+
+ .classText {
+     padding: 10px;
+     font-weight: 300;
  }
 </style>

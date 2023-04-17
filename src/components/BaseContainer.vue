@@ -3,8 +3,8 @@
   <div class="containerB">
     <TopBar />
     <v-sheet class="pl-5 pb-3" prepend-icon="mdi-account" color="surface">
-      <h2 style="padding-left: 5px;">
-        <v-icon icon="mdi-account" class="pr-2" />{{ this.firstName }}, {{ this.lastName }}
+      <h2 style="padding-left: 5px; font-size: 40px;">
+        <v-icon icon="mdi-account" class="pr-2" />{{ this.lastName }} , {{ this.firstName }}
       </h2>
       <h3 class="subBase">
         {{ this.email }}
@@ -28,9 +28,6 @@ export default {
     lastName: store.get('last_name'),
     email: store.get('email'),
   }),
-  beforeCreate() {
-    // Call the checkAuth function here
-  },
   setup() { },
   components: { SideBar, TopBar, Footer },
 }
@@ -38,6 +35,10 @@ export default {
 </script>
 
 <style>
+.gradient {
+    height: 100vh;
+
+}
 .containerB {
   padding-left: 100px;
   flex-direction: column;

@@ -7,14 +7,15 @@
         <v-divider thickness="11"></v-divider>
         <v-list dense nav>
             <v-list-item v-for="item in menuItems" :key="item.name" :value="item.name"
-                :class="currentRouteName == item.route ? 'text-primary' : undefined" rounded class="mt-2 pt-2 pb-2"
-                @click="goTo(item.route)">
+                :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
+                @click="goTo(item.route)" >
                 <div class="iconS">
                     <v-icon :icon="item.icon" size="x-large" />
                 </div>
-                <h4>{{ item.name }}</h4>
+                <h4 class="sideText">{{ item.name }}</h4>
+
             </v-list-item>
-            <v-divider></v-divider>
+            
         </v-list>
         <template v-slot:append>
             <v-divider></v-divider>
@@ -22,7 +23,7 @@
                 <div class="iconS">
                     <v-icon icon="mdi-logout" size="x-large" />
                 </div>
-                <h4>Logout</h4>
+                <h4 class="sideText" >Logout</h4>
             </v-list-item>
         </template>
     </v-navigation-drawer>
@@ -46,14 +47,24 @@ export default {
                     route: 'Home'
                 },
                 {
-                    name: 'Messages',
-                    icon: 'mdi-email',
-                    route: 'Messages'
+                    name: 'Asistencia',
+                    icon: 'mdi-table-network',
+                    route: 'Attendances',
                 },
                 {
                     name: 'Calendar',
                     icon: 'mdi-calendar',
                     route: 'Calendar'
+                },
+                {
+                    name: 'Analisis',
+                    icon: 'mdi-chart-line',
+                    route: 'Classes'
+                },
+                {
+                    name: 'Gestion',
+                    icon: 'mdi-cog',
+                    route: 'Managment'
                 }
             ]
 
@@ -74,12 +85,9 @@ export default {
                 console.log(error)
             }
         },
-        async goHome() {
-            this.router.push({ name: "Home" })
+        async goTo(route) {
+            this.router.push({ name: route })
         },
-        async goManagement() {
-            this.router.push({ name: "ManagementScreen" })
-        }
     },
 
 }
@@ -99,7 +107,7 @@ export default {
     padding-left: 25%;
 }
 
-h4 {
+.sideText {
     font-size: 14px;
     text-align: center;
     font-weight: 300;

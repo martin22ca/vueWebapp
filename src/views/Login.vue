@@ -2,7 +2,7 @@
     <div class="gradient">
         <v-dialog v-model="showDialog" width="auto">
             <v-card title="Login Error" rounded="xl">
-                <v-card-text >
+                <v-card-text>
                     {{ showError }}
                 </v-card-text>
                 <v-card-actions>
@@ -47,7 +47,7 @@
 </template>
   
 <script>
-import axios from 'axios'
+import axiosClient from '@/plugins/axiosClient.js';
 import store from 'storejs';
 import * as Yup from "yup";
 import { checkLoged } from '@/plugins/auth';
@@ -66,6 +66,7 @@ export default {
         checkLoged()
     },
     setup() {
+        const router = useRouter()
         const validationSchema = Yup.object().shape({
             username: Yup.string().required('Username is required'),
             password: Yup.string().required('Password is required')
@@ -78,13 +79,12 @@ export default {
 
         const username = useField('username');
         const password = useField('password');
-        const router = useRouter();
         const showError = ref('');
         const showDialog = ref(false);
 
         const submit = handleSubmit(async (values) => {
             try {
-                const result = await axios.post('http://192.168.0.62:3001/login', {
+                const result = await axiosClient.post('login', {
                     username: values.username,
                     password: values.password,
                 });
@@ -99,7 +99,7 @@ export default {
 
                 }
             } catch (error) {
-                console.log(error.response.data.message)
+                console.log(error)
                 showError.value = error.response.data.message
                 showDialog.value = true;
             }

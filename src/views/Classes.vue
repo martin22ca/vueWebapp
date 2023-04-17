@@ -1,142 +1,152 @@
 <template>
     <BaseContainer>
-        <div class="classContainer">
-            <v-card class="pt-2 pb-2" variant="tonal">
-                <v-card-title>
-                    <h3 style="padding: 5px;">
-                        Asistencias dia: <strong>{{ currentDate }}</strong>
-                    </h3>
-                    <h3 style="padding: 5px;">
-                        Curso: <strong>{{ classYear }}-"{{ classSection }}"</strong>
-                    </h3>
-                </v-card-title>
-                <v-spacer></v-spacer>
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                    class="pl-5 pr-5" variant="outlined"></v-text-field>
-            </v-card>
-            <v-data-table :headers="headers" :items="items" class="elevation-1" density="compact" :search="search">
-                <template v-slot:item.moreInfo="{}">
-                    <v-btn rounded="true">
-                        Mas Info
-                    </v-btn>
-                </template>
-                <template v-slot:item.present="{ item }">
-                    <v-checkbox-btn v-model="item.value.present" disabled />
-                </template>
-            </v-data-table>
+        <div class="classesContainer">
+            <v-row no-gutters>
+                <v-col>
+                    <v-card color="surface-lighter-1" class="ma-2" title="Class info" subtitle="Subtitle">
+                        <div v-if="classId.sc != -1" style="padding: 2%; ">
+                            <h4 style="padding: 5px;">
+
+                                Curso: <v-chip variant="elevated" color="primary">{{ classYear }} - "{{ classSection }}"</v-chip>
+                            </h4>
+                            <h4 style="padding: 5px;">
+                                Estado Actul: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
+                                    {{ classStatus ? "ABIERTO" : "CERRADO" }}
+                                </v-chip>
+                            </h4>
+                        </div>
+                        <div v-else style="padding: 2%; ">
+                            <v-chip color="primary" class="ma-2">
+                                Ningun Curso Seleccionado
+                            </v-chip>
+                        </div>
+                    </v-card>
+                </v-col>
+                <v-col cols="8">
+                    <v-card color="surface-lighter-1" class="ma-2" title="Seleccionar Curso"
+                        subtitle="Seleccione Clase para obtener info">
+                        <div style="padding-left: 2%; padding-bottom: 2%; padding-right: 2%;">
+                            <v-select v-model="classId" :items="selectItems" label="Select" item-title="text"
+                                item-value="sc" single-line :on-update:model-value="fetchClassInfo(classId)"></v-select>
+                        </div>
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-row no-gutters>
+                <v-col>
+                    <v-card class="pt-2 pb-2" variant="tonal">
+                        <v-card-title>
+                            Tabla de estadisticas
+                        </v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
+                            class="pl-5 pr-5" variant="outlined"></v-text-field>
+                    </v-card>
+                    <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact"
+                        :search="search" hover>
+                        <template v-slot:no-data>
+                            No data
+                        </template>
+                    </v-data-table>
+                </v-col>
+            </v-row>
         </div>
     </BaseContainer>
 </template>
 
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import BaseContainer from '@/components/BaseContainer.vue';
-import { useStore } from 'vuex'
 import store from 'storejs';
+import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
-import { useRouter } from 'vue-router';
-import axios from 'axios'
+import { axiosClient } from '@/plugins/axiosClient';
+import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
-    name: 'Home',
+    name: 'Classes',
     data() {
         return {
-            currDate: '',
-            classId: useStore().state.classId,
-            classYear: useStore().state.classYear,
-            classSection: useStore().state.classSection,
-
             search: '',
+            dialog: false,
+            currDate: '',
+            selectItems: [],
+            classId: { sc: -1, text: "Select" },
+            classYear: '',
+            classSection: '',
+            classStatus: false,
+
             headers: [
-                { title: 'id', key: 'idStud', align: 'start', width: '5%' },
-                { title: 'Apellido', key: 'lastName', sortable: true, align: 'center', width: '20%' },
-                { title: 'Nombre', key: 'firstName', align: 'center', width: '20%' },
-                { title: 'Present', key: 'present', align: 'center', width: '5%' },
-                { title: 'Hora entrada', key: 'time', align: 'center', width: '10%' },
-                { title: 'Picture', key: 'picture', sortable: false, align: 'center' },
-                { title: '', key: 'moreInfo', sortable: false, align: 'end', width: '8%' },
+                { title: 'id', key: 'id_stud', align: 'start', },
+                { title: 'Dni', key: 'dni', align: 'start', },
+                { title: 'Apellido', key: 'last_name', sortable: true, align: 'center' },
+                { title: 'Nombre', key: 'first_name', align: 'center' },
+                { title: 'Ausentes', key: 'present', align: 'center', },
+                { title: 'Tardes', key: 'late', sortable: false, align: 'center', },
+                { title: 'Registros Totales', key: 'total', align: 'center', },
+                { title: 'Promedio', key: '', align: 'center', },
             ],
-            items: [
-                {
-                    idStud: 1,
-                    firstName: 'Jose',
-                    lastName: 'Argelio',
-                    present: false,
-                    time: null,
-                    picture: null,
-                },
-                {
-                    idStud: 2,
-                    firstName: 'Martin',
-                    lastName: 'Caceres',
-                    present: true,
-                    time: 4.3,
-                    picture: '1%',
-                },
-            ],
+            items: [],
+
         }
     },
     beforeCreate() {
         checkAuth()
     },
-    mounted() {
-        this.fetchAttendences();
-    },
     setup() {
         const store = useStore()
-        const router = useRouter()
-        const sect = store.state.classSection
-        const classYear = store.state.classYear
-        if (sect == "z" || classYear == -1) {
-            router.push({
-                name: 'Home',
-            })
-        }
-        store.commit('setPageTitle', { title: 'Asistencias', })
-        const date = new Date();
-
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-        let year = date.getFullYear();
-
-        // This arrangement can be altered based on how we want the date's format to appear.
-        let currentDate = `${day}-${month}-${year}`;
-        store.commit('setDate', { date: currentDate })
+        store.commit('setPageTitle', { title: 'Classes', subtitle: 'Analitica de Clases' })
     },
-    computed: {
-        currentDate() {
-            return this.$store.state.currentDate
-        }
-
+    mounted() {
+        this.fetchClasses()
     },
     methods: {
-        async fetchAttendences() {
+        async fetchClasses() {
             const accessToken = store.get('accessToken');
-
+            const userId = store.get('userId');
 
             try {
-                let result = await axios({
+                let result = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: "http://192.168.0.62:3001/attendence",
+                    url: "/classes",
                     params: {
                         'accessToken': accessToken,
-                        'classId': this.classId
+                        'userId': userId
                     }
                 })
-                if (result.status == 200)
-                    this.messages = result.data.messages;
+                if (result.status == 200) {
+                    this.selectItems = result.data.schoolClasses;
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async fetchClassInfo(classId) {
+            const accessToken = store.get('accessToken');
+
+            try {
+                let result = await axiosClient({
+                    method: 'get',
+                    timeout: 2000,
+                    url: "/classes/info",
+                    params: {
+                        'accessToken': accessToken,
+                        'classId': classId
+                    }
+                })
+                if (result.status == 200) {
+                    this.items = result.data.classInfo;
+                    this.classYear = result.data.scInfo.school_year
+                    this.classSection = result.data.scInfo.school_section
+                    this.classStatus = result.data.scInfo.status
+                }
             } catch (error) {
                 console.log(error)
             }
         },
     },
-    components: { BaseContainer, VDataTable, }
+    components: { BaseContainer, VDataTable }
 }
 
 </script>
-<style>
-.classContainer {
-    padding: 5px;
-}
-</style>
+<style></style>

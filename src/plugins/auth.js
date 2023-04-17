@@ -1,6 +1,6 @@
 import store from 'storejs';
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axiosClient from './axiosClient';
 
 export async function checkAuth() {
     const router = useRouter()
@@ -15,22 +15,23 @@ export async function checkAuth() {
             return null
         }
 
-        let result = await axios({
+        let result = await axiosClient({
             method: 'get',
             timeout: 2000,
-            url: "http://192.168.0.62:3001/auth",
+            url: "/auth",
+            crossDomain: true,
             params: {
                 'accessToken': token,
                 'userId': id
             }
         });
-        if (result.status == 304 || result.status == 200 ) {
+        if (result.status == 304 || result.status == 200) {
             return null
         }
-        
+
 
     } catch (error) {
-        router.push({ name: "Login" ,forceReload: true})
+        router.push({ name: "Login", forceReload: true })
         console.log(error['response']['data']['message'])
     }
 }
@@ -47,10 +48,11 @@ export async function checkLoged() {
             return null
         }
 
-        let result = await axios({
+        let result = await axiosClient({
             method: 'get',
             timeout: 2000,
-            url: "http://192.168.0.62:3001/auth",
+            crossDomain: true,
+            url: "/auth",
             params: {
                 'accessToken': token,
                 'userId': id

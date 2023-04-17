@@ -1,106 +1,66 @@
 <template>
-    <form @submit.prevent="submit">
-      <v-text-field
-        v-model="name.value.value"
-        :counter="10"
-        :error-messages="name.errorMessage.value"
-        label="Name"
-      ></v-text-field>
-  
-      <v-text-field
-        v-model="phone.value.value"
-        :counter="7"
-        :error-messages="phone.errorMessage.value"
-        label="Phone Number"
-      ></v-text-field>
-  
-      <v-text-field
-        v-model="email.value.value"
-        :error-messages="email.errorMessage.value"
-        label="E-mail"
-      ></v-text-field>
-  
-      <v-select
-        v-model="select.value.value"
-        :items="items"
-        :error-messages="select.errorMessage.value"
-        label="Select"
-      ></v-select>
-  
-      <v-checkbox
-        v-model="checkbox.value.value"
-        :error-messages="checkbox.errorMessage.value"
-        value="1"
-        label="Option"
-        type="checkbox"
-      ></v-checkbox>
-  
-      <v-btn
-        class="me-4"
-        type="submit"
-      >
-        submit
-      </v-btn>
-  
-      <v-btn @click="handleReset">
-        clear
-      </v-btn>
-    </form>
-  </template>
+  <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'calories', order: 'asc' }]" class="elevation-1">
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-divider class="mx-4" inset vertical></v-divider>
+        <v-spacer></v-spacer>
+        <v-dialog v-model="dialog" max-width="500px">
+          <template v-slot:activator="{ props }">
+            <v-btn color="primary" dark class="mb-2" v-bind="props">
+              New Item
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">{{ formTitle }}</span>
+            </v-card-title>
 
-<script>
-import { ref } from 'vue'
-import { useField, useForm } from 'vee-validate'
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="sedItem.name" label="Dessert name"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
 
-export default {
-  setup () {
-    const { handleSubmit, handleReset } = useForm({
-      validationSchema: {
-        name (value) {
-          if (value?.length >= 2) return true
-
-          return 'Name needs to be at least 2 characters.'
-        },
-        phone (value) {
-          if (value?.length > 9 && /[0-9-]+/.test(value)) return true
-
-          return 'Phone number needs to be at least 9 digits.'
-        },
-        email (value) {
-          if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true
-
-          return 'Must be a valid e-mail.'
-        },
-        select (value) {
-          if (value) return true
-
-          return 'Select an item.'
-        },
-        checkbox (value) {
-          if (value === '1') return true
-
-          return 'Must be checked.'
-        },
-      },
-    })
-    const name = useField('name')
-    const phone = useField('phone')
-    const email = useField('email')
-    const select = useField('select')
-    const checkbox = useField('checkbox')
-
-    const items = ref([
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-    ])
-
-    const submit = handleSubmit(values => {
-      alert(JSON.stringify(values, null, 2))
-    })
-
-    return { name, phone, email, select, checkbox, items, submit, handleReset }
-  },
-}
-</script>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="save">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar>
+    </template>
+  </v-data-table>
+</template>

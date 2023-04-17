@@ -17,9 +17,17 @@ const routes = [
     name: 'Register',
     component: () => import('@/views/Register.vue')
   }, {
+    path: '/attendances',
+    name: 'Attendances',
+    component: () => import('@/views/Attendances.vue')
+  }, {
     path: '/class',
     name: 'Classes',
     component: () => import('@/views/Classes.vue')
+  },{
+    path: '/calendar',
+    name: 'Calendar',
+    component: () => import('@/views/Calendar.vue')
   }
 
 ]

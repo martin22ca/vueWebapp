@@ -91,7 +91,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import * as Yup from "yup";
 import { useField, useForm } from 'vee-validate'
-import checkAuth from '@/plugins/auth';
+import { checkAuth }  from '@/plugins/auth';
 
 
 import SideBar from '@/components/SideBar.vue';
@@ -214,7 +214,7 @@ h1 {
     bottom: 50%;
     width: 100vh;
     animation: blink 1.5s;
-    background: rgb(var(--v-theme-secondary));
+    background: rgb(var(--v-theme-surface));
     color: rgb(var(--v-theme-on-secondary));
 }
 
