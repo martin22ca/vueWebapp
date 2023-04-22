@@ -17,7 +17,7 @@ export async function checkAuth() {
 
         let result = await axiosClient({
             method: 'get',
-            timeout: 2000,
+            timeout: 5000,
             url: "/auth",
             crossDomain: true,
             params: {
@@ -32,6 +32,7 @@ export async function checkAuth() {
 
     } catch (error) {
         router.push({ name: "Login", forceReload: true })
+        console.log(error)
         console.log(error['response']['data']['message'])
     }
 }
@@ -50,7 +51,7 @@ export async function checkLoged() {
 
         let result = await axiosClient({
             method: 'get',
-            timeout: 2000,
+            timeout: 5000,
             crossDomain: true,
             url: "/auth",
             params: {

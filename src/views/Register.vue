@@ -1,7 +1,7 @@
 <template>
     <v-parallax src="../assets/Paralax.jpg">
         <SideBar />
-        <form @submit.prevent="submit" class="container">
+        <form @submit.prevent="submit" class="registerContainer">
             <v-container>
                 <v-row>
                     <v-col align-self="center">
@@ -91,7 +91,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import * as Yup from "yup";
 import { useField, useForm } from 'vee-validate'
-import { checkAuth }  from '@/plugins/auth';
+import { checkAuth } from '@/plugins/auth';
 
 
 import SideBar from '@/components/SideBar.vue';
@@ -206,7 +206,7 @@ h1 {
     }
 }
 
-.container {
+.registerContainer {
     border-radius: 10px;
     margin: auto;
     margin-top: 50px;
@@ -222,6 +222,7 @@ h1 {
     font-size: medium;
     font-weight: 300;
     padding-left: 10px;
-}</style>
+}
+</style>
   
 

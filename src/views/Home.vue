@@ -5,11 +5,13 @@
                 <h3><v-icon icon="mdi-information" class="pa-8" />
                     Mensajes</h3>
                 <div v-if="messages.length === 0">
-                    <h3>No hay mensajes.</h3>
+                    <div class="noList">
+                        <h3>No hay mensajes nuevos.</h3>
+                    </div>
                 </div>
                 <div v-else class="scroll">
                     <v-card v-for="message in messages" :key="message.id" :title="message.title"
-                        subtitle="Mensaje de aistencia" :text="message.info" 
+                        subtitle="Mensaje de aistencia" :text="message.info"
                         :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-2" variant="tonal"
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
                         <div class="msgText">{{ message.message }} </div>
@@ -29,12 +31,14 @@
                 <h3><v-icon icon="mdi-table-network" class="pa-8" />Asistencias Hoy</h3>
                 <div class="classesContainer">
                     <div v-if="classes.length === 0">
-                        <h3>No hay classes asignadas.</h3>
+                        <div class="noList">
+                            <h3>No hay classes asignadas.</h3>
+                        </div>
                     </div>
                     <div v-else class="scroll">
                         <v-row>
                             <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
-                                <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
+                                <v-card align="center" :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
                                     class="ma-2" subtitle="Curso Secundario" color="surface-lighter-2" rounded="true">
                                     <h4 class="classText"> Estudiantes presentes: <v-chip> {{ schoolClass.present }}
                                         </v-chip></h4>
@@ -96,7 +100,7 @@ export default {
             try {
                 let result = await axiosClient({
                     method: 'get',
-                    timeout: 2000,
+                    timeout: 5000,
                     url: "/messages",
                     params: {
                         'accessToken': accessToken,
@@ -115,7 +119,7 @@ export default {
             try {
                 let result = await axiosClient({
                     method: 'put',
-                    timeout: 2000,
+                    timeout: 5000,
                     url: '/messages/viewd',
                     params: {
                         'accessToken': accessToken,
@@ -162,7 +166,7 @@ export default {
             try {
                 let result = await axiosClient({
                     method: 'get',
-                    timeout: 2000,
+                    timeout: 5000,
                     url: "/classes/home",
                     params: {
                         'accessToken': accessToken,
@@ -192,13 +196,19 @@ export default {
 
 </script>
 
-<style scoped> .cardTitle {
+<style scoped> .noList {
+     text-align: center;
+     padding-top: 5%;
+ }
+
+ .cardTitle {
      padding: 10px;
  }
 
  .dashContainer {
      display: flex;
      flex-direction: row;
+     min-height: 70vh;
  }
 
  .left-panel {
@@ -207,8 +217,6 @@ export default {
      margin: 7px;
      margin-left: 10px;
      background-color: rgb(var(--v-theme-surface-lighter-1));
-     min-height: 300px;
-     max-height: 750px;
      overflow-y: scroll;
 
  }

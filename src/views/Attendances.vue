@@ -7,15 +7,29 @@
                         <v-col cols="4">
                             <v-sheet>
                                 <h3 style="padding: 5px;">
-                                    Diagit: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
+                                    Dia: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
                                 </h3>
                             </v-sheet>
                         </v-col>
                         <v-col cols="4">
+
                             <v-sheet style="text-align: center;">
                                 <h3 style="padding: 5px;">
-                                    Curso: <v-chip variant="elevated" color="primary">{{ classYear }} - "{{ classSection
-                                    }}"</v-chip>
+                                    Curso:
+                                    <v-menu transition="scale-transition">
+                                        <template v-slot:activator="{ props }">
+                                            <v-chip v-bind:="props" variant="elevated" color="primary" append-icon="mdi-menu-down">{{ classYear }} - "{{
+                                                classSection
+                                            }}"
+                                            </v-chip>
+                                        </template>
+                                        <v-list>
+                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
+                                                @click="manageClassUpdate(i)">
+                                                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-menu>
                                 </h3>
                             </v-sheet>
 
@@ -24,6 +38,7 @@
                             <v-sheet style="text-align: end;">
                                 <h3 style="padding: 5px;">
                                     Estado Actual:
+
                                     <v-chip :color="status ? 'secondary' : 'error'" variant="elevated">
                                         {{ status ? "ABIERTO" : "CERRADO" }}
                                     </v-chip>
@@ -42,7 +57,7 @@
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="600px">
+                    <v-dialog v-model="dialog" max-width="400px">
                         <v-card>
                             <v-card-title>
                                 <span class="text-h5 pa-5">Editar asistencia</span>
@@ -51,33 +66,58 @@
                             <v-card-text>
                                 <v-container>
                                     <v-row>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.first_name" readonly
-                                                label="Nombre"></v-text-field>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-card variant="text" align="start">
+                                                <v-card-title class="text-decoration-underline">Nombre</v-card-title>
+                                                <v-card-text class="text-lg-h6">
+                                                    {{ editedItem.first_name }}
+                                                </v-card-text>
+                                            </v-card>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.last_name" readonly
-                                                label="Apellido"></v-text-field>
+                                        <v-col cols="12" sm="6" md="6" align="end">
+                                            <v-card variant="text">
+                                                <v-card-title class="text-decoration-underline">Apellido</v-card-title>
+                                                <v-card-text class="text-lg-h6">
+                                                    {{ editedItem.last_name }}
+                                                </v-card-text>
+                                            </v-card>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.time_arrival" label="Hora Ingreso"
-                                                type="time"></v-text-field>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12" sm="6" md="12">
+                                            <v-card variant="text">
+                                                <v-card-title align="start" class="text-decoration-underline">Hora
+                                                    Ingreso</v-card-title>
+                                                <v-card-text>
+                                                    <v-text-field v-model="editedItem.time_arrival"
+                                                        type="time"></v-text-field>
+                                                </v-card-text>
+                                            </v-card>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <p>Presente</p>
-                                            <v-checkbox-btn v-model="editedItem.present"
-                                                :color="editedItem.present ? 'primary' : 'surface'" />
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12" sm="6" md="6" align="center">
+                                            <v-card variant="text">
+                                                <v-card-title class="text-decoration-underline">Presente</v-card-title>
+                                                <v-card-text>
+                                                    <v-checkbox-btn v-model="editedItem.present"
+                                                        :color="editedItem.present ? 'primary' : 'surface'" />
+                                                </v-card-text>
+                                            </v-card>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <p>Tarde</p>
-                                            <v-checkbox-btn v-if="editedItem.present" v-model="editedItem.late"
-                                                :color="editedItem.late ? 'primary' : 'surface'" />
-                                            <v-checkbox-btn v-else disabled />
+                                        <v-col cols="12" sm="6" md="6" align="center">
+                                            <v-card variant="text">
+                                                <v-card-title class="text-decoration-underline">Tarde</v-card-title>
+                                                <v-card-text>
+                                                    <v-checkbox-btn v-if="editedItem.present" v-model="editedItem.late"
+                                                        :color="editedItem.late ? 'primary' : 'surface'" />
+                                                    <v-checkbox-btn v-else disabled />
+                                                </v-card-text>
+                                            </v-card>
                                         </v-col>
                                     </v-row>
                                 </v-container>
                             </v-card-text>
-
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn class="ma-2" color="secondary" variant="tonal" @click="close">
@@ -109,7 +149,9 @@
                     </v-icon>
                 </template>
                 <template v-slot:no-data>
-                    No data
+                    <div class="noList">
+                        No data
+                    </div>
                 </template>
                 <template v-slot:item.present="{ item }">
                     <v-checkbox-btn v-model="item.value.present" readonly
@@ -129,7 +171,6 @@ import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
 import { checkAuth } from '@/plugins/auth';
-import { useRouter } from 'vue-router';
 import { axiosClient } from '@/plugins/axiosClient';
 
 export default {
@@ -139,9 +180,10 @@ export default {
             dialog: false,
             status: false,
             currDate: '',
+            myClasses: useStore().state.myClasses,
             classId: useStore().state.classId,
-            classYear: useStore().state.classYear,
-            classSection: useStore().state.classSection,
+            classYear: -1,
+            classSection: '',
 
             search: '',
             headers: [
@@ -173,18 +215,23 @@ export default {
         checkAuth()
     },
     mounted() {
-        if (this.classId != -1) { this.fetchAttendences() };
+        if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
+            this.fetchClasses()
+            return
+        } else if (this.classId == -1) {
+            let firstKey = Object.keys(this.myClasses)[0];
+            this.classId = this.myClasses[firstKey].sc
+            this.classSection = this.myClasses[firstKey].school_section
+            this.classYear = this.myClasses[firstKey].school_year
+        } else {
+            this.classSection = this.myClasses[this.classId].school_section
+            this.classYear = this.myClasses[this.classId].school_year
+        }
+        this.fetchAttendences()
     },
     setup() {
         const store = useStore()
-        const router = useRouter()
-        const sect = store.state.classSection
-        const classYear = store.state.classYear
-        if (sect == "z" || classYear == -1) {
-            router.push({
-                name: 'Home',
-            })
-        }
+
         store.commit('setPageTitle', { title: 'Asistencias', })
         const date = new Date();
 
@@ -209,10 +256,11 @@ export default {
     methods: {
         async fetchAttendences() {
             const accessToken = store.get('accessToken');
+
             try {
                 let result = await axiosClient({
                     method: 'get',
-                    timeout: 2000,
+                    timeout: 5000,
                     url: "/attendence",
                     params: {
                         'accessToken': accessToken,
@@ -226,6 +274,45 @@ export default {
             } catch (error) {
                 console.log(error)
             }
+        },
+        async fetchClasses() {
+            const storeX = useStore()
+            const accessToken = store.get('accessToken');
+            const userId = store.get('userId');
+
+            try {
+                let result = await axiosClient({
+                    method: 'get',
+                    timeout: 5000,
+                    url: "/classes",
+                    params: {
+                        'accessToken': accessToken,
+                        'userId': userId
+                    }
+                })
+                if (result.status == 200) {
+                    this.myClasses = result.data.classObjs;
+                    storeX.commit('setMyClasses', { myClasses: result.data.classObjs })
+                    if (this.classId == -1) {
+                        let firstKey = Object.keys(this.myClasses)[0];
+                        this.classId = this.myClasses[firstKey].sc
+                        this.classSection = this.myClasses[firstKey].school_section
+                        this.classYear = this.myClasses[firstKey].school_year
+                    } else {
+                        this.classSection = this.myClasses[this.classId].school_section
+                        this.classYear = this.myClasses[this.classId].school_year
+                    }
+                    this.fetchAttendences()
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        manageClassUpdate(idx) {
+            this.classId = this.myClasses[idx].sc
+            this.classSection = this.myClasses[idx].school_section
+            this.classYear = this.myClasses[idx].school_year
+            this.fetchAttendences()
         },
         decodeImage(encoded) {
             return "data:image/jpg;base64," + encoded;
@@ -283,6 +370,11 @@ export default {
 
 </script>
 <style>
+.noList {
+    text-align: center;
+    padding-top: 5%;
+}
+
 .classContainer {
     padding: 5px;
     min-height: 750px;

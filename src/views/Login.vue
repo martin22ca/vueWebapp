@@ -10,7 +10,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <div class="container">
+        <div class="loginContainer">
             <div class="left">
                 <h1 class="h1Log">Login</h1>
                 <form @submit.prevent="submit">
@@ -152,7 +152,7 @@ p {
     }
 }
 
-.container {
+.loginContainer {
     display: flex;
     margin: 0;
     position: absolute;

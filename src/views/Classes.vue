@@ -2,15 +2,31 @@
     <BaseContainer>
         <div class="classesContainer">
             <v-row no-gutters>
-                <v-col>
+                <v-col style="display: table-cell;">
                     <v-card color="surface-lighter-1" class="ma-2" title="Class info" subtitle="Subtitle">
-                        <div v-if="classId.sc != -1" style="padding: 2%; ">
+                        <div v-if="classYear != -1" style="padding: 2%; ">
                             <h4 style="padding: 5px;">
-
-                                Curso: <v-chip variant="elevated" color="primary">{{ classYear }} - "{{ classSection }}"</v-chip>
+                                Curso: <v-menu transition="scale-transition">
+                                    <template v-slot:activator="{ props }">
+                                        <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated" color="primary"
+                                            append-icon="mdi-menu-down">{{ classYear }} - "{{
+                                                classSection
+                                            }}"
+                                        </v-chip>
+                                        <v-chip v-else v-bind:="props" variant="elevated" color="primary"
+                                            append-icon="mdi-menu-down"> Select
+                                        </v-chip>
+                                    </template>
+                                    <v-list>
+                                        <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
+                                            @click="fetchClassInfo(item.sc)">
+                                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
                             </h4>
                             <h4 style="padding: 5px;">
-                                Estado Actul: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
+                                Estado Actual: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
                                     {{ classStatus ? "ABIERTO" : "CERRADO" }}
                                 </v-chip>
                             </h4>
@@ -19,33 +35,52 @@
                             <v-chip color="primary" class="ma-2">
                                 Ningun Curso Seleccionado
                             </v-chip>
+                            <v-menu transition="scale-transition">
+                                <template v-slot:activator="{ props }">
+                                    <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated" color="primary"
+                                        append-icon="mdi-menu-down">{{ classYear }} - "{{
+                                            classSection
+                                        }}"
+                                    </v-chip>
+                                    <v-chip v-else v-bind:="props" variant="elevated" color="primary"
+                                        append-icon="mdi-menu-down"> Select
+                                    </v-chip>
+                                </template>
+                                <v-list>
+                                    <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
+                                        @click="fetchClassInfo(item.sc)">
+                                        <v-list-item-title>{{ item.text }} </v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
                         </div>
                     </v-card>
                 </v-col>
                 <v-col cols="8">
-                    <v-card color="surface-lighter-1" class="ma-2" title="Seleccionar Curso"
-                        subtitle="Seleccione Clase para obtener info">
-                        <div style="padding-left: 2%; padding-bottom: 2%; padding-right: 2%;">
-                            <v-select v-model="classId" :items="selectItems" label="Select" item-title="text"
-                                item-value="sc" single-line :on-update:model-value="fetchClassInfo(classId)"></v-select>
+                    <v-card color="surface-lighter-1" class="ma-2" title="Buscar Estudiante" subtitle="Escribir">
+                        <div style="padding-bottom: 2%">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
+                                class="pl-5 pr-5" variant="outlined"></v-text-field>
                         </div>
                     </v-card>
                 </v-col>
             </v-row>
             <v-row no-gutters>
-                <v-col>
+                <v-col style="display: table-cell;">
                     <v-card class="pt-2 pb-2" variant="tonal">
                         <v-card-title>
                             Tabla de estadisticas
                         </v-card-title>
                         <v-spacer></v-spacer>
-                        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                            class="pl-5 pr-5" variant="outlined"></v-text-field>
                     </v-card>
                     <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact"
                         :search="search" hover>
                         <template v-slot:no-data>
                             No data
+                        </template>
+                        <template v-slot:item.percentage="{ item }">
+                            <v-chip :color="getColor(item.value.present, item.value.total)">
+                                {{ getValue(item.value.present, item.value.total) }} </v-chip>
                         </template>
                     </v-data-table>
                 </v-col>
@@ -69,9 +104,8 @@ export default {
             search: '',
             dialog: false,
             currDate: '',
-            selectItems: [],
-            classId: { sc: -1, text: "Select" },
-            classYear: '',
+            myClasses: useStore().state.myClasses,
+            classYear: -1,
             classSection: '',
             classStatus: false,
 
@@ -80,10 +114,11 @@ export default {
                 { title: 'Dni', key: 'dni', align: 'start', },
                 { title: 'Apellido', key: 'last_name', sortable: true, align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
-                { title: 'Ausentes', key: 'present', align: 'center', },
+                { title: 'Presentes', key: 'present', align: 'center', },
+                { title: 'Ausentes', key: 'missing', align: 'center', },
                 { title: 'Tardes', key: 'late', sortable: false, align: 'center', },
                 { title: 'Registros Totales', key: 'total', align: 'center', },
-                { title: 'Promedio', key: '', align: 'center', },
+                { title: 'Porcentaje', key: 'percentage', align: 'center', },
             ],
             items: [],
 
@@ -97,7 +132,10 @@ export default {
         store.commit('setPageTitle', { title: 'Classes', subtitle: 'Analitica de Clases' })
     },
     mounted() {
-        this.fetchClasses()
+        if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
+            this.fetchClasses()
+            return
+        }
     },
     methods: {
         async fetchClasses() {
@@ -115,13 +153,16 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-                    this.selectItems = result.data.schoolClasses;
+                    this.myClasses = result.data.classObjs;
                 }
             } catch (error) {
                 console.log(error)
             }
         },
         async fetchClassInfo(classId) {
+            this.classYear = this.myClasses[classId].school_year
+            this.classSection = this.myClasses[classId].school_section
+            this.classStatus = this.myClasses[classId].status
             const accessToken = store.get('accessToken');
 
             try {
@@ -136,14 +177,25 @@ export default {
                 })
                 if (result.status == 200) {
                     this.items = result.data.classInfo;
-                    this.classYear = result.data.scInfo.school_year
-                    this.classSection = result.data.scInfo.school_section
-                    this.classStatus = result.data.scInfo.status
                 }
             } catch (error) {
                 console.log(error)
             }
-        },
+        }, getColor(present, total) {
+            const pre = Number(present)
+            const tot = Number(total)
+            const percent = pre / tot * 100
+            if (percent < 30) return 'red'
+            else if (percent < 50) return 'orange'
+            else return 'green'
+        }, getValue(present, total) {
+            const pre = Number(present)
+            const tot = Number(total)
+            if (total == 0) return 0
+            else {
+                return Math.round(100 * pre / tot)
+            }
+        }
     },
     components: { BaseContainer, VDataTable }
 }

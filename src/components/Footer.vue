@@ -1,12 +1,12 @@
 <template>
-    <v-footer class=" text-center d-flex flex-column mt-5" color="primary-darken">
+    <v-footer class=" text-center d-flex flex-column mt-5" color="surface-lighter-2">
         <div>
             <strong> Copyright © Colegio Del Espíritu Santo. </strong> — {{ new Date().getFullYear() }}
         </div>
-        <div class="pa-5"> Todos los derechos reservados. Este sitio web es exclusivo para el
+        <div class="pl-5 pr-5 pt-2"> Todos los derechos reservados. Este sitio web es exclusivo para el
             uso del personal de la institución y está protegido por las leyes de propiedad intelectual. Prohibida su
             reproducción total o parcial sin autorización previa por escrito. Contáctanos:
-            <strong>administracion@delespiritusanto.edu.ar.</strong>
+            <strong class="lightenMsg"> <link> administracion@delespiritusanto.edu.ar. </strong>
         </div>
 
         <v-divider></v-divider>
@@ -18,12 +18,12 @@
 <script>
 export default {
     data: () => ({
-        icons: [
-            'mdi-facebook',
-            'mdi-twitter',
-            'mdi-linkedin',
-            'mdi-instagram',
-        ],
     }),
 }
 </script>
+
+<style>
+.lightenMsg {
+    color: forestgreen;
+}
+</style>
