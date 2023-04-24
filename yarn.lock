@@ -1341,6 +1341,11 @@ vite@^3.1.9:
   optionalDependencies:
     fsevents "~2.3.2"
 
+vue-cal@^4.8.1:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/vue-cal/-/vue-cal-4.8.1.tgz#409dea906ee32af875c6b8670b64b8d494d18d3f"
+  integrity sha512-qe0jSDmbzdKF3/MSTPcHSJMOovav4MwmXtgs1n7jkI345zAtfErQVv4uFEVXg1rD62sBi1qWflYRUKy1mzQapg==
+
 vue-eslint-parser@^9.0.1:
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-9.1.1.tgz#3f4859be7e9bb7edaa1dc7edb05abffee72bf3dd"
@@ -1361,14 +1366,7 @@ vue-router@^4.0.0:
   dependencies:
     "@vue/devtools-api" "^6.4.5"
 
-vue-simple-calendar@^6.3.1:
-  version "6.3.1"
-  resolved "https://registry.yarnpkg.com/vue-simple-calendar/-/vue-simple-calendar-6.3.1.tgz#e7e575dd5f12dac99b3a0818bd3c04063acf7b23"
-  integrity sha512-FUvFQPA9X6tuLj/8JY13HRTJQdFrKpej6B3dN6t4LCPVQUxPKu1K4URgh4cE3trpZNtepayiecehk+04nqb9BQ==
-  dependencies:
-    vue "^3.2.47"
-
-vue@^3.2.13, vue@^3.2.47:
+vue@^3.2.13:
   version "3.2.47"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.47.tgz#3eb736cbc606fc87038dbba6a154707c8a34cff0"
   integrity sha512-60188y/9Dc9WVrAZeUVSDxRQOZ+z+y5nO2ts9jWXSTkMvayiWxCWOWtBQoYjLeccfXkiiPZWAHcV+WTPhkqJHQ==

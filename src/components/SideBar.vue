@@ -6,16 +6,16 @@
         </v-list>
         <v-divider thickness="11"></v-divider>
         <v-list dense nav>
-            <v-list-item v-for="item in menuItems" :key="item.name" :value="item.name"
+            <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
                 :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
-                @click="goTo(item.route)" >
+                @click="goTo(item.route)">
                 <div class="iconS">
                     <v-icon :icon="item.icon" size="x-large" />
                 </div>
                 <h4 class="sideText">{{ item.name }}</h4>
-
             </v-list-item>
-            
+
+
         </v-list>
         <template v-slot:append>
             <v-divider></v-divider>
@@ -23,7 +23,7 @@
                 <div class="iconS">
                     <v-icon icon="mdi-logout" size="x-large" />
                 </div>
-                <h4 class="sideText" >Logout</h4>
+                <h4 class="sideText">Logout</h4>
             </v-list-item>
         </template>
     </v-navigation-drawer>
@@ -39,32 +39,38 @@ export default {
         return {
             firstName: store.get('first_name'),
             lastName: store.get('last_name'),
+            role: store.get('role'),
             router: useRouter(),
             menuItems: [
                 {
                     name: 'Home',
                     icon: 'mdi-home',
-                    route: 'Home'
+                    route: 'Home',
+                    roleNeeded: 2,
                 },
                 {
                     name: 'Asistencia',
                     icon: 'mdi-table-network',
                     route: 'Attendances',
+                    roleNeeded: 2,
                 },
                 {
                     name: 'Calendar',
                     icon: 'mdi-calendar',
-                    route: 'Calendar'
+                    route: 'Calendar',
+                    roleNeeded: 2,
                 },
                 {
                     name: 'Analisis',
                     icon: 'mdi-chart-line',
-                    route: 'Classes'
+                    route: 'Classes',
+                    roleNeeded: 2,
                 },
                 {
                     name: 'Gestion',
                     icon: 'mdi-cog',
-                    route: 'Managment'
+                    route: 'Managment',
+                    roleNeeded: 1,
                 }
             ]
 
@@ -73,7 +79,11 @@ export default {
     computed: {
         currentRouteName() {
             return this.$route.name;
-        }
+        },
+        filteredMenuItems() {
+            return this.menuItems.filter(item => item.roleNeeded >= this.role);
+        },
+
     },
     methods: {
         async closeSession() {

@@ -9,7 +9,7 @@ export function setClass(state, { classId, year, section }) {
 }
 
 export function setDate(state, { date }) {
-  state.currentDate = date
+  state.attDate = date
 }
 
 export function setMyClasses(state, { myClasses }) {

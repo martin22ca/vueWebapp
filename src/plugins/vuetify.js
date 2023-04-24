@@ -34,7 +34,8 @@ export default createVuetify({
 
           'background-lighter': '#151515',
 
-          'primary-darken': '#12913c',
+          'primary-darken-1': '#12913c',
+          'primary-darken-2': '#154f28',
           'secondary-darken': '#018786',
 
           'surface-lighter-1': '#232323',

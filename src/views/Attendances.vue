@@ -18,9 +18,10 @@
                                     Curso:
                                     <v-menu transition="scale-transition">
                                         <template v-slot:activator="{ props }">
-                                            <v-chip v-bind:="props" variant="elevated" color="primary" append-icon="mdi-menu-down">{{ classYear }} - "{{
-                                                classSection
-                                            }}"
+                                            <v-chip v-bind:="props" variant="elevated" color="primary"
+                                                append-icon="mdi-menu-down">{{ classYear }} - "{{
+                                                    classSection
+                                                }}"
                                             </v-chip>
                                         </template>
                                         <v-list>
@@ -179,7 +180,7 @@ export default {
         return {
             dialog: false,
             status: false,
-            currDate: '',
+            attDate: useStore().state.attDate,
             myClasses: useStore().state.myClasses,
             classId: useStore().state.classId,
             classYear: -1,
@@ -233,19 +234,22 @@ export default {
         const store = useStore()
 
         store.commit('setPageTitle', { title: 'Asistencias', })
-        const date = new Date();
+        const attDate = store.state.attDate
+        if (attDate == '') {
+            const date = new Date();
 
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-        let year = date.getFullYear();
+            let day = date.getDate();
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
 
-        // This arrangement can be altered based on how we want the date's format to appear.
-        let currentDate = `${day}-${month}-${year}`;
-        store.commit('setDate', { date: currentDate })
+            // This arrangement can be altered based on how we want the date's format to appear.
+            let currentDate = `${day}-${month}-${year}`;
+            store.commit('setDate', { date: currentDate })
+        }
     },
     computed: {
         currentDate() {
-            return this.$store.state.currentDate
+            return this.$store.state.attDate
         },
     },
     watch: {
@@ -264,7 +268,8 @@ export default {
                     url: "/attendence",
                     params: {
                         'accessToken': accessToken,
-                        'classId': this.classId
+                        'classId': this.classId,
+                        'attDate': this.attDate
                     }
                 })
                 if (result.status == 200) {

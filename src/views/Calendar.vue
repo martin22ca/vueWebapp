@@ -1,33 +1,28 @@
 <template>
     <BaseContainer>
         <div class="calendarContainer">
-            <calendar-view :show-date="showDate" class="theme-default holiday-us-traditional holiday-us-official">
-                <template #header="{ headerProps }">
-                    <calendar-view-header :header-props="headerProps" @input="setShowDate" />
-                </template>
-            </calendar-view>
+            <v-card title="Seleccionar Fecha" subtitle="Validacion asistencias pasadas" style="width: 100%;">
+                <VueCal style="padding: 10px; background-color: rgb(var(--v-theme-surface-lighter-1)); " active-view="month"
+                    click-to-navigate :disable-views="['years', 'week', 'day']" :min-date="minDate" :max-date="maxDate"
+                    @cell-dblclick="onDateClick" />
+            </v-card>
         </div>
     </BaseContainer>
 </template>
 
 <script>
-import { CalendarView, CalendarViewHeader } from "vue-simple-calendar"
-import "../../node_modules/vue-simple-calendar/dist/style.css"
-import "../../node_modules/vue-simple-calendar/dist/css/holidays-us.css"
 import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
+import VueCal from 'vue-cal'
+import 'vue-cal/dist/vuecal.css'
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
     name: 'Calendar',
     data() {
         return {
-            dialog: false,
-            currDate: '',
-            selectItems: [],
-            classId: { sc: -1, text: "Select" },
-            classYear: '',
-            classSection: '',
+            date: new Date(),
+            storage: useStore(),
         }
     },
     beforeCreate() {
@@ -35,24 +30,56 @@ export default {
     },
     setup() {
         const store = useStore()
-        store.commit('setPageTitle', { title: 'Calendar', subtitle: 'Ver asistencias anteriores' })
-    },
-    mounted() {
-        this.fetchClasses()
+        store.commit('setPageTitle', { title: 'Calendario' })
     },
     methods: {
-        async fetchClasses() {
+        onDateClick(date) {
+            this.storage.commit('setDate', { date: date })
+            this.$router.push({
+                name: 'Attendances',
+            })
 
-        },
+        }
     },
-    components: { BaseContainer, CalendarView, CalendarViewHeader }
+    computed: {
+        minDate() {
+            return new Date(new Date().getFullYear(), 0, 1);
+        },
+        maxDate() {
+            return new Date()
+        }
+    },
+    components: { BaseContainer, VueCal }
 }
 
 </script>
 <style>
 .calendarContainer {
     height: 600px;
-    padding: 1%;
     display: flex;
+}
+
+.vuecal--month-view .vuecal__cell-date {
+    padding: 4px;
+}
+
+.vuecal__cell--disabled {
+    text-decoration: line-through;
+}
+
+.vuecal__cell--before-min {
+    color: rgb(var(--v-theme-surface-lighter-2));
+}
+
+.vuecal__cell--after-max {
+    color: rgb(var(--v-theme-surface-lighter-2));
+}
+
+.vuecal__cell--selected {
+    background-color: rgb(var(--v-theme-primary-darken-1));
+}
+
+.vuecal__cell--today {
+    background-color: rgb(var(--v-theme-primary-darken-2));
 }
 </style>
