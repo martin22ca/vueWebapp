@@ -13,9 +13,9 @@ const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: () => import('@/views/Register.vue')
+    path: '/management',
+    name: 'Management',
+    component: () => import('@/views/Management.vue')
   },
   {
     path: '/attendances',
@@ -31,6 +31,11 @@ const routes = [
     path: '/calendar',
     name: 'Calendar',
     component: () => import('@/views/Calendar.vue')
+  },
+  {
+    path: '/aplication',
+    name: 'Daemon',
+    component: () => import('@/views/Daemon.vue')
   },
   {
     path: '/test',

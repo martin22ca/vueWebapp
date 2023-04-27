@@ -1,32 +1,37 @@
 <template>
-    <v-navigation-drawer :width="100" rounded="true" color="background-lighter">
-        <v-list color="">
-            <v-img src="../assets/logo.png" width="100" class="image">
-            </v-img>
-        </v-list>
-        <v-divider thickness="11"></v-divider>
-        <v-list dense nav>
-            <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
-                :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
-                @click="goTo(item.route)">
-                <div class="iconS">
-                    <v-icon :icon="item.icon" size="x-large" />
-                </div>
-                <h4 class="sideText">{{ item.name }}</h4>
-            </v-list-item>
+    <div style="width:85px;">
+        <v-navigation-drawer :width="100" rounded="true" color="transparent" class="pa-1" border="0">
+            <v-list>
+                <v-sheet rounded="lg" class="pa-2">
+                    <img src="../assets/logo.png" width="70" class="image" />
+                </v-sheet>
+            </v-list>
 
-
-        </v-list>
-        <template v-slot:append>
-            <v-divider></v-divider>
-            <v-list-item value="Logout" rounded="true" class="text-primary" @click="closeSession">
-                <div class="iconS">
-                    <v-icon icon="mdi-logout" size="x-large" />
-                </div>
-                <h4 class="sideText">Logout</h4>
-            </v-list-item>
-        </template>
-    </v-navigation-drawer>
+            <v-sheet height="80vh" rounded="lg">
+                <v-list dense nav>
+                    <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
+                        :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
+                        @click="goTo(item.route)">
+                        <div class="iconS">
+                            <v-icon :icon="item.icon" size="x-large" />
+                        </div>
+                        <h4 class="sideText">{{ item.name }}</h4>
+                    </v-list-item>
+                </v-list>
+            </v-sheet>
+            <template v-slot:append>
+                <v-sheet rounded="lg">
+                    <v-list-item value="Logout" rounded="true" variant="tonal" @click="closeSession"
+                        style="border-radius: 10%;" color="primary">
+                        <div class="iconS">
+                            <v-icon icon="mdi-logout" size="x-large" />
+                        </div>
+                        <h4 class="sideText">Logout</h4>
+                    </v-list-item>
+                </v-sheet>
+            </template>
+        </v-navigation-drawer>
+    </div>
 </template>
 
 <script>
@@ -46,31 +51,37 @@ export default {
                     name: 'Home',
                     icon: 'mdi-home',
                     route: 'Home',
-                    roleNeeded: 2,
+                    roleNeeded: 1,
                 },
                 {
                     name: 'Asistencia',
                     icon: 'mdi-table-network',
                     route: 'Attendances',
-                    roleNeeded: 2,
+                    roleNeeded: 1,
                 },
                 {
                     name: 'Calendar',
                     icon: 'mdi-calendar',
                     route: 'Calendar',
-                    roleNeeded: 2,
+                    roleNeeded: 1,
                 },
                 {
                     name: 'Analisis',
                     icon: 'mdi-chart-line',
                     route: 'Classes',
-                    roleNeeded: 2,
+                    roleNeeded: 1,
                 },
                 {
                     name: 'Gestion',
                     icon: 'mdi-cog',
-                    route: 'Managment',
-                    roleNeeded: 1,
+                    route: 'Management',
+                    roleNeeded: 2,
+                },
+                {
+                    name: 'APP',
+                    icon: 'mdi-download-box',
+                    route: 'Daemon',
+                    roleNeeded: 2,
                 }
             ]
 
@@ -81,7 +92,7 @@ export default {
             return this.$route.name;
         },
         filteredMenuItems() {
-            return this.menuItems.filter(item => item.roleNeeded >= this.role);
+            return this.menuItems.filter(item => item.roleNeeded <= this.role);
         },
 
     },
@@ -106,10 +117,9 @@ export default {
 
 <style>
 .image {
-    flex-direction: column;
+    display: block;
     margin-left: auto;
-    padding-bottom: 10px;
-    align-items: center;
+    margin-right: auto;
 }
 
 .iconS {
@@ -118,7 +128,7 @@ export default {
 }
 
 .sideText {
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
     font-weight: 300;
 }

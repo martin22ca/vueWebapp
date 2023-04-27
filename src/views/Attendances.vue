@@ -5,7 +5,7 @@
                 <v-card-title>
                     <v-row>
                         <v-col cols="4">
-                            <v-sheet>
+                            <v-sheet color="transparent">
                                 <h3 style="padding: 5px;">
                                     Dia: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
                                 </h3>
@@ -13,7 +13,7 @@
                         </v-col>
                         <v-col cols="4">
 
-                            <v-sheet style="text-align: center;">
+                            <v-sheet style="text-align: center;" color="transparent">
                                 <h3 style="padding: 5px;">
                                     Curso:
                                     <v-menu transition="scale-transition">
@@ -36,7 +36,7 @@
 
                         </v-col>
                         <v-col cols="4">
-                            <v-sheet style="text-align: end;">
+                            <v-sheet style="text-align: end;" color="transparent">
                                 <h3 style="padding: 5px;">
                                     Estado Actual:
 
@@ -213,7 +213,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth()
+        checkAuth(1)
     },
     mounted() {
         if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
@@ -381,7 +381,8 @@ export default {
 }
 
 .classContainer {
-    padding: 5px;
+    margin-top: 10px;
+    margin-right: 10px;
     min-height: 750px;
 }
 

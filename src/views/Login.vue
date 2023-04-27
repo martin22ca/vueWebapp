@@ -100,8 +100,9 @@ export default {
                 }
             } catch (error) {
                 console.log(error)
-                showError.value = error.response.data.message
                 showDialog.value = true;
+                if (error.response != undefined) showError.value = error.response.data.message
+                else showError.value = "Error de Servidor. \n Porfavor consultar administrador"
             }
         });
 

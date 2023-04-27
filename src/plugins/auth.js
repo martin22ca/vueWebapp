@@ -2,7 +2,7 @@ import store from 'storejs';
 import { useRouter } from 'vue-router'
 import axiosClient from './axiosClient';
 
-export async function checkAuth() {
+export async function checkAuth(minRole = 2) {
     const router = useRouter()
 
     try {
@@ -22,7 +22,8 @@ export async function checkAuth() {
             crossDomain: true,
             params: {
                 'accessToken': token,
-                'userId': id
+                'userId': id,
+                'minRole': minRole
             }
         });
         if (result.status == 304 || result.status == 200) {

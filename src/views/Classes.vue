@@ -2,9 +2,9 @@
     <BaseContainer>
         <div class="classesContainer">
             <v-row no-gutters>
-                <v-col style="display: table-cell;">
-                    <v-card color="surface-lighter-1" class="ma-2" title="Class info" subtitle="Subtitle">
-                        <div v-if="classYear != -1" style="padding: 2%; ">
+                <v-col>
+                    <v-card color="surface-lighter-1" title="Class info" subtitle="Subtitle" class="mb-2 ">
+                        <div v-if="classYear != -1">
                             <h4 style="padding: 5px;">
                                 Curso: <v-menu transition="scale-transition">
                                     <template v-slot:activator="{ props }">
@@ -57,7 +57,7 @@
                     </v-card>
                 </v-col>
                 <v-col cols="8">
-                    <v-card color="surface-lighter-1" class="ma-2" title="Buscar Estudiante" subtitle="Escribir">
+                    <v-card color="surface-lighter-1" class="ml-2 mb-2" title="Buscar Estudiante" subtitle="Escribir">
                         <div style="padding-bottom: 2%">
                             <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                                 class="pl-5 pr-5" variant="outlined"></v-text-field>
@@ -73,16 +73,24 @@
                         </v-card-title>
                         <v-spacer></v-spacer>
                     </v-card>
-                    <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact"
-                        :search="search" hover>
-                        <template v-slot:no-data>
-                            No data
-                        </template>
-                        <template v-slot:item.percentage="{ item }">
-                            <v-chip :color="getColor(item.value.present, item.value.total)">
-                                {{ getValue(item.value.present, item.value.total) }} </v-chip>
-                        </template>
-                    </v-data-table>
+                    <div v-if="items.length != 0">
+                        <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact"
+                            :search="search" hover>
+                            <template v-slot:no-data>
+                                No data
+                            </template>
+                            <template v-slot:item.percentage="{ item }">
+                                <v-chip :color="getColor(item.value.present, item.value.total)">
+                                    {{ getValue(item.value.present, item.value.total) }} </v-chip>
+                            </template>
+                        </v-data-table>
+                    </div>
+                    <div v-else>
+                        <v-sheet style="text-align: center; font-size: xx-large; margin-top: 80px;" class="pa-2"
+                            color="background">
+                            Ningun Curso Seleccionado!
+                        </v-sheet>
+                    </div>
                 </v-col>
             </v-row>
         </div>
@@ -125,7 +133,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth()
+        checkAuth(1)
     },
     setup() {
         const store = useStore()
@@ -201,4 +209,10 @@ export default {
 }
 
 </script>
-<style></style>
+<style>
+.classesContainer {
+    margin-top: 10px;
+    margin-right: 10px;
+    min-height: 75vh;
+}
+</style>

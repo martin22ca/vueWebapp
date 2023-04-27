@@ -1,33 +1,27 @@
 <template>
-  <SideBar />
-  <div class="containerB">
-    <TopBar />
-    <v-sheet class="pl-5 pb-3" prepend-icon="mdi-account" color="surface">
-      <h2 style="padding-left: 5px; font-size: 40px;">
-        <v-icon icon="mdi-account" class="pr-2" />{{ this.lastName }} , {{ this.firstName }}
-      </h2>
-      <h3 class="subBase">
-        {{ this.email }}
-      </h3>
-    </v-sheet>
-    <slot></slot>
-    <Footer />
-  </div>
+  <v-row>
+    <v-col cols="auto">
+      <SideBar />
+    </v-col>
+    <v-col>
+      <div class="containerB">
+        <TopBar />
+        
+        <slot></slot>
+        <Footer />
+      </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
-import store from 'storejs';
 import SideBar from '@/components/SideBar.vue';
 import TopBar from './TopBar.vue';
 import Footer from './Footer.vue';
 
 export default {
   name: 'BaseContainer',
-  data: () => ({
-    firstName: store.get('first_name'),
-    lastName: store.get('last_name'),
-    email: store.get('email'),
-  }),
+
   setup() { },
   components: { SideBar, TopBar, Footer },
 }
@@ -36,15 +30,14 @@ export default {
 
 <style>
 .gradient {
-    height: 100vh;
+  height: 100vh;
 
 }
+
 .containerB {
-  padding-left: 100px;
   flex-direction: column;
   width: 100%;
-  height: 100%;
-  background-color: rgb(var(--v-theme-surface));
+  background-color: rgb(var(--v-theme-backgound));
 }
 
 .text {

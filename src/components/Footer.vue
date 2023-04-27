@@ -1,5 +1,5 @@
 <template>
-    <v-footer class=" text-center d-flex flex-column mt-5" color="surface-lighter-2">
+    <v-footer class=" text-center d-flex flex-column  ml-0 mt-5 ma-2" color="surface-lighter-2" rounded="lg">
         <div>
             <strong> Copyright © Colegio Del Espíritu Santo. </strong> — {{ new Date().getFullYear() }}
         </div>

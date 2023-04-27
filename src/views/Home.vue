@@ -82,7 +82,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth()
+        checkAuth(1)
     },
     mounted() {
         this.fetchClasses();
@@ -206,16 +206,16 @@ export default {
  }
 
  .dashContainer {
+    min-height: 75vh;
      display: flex;
      flex-direction: row;
-     min-height: 70vh;
  }
 
  .left-panel {
      flex: 1;
      border-radius: 1%;
      margin: 7px;
-     margin-left: 10px;
+     margin-left: 0;
      background-color: rgb(var(--v-theme-surface-lighter-1));
      overflow-y: scroll;
 

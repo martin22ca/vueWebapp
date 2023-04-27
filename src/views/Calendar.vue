@@ -2,7 +2,7 @@
     <BaseContainer>
         <div class="calendarContainer">
             <v-card title="Seleccionar Fecha" subtitle="Validacion asistencias pasadas" style="width: 100%;">
-                <VueCal style="padding: 10px; background-color: rgb(var(--v-theme-surface-lighter-1)); " active-view="month"
+                <VueCal style="padding: 10px; background-color: rgb(var(--v-theme-surface-lighter-1)); height: 670px;" active-view="month"
                     click-to-navigate :disable-views="['years', 'week', 'day']" :min-date="minDate" :max-date="maxDate"
                     @cell-dblclick="onDateClick" />
             </v-card>
@@ -26,7 +26,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth()
+        checkAuth(2)
     },
     setup() {
         const store = useStore()
@@ -55,7 +55,9 @@ export default {
 </script>
 <style>
 .calendarContainer {
-    height: 600px;
+    margin-top: 10px;
+    margin-right: 10px;
+    height: 750px;
     display: flex;
 }
 
