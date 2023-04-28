@@ -1,6 +1,6 @@
 <template>
-    <v-card title="Empleados" subtitle="Editar informacion de los empleados" color="surface-lighter-1" class="ma-2 mr-5">
-        <v-sheet >
+    <v-card title="Empleados" subtitle="Editar Cursos" color="surface-lighter-1" class="ma-2 mr-5">
+        <v-sheet>
             <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" hover>
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
@@ -117,13 +117,10 @@ export default {
             },
 
             headers: [
-                { title: 'id', key: 'id_emp', align: 'start', width: '3%' },
-                { title: 'Username', key: 'user_name', sortable: true, align: 'center', width: '10%' },
-                { title: 'Apellido', key: 'last_name', align: 'center' },
-                { title: 'Nombre', key: 'first_name', align: 'center', width: '10%' },
-                { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
-                { title: 'Email', key: 'email', align: 'center', width: '25%' },
-                { title: 'Rol', key: 'id_role', align: 'center', width: '3%' },
+                { title: 'id', key: 'id_cls', align: 'start', width: '3%' },
+                { title: 'Año', key: 'user_name', sortable: true, align: 'center', width: '10%' },
+                { title: 'Seccion', key: 'last_name', align: 'center' },
+                { title: 'Preceptor Asignado', key: 'first_name', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end', width: '8%' },
             ],
             items: [],

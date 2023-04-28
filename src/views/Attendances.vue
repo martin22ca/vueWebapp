@@ -53,8 +53,8 @@
                 <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                     class="pl-5 pr-5" variant="outlined"></v-text-field>
             </v-card>
-            <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" :search="search"
-                hover>
+            <v-data-table v-if="items.length > 0" :headers="headers" :items="items" class="elevation-1 border-1"
+                density="compact" :search="search" hover>
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
@@ -162,6 +162,9 @@
                     <v-checkbox-btn v-model="item.value.late" readonly :color="item.value.late ? 'primary' : 'surface'" />
                 </template>
             </v-data-table>
+            <v-sheet v-else style="margin: 5%;  text-align: center;" color="background">
+                <v-chip size="x-large" style="font-size: x-large;">No hay estudiantes en esta clase!</v-chip>
+            </v-sheet>
         </div>
     </BaseContainer>
 </template>
@@ -219,7 +222,7 @@ export default {
         if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
             this.fetchClasses()
             return
-        } else if (this.classId == -1) {
+        } else if (this.classId == -1 || this.classId == undefined) {
             let firstKey = Object.keys(this.myClasses)[0];
             this.classId = this.myClasses[firstKey].sc
             this.classSection = this.myClasses[firstKey].school_section
@@ -298,7 +301,7 @@ export default {
                 if (result.status == 200) {
                     this.myClasses = result.data.classObjs;
                     storeX.commit('setMyClasses', { myClasses: result.data.classObjs })
-                    if (this.classId == -1) {
+                    if (this.classId == -1 || this.classId == undefined) {
                         let firstKey = Object.keys(this.myClasses)[0];
                         this.classId = this.myClasses[firstKey].sc
                         this.classSection = this.myClasses[firstKey].school_section

@@ -12,7 +12,7 @@
                 <div v-else class="scroll">
                     <v-card v-for="message in messages" :key="message.id" :title="message.title"
                         subtitle="Mensaje de aistencia" :text="message.info"
-                        :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-2" variant="tonal"
+                        :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-1" variant="tonal"
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
                         <div class="msgText">{{ message.message }} </div>
                         <div>{{ message.info }}</div>
@@ -38,15 +38,16 @@
                     <div v-else class="scroll">
                         <v-row>
                             <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
-                                <v-card align="center" :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
-                                    class="ma-2" subtitle="Curso Secundario" color="surface-lighter-2" rounded="true">
+                                <v-card align="center"
+                                    :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
+                                    class="ma-1 " subtitle="Curso Secundario" color="surface-lighter-2" rounded="true">
                                     <h4 class="classText"> Estudiantes presentes: <v-chip> {{ schoolClass.present }}
                                         </v-chip></h4>
                                     <h4 class="classText"> Estudiantes Totales: <v-chip>{{ schoolClass.total }} </v-chip>
                                     </h4>
                                     <h4 class="classText"> Porcentaje: <v-chip
                                             :color="getColor(schoolClass.present, schoolClass.total)">
-                                            {{ Math.round(100 * schoolClass.present / schoolClass.total) }} </v-chip></h4>
+                                            {{ this.getPercentage(schoolClass.present, schoolClass.total) }} </v-chip></h4>
                                     <v-card-actions>
                                         <v-btn variant="tonal" color="primary"
                                             @click="viewClass(schoolClass.sc, schoolClass.school_year, schoolClass.school_section)">Ver
@@ -179,17 +180,23 @@ export default {
                 console.log(error)
             }
         }, async viewClass(id, year, section) {
+            this.storage.commit('setDate', { date: "" })
             this.storage.commit('setClass', { classId: id, year: year, section: section })
             this.$router.push({
                 name: 'Attendances',
             })
 
         }, getColor(present, total) {
+            if (total == 0) return 'green'
             const percent = present / total * 100
             if (percent < 30) return 'red'
             else if (percent < 50) return 'orange'
             else return 'green'
-        },
+        }, getPercentage(present, total) {
+            if (total == 0) return 0
+            const percent = Math.round(100 * present / total)
+            return percent
+        }
     },
     components: { BaseContainer }
 }
@@ -206,7 +213,7 @@ export default {
  }
 
  .dashContainer {
-    min-height: 75vh;
+     min-height: 75vh;
      display: flex;
      flex-direction: row;
  }

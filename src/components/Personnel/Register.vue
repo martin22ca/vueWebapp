@@ -177,12 +177,6 @@ export default {
 </script>
   
 <style>
-.gradient {
-    height: 100vh;
-    background: rgb(0, 0, 0);
-    background: linear-gradient(190deg, rgba(0, 0, 0, 1) 80%, rgba(47, 47, 47, 1) 80%, rgb(173, 173, 173) 100%);
-}
-
 h1 {
     margin: 10px;
 }
@@ -192,7 +186,7 @@ h1 {
     margin: auto;
     margin-bottom: 50px;
     bottom: 50%;
-    background: rgb(var(--v-theme-surface-lighter-2));
+    background: rgb(var(--v-theme-surface-lighter-1));
     color: rgb(var(--v-theme-on-secondary));
 }
 

@@ -1,6 +1,6 @@
 <template>
     <div style="width:85px;">
-        <v-navigation-drawer :width="100" rounded="true" color="transparent" class="pa-1" border="0">
+        <v-navigation-drawer :width="100" rounded="true" color="transparent" class="pa-1" border="0" permanent>
             <v-list>
                 <v-sheet rounded="lg" class="pa-2">
                     <img src="../assets/logo.png" width="70" class="image" />

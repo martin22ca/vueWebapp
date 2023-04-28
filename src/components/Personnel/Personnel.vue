@@ -1,6 +1,6 @@
 <template>
     <v-row>
-        <v-col cols="2">
+        <v-col cols="3">
             <v-card title="Empleados" variant="flat" rounded="false" color="surface-lighter-1" class="ma-2">
                 <v-list dense nav>
                     <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1" rounded
@@ -15,8 +15,8 @@
                 </v-list>
             </v-card>
         </v-col>
-        <v-col class="pa-2" cols="10" style="border-left: solid 3px; border-color: rgb(var(--v-theme-surface-lighter-2));">
-            <v-card variant="text">
+        <v-col class="pa-2 pl-0 " cols="9">
+            <v-card variant="text" class="ma-0">
                 <component class="enterAnim" :is="currentComponent"></component>
             </v-card>
         </v-col>

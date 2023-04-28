@@ -4,7 +4,7 @@
             <v-card title="Seleccionar Fecha" subtitle="Validacion asistencias pasadas" style="width: 100%;">
                 <VueCal style="padding: 10px; background-color: rgb(var(--v-theme-surface-lighter-1)); height: 670px;" active-view="month"
                     click-to-navigate :disable-views="['years', 'week', 'day']" :min-date="minDate" :max-date="maxDate"
-                    @cell-dblclick="onDateClick" />
+                    @cell-dblclick="onDateClick"  locale="es"/>
             </v-card>
         </div>
     </BaseContainer>

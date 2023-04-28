@@ -1,33 +1,34 @@
 <template>
     <base-container>
-        <v-sheet color="background" style="min-height: 60vh;">
-            <div class="managementContainer">
-                <v-row>
-                    <v-col cols="2" class="pa-0">
-                        <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"
-                            rounded="false" color="surface-lighter-1" class="ml-4 mr-2 mt-2">
-                            <v-list dense nav>
-                                <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1"
-                                    rounded @click="selectComp(item.comp)">
-                                    <v-card :title="item.name" variant="outlined"
-                                        :color="currentComp == item.comp ? 'primary' : 'undefined'">
-                                        <template v-slot:prepend>
-                                            <v-icon :icon="item.icon" size="large" />
-                                        </template>
-                                    </v-card>
-                                </v-list-item>
-                            </v-list>
-                        </v-card>
-                    </v-col>
-                    <v-col class="pa-0" cols="10"
-                        style="border-left: solid 3px; border-color: rgb(var(--v-theme-surface-lighter-2));">
-                        <v-card variant="text">
-                            <component class="enterAnim" :is="currentComponent"></component>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </div>
-        </v-sheet>
+        <div>
+            <v-parallax src="../assets/Paralax.jpg" style=" margin-right: 10px; border-radius: 1%;">
+                <div class="managementContainer">
+                    <v-row>
+                        <v-col cols="2" class="pa-0">
+                            <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"
+                                rounded="false" color="surface-lighter-1" class="ml-4 mr-2 mt-2">
+                                <v-list dense nav>
+                                    <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1"
+                                        rounded @click="selectComp(item.comp)">
+                                        <v-card :title="item.name" variant="outlined"
+                                            :color="currentComp == item.comp ? 'primary' : 'undefined'">
+                                            <template v-slot:prepend>
+                                                <v-icon :icon="item.icon" size="large" />
+                                            </template>
+                                        </v-card>
+                                    </v-list-item>
+                                </v-list>
+                            </v-card>
+                        </v-col>
+                        <v-col class="pa-0" cols="10">
+                            <v-card variant="text">
+                                <component class="enterAnim" :is="currentComponent"></component>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </div>
+            </v-parallax>
+        </div>
     </base-container>
 </template>
   
@@ -36,12 +37,13 @@ import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
 import BaseContainer from '@/components/BaseContainer.vue';
 import Personnel from '@/components/Personnel/Personnel.vue';
+import ClassesMan from '@/components/ClassManage/ClassesMan.vue';
 
 export default {
     data: () => ({
         currentComp: -1,
         rigthComponents: {
-            0: 'Classes',
+            0: ClassesMan,
             1: Personnel,
             2: 'Students',
         },
@@ -82,7 +84,7 @@ export default {
             return this.rigthComponents[this.currentComp]
         }
     },
-    components: { BaseContainer, Personnel }
+    components: { BaseContainer, Personnel, ClassesMan }
 
 }
 
@@ -90,14 +92,10 @@ export default {
   
 <style>
 .managementContainer {
-    min-height: 75vh;
     border-radius: 10px;
     margin-top: 2%;
-    padding-bottom: 2%;
-    padding-left: 1%;
+    margin-left: 1%;
     margin-right: 10px;
-    background: rgb(var(--v-theme-surface));
-    color: rgb(var(--v-theme-on-secondary));
 }
 
 .enterAnim {

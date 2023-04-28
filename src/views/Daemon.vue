@@ -1,53 +1,82 @@
 <template>
     <base-container>
-        <v-parallax src="../assets/Paralax.jpg" height="750">
-            <div class="daemonContainer">
-                <div class="leftD">
-                    <v-card title="Descargar aplicacion" subtitle="Informacion" variant="text">
-                        <v-list dense nav>
+        <v-parallax src="../assets/Paralax.jpg" style="margin-right: 10px; border-radius: 1%;">
+            <v-row style="display: flex;">
+                <div class="daemonContainer">
+                    <v-col class="pa-0 align-self-stretch" style="flex: 1;">
+                        <v-card title="Descargar aplicacion" subtitle="Informacion" variant="elevated" height="350px"
+                            align="center">
                             <v-list-item prepend-icon="mdi-information"> Para la toma de asistencias es necesario
                                 descargar un programa que se instalará en el ordenador. Una vez instalado, este
                                 iniciará automáticamente todos los días al iniciar la computadora.</v-list-item>
                             <v-list-item prepend-icon="mdi-alert"> <strong>
-                                    Es importante tener en cuenta que este programa solo debe instalarse en las computadoras
+                                    Es importante tener en cuenta que este programa solo debe instalarse en las
+                                    computadoras
                                     que se utilizarán para tomar asistencias en los cursos.
                                 </strong></v-list-item>
                             <v-card-actions>
-                                <v-btn class="me-4 mt-4" @click="download" variant="outlined" :disabled="daemonWorking">
+                                <v-btn class="me-4 mt-4" @click="download" variant="outlined" :disabled="daemonInstalled">
                                     Descargar
                                 </v-btn>
                             </v-card-actions>
-                        </v-list>
-                    </v-card>
-                </div>
-                <div class="rightD">
-                    <v-card title="Estado Aplicacion" subtitle="Verificacion de la aplicacion en el curso" variant="text">
+                        </v-card>
+                    </v-col>
+                    <v-col class="pa-0 " style="flex: 1;">
+                        <v-card title="Estado Aplicacion local" subtitle="Verificacion de la aplicacion en esta computadora"
+                            variant="elevated" align-self-center align="center" height="350px" color="surface-lighter-2">
 
-                        Instalacion:
-                        <div v-if="daemonInstalled">
-                            <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
-                                App instalada
-                            </v-chip>
-                        </div>
-                        <div v-else style=" margin: 10px; padding: 10px;">
-                            <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
-                                App no encontrada
-                            </v-chip>
-                        </div>
-                        Estado:
-                        <div v-if="daemonWorking" class="aniWob">
-                            <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
-                                En Funcionamiento!
-                            </v-chip>
-                        </div>
-                        <div v-else style=" margin: 10px; padding: 10px;">
-                            <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
-                                App no esta online
-                            </v-chip>
-                        </div>
-                    </v-card>
+                            Instalacion:
+                            <div v-if="daemonInstalled" style=" margin: 10px; padding: 10px;">
+                                <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
+                                    App instalada
+                                </v-chip>
+                            </div>
+                            <div v-else style=" margin: 10px; padding: 10px;">
+                                <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
+                                    App no encontrada
+                                </v-chip>
+                            </div>
+                            Estado:
+                            <div v-if="daemonWorking" class="aniWob" style=" margin: 10px; padding: 10px;">
+                                <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
+                                    En Funcionamiento!
+                                </v-chip>
+                            </div>
+                            <div v-else style=" margin: 10px; padding: 10px;">
+                                <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
+                                    App no esta online
+                                </v-chip>
+                            </div>
+                        </v-card>
+                    </v-col>
                 </div>
-            </div>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card style="margin-left: 9.5%; margin-right:9.5% ;" title="Otros cursos">
+                        <v-row>
+                            <v-col v-for="classroom in classrooms" cols="12" sm="6" md="3" lg="2">
+                                <v-card-item>
+                                    <v-card color="surface-lighter-2" class="ma-0" align="center">
+                                        <v-list-item>
+                                            Nombre: <v-chip v-if="classroom.class_name != null">{{ classroom.class_name
+                                            }}</v-chip>
+                                            <v-chip v-else> No Name</v-chip>
+                                        </v-list-item>
+                                        <v-list-item>
+                                            Numero: <v-chip>{{ classroom.class_number }}</v-chip>
+                                        </v-list-item>
+                                        <v-list-item>
+                                            Status: <v-chip :color="classroom.status ? 'primary' : 'warning'">{{
+                                                classroom.status ? 'Online' : 'Offline' }}</v-chip>
+                                        </v-list-item>
+                                    </v-card>
+                                </v-card-item>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-col>
+            </v-row>
         </v-parallax>
     </base-container>
 </template>
@@ -63,6 +92,7 @@ export default {
     data: () => ({
         daemonInstalled: false,
         daemonWorking: false,
+        classrooms: []
     }),
     setup() {
         const store = useStore()
@@ -85,8 +115,29 @@ export default {
                         'clientIp': window.location.hostname
                     }
                 })
-                if (result.status == 200) {
-                    this.daemonWorking = result.data.daemonInfo;
+                if (result) {
+                    console.log(result)
+                    this.daemonInstalled = result.data.daemonInstalled;
+                    this.daemonWorking = result.data.daemonWorking;
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }, async checkCursos() {
+            const accessToken = store.get('accessToken');
+            try {
+                let result = await axiosClient({
+                    method: 'get',
+                    timeout: 2000,
+                    url: "/classroom",
+                    params: {
+                        'accessToken': accessToken,
+                        'clientIp': window.location.hostname
+                    }
+                })
+                if (result) {
+                    console.log(result)
+                    this.classrooms = result.data.classrooms;
                 }
             } catch (error) {
                 console.log(error)
@@ -95,6 +146,7 @@ export default {
     },
     mounted() {
         this.checkDaemonStatus();
+        this.checkCursos();
     },
     components: { BaseContainer }
 
@@ -107,13 +159,13 @@ export default {
     display: flex;
     margin-left: auto;
     margin-right: auto;
-    width: 60%;
+    width: 80%;
     margin-top: 5%;
 
 }
 
 .leftD {
-    flex: 1;
+
     border-top-left-radius: 5%;
     border-bottom-left-radius: 5%;
     background: rgb(var(--v-theme-surface));
@@ -121,9 +173,8 @@ export default {
 }
 
 .rightD {
-    flex: 1;
+
     text-align: center;
-    padding: 2rem;
     border-top-right-radius: 5%;
     border-bottom-right-radius: 5%;
     background: rgb(var(--v-theme-surface-lighter-2));
@@ -131,8 +182,6 @@ export default {
 }
 
 .aniWob {
-    margin: 40px;
-    padding: 40px;
     animation: aniWob 4s ease-in 0s infinite alternate forwards;
 }
 
