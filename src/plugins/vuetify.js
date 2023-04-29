@@ -39,6 +39,7 @@ export default createVuetify({
           'secondary-darken': '#018786',
 
           'surface-lighter-1': '#232323',
+          'on-surface-lighter-2':'#ffffff',
           'surface-lighter-2': '#2f2f2f',
         }
       }

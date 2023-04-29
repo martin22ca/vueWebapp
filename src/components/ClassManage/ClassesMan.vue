@@ -1,7 +1,7 @@
 <template>
     <v-row>
-        <v-col cols="3">
-            <v-card title="Cursos" variant="flat" rounded="false" color="surface-lighter-1" class="ma-2">
+        <v-col cols="2">
+            <v-card title="Cursos" variant="flat" rounded="false" color="surface-lighter-1" class="ma-2" >
                 <v-list dense nav>
                     <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1" rounded
                         @click="selectComp(item.comp)">
@@ -25,14 +25,14 @@
   
 <script>
 import RegisterClasses from './RegisterClasses.vue';
-import editClasses from './editClasses.vue';
+import EditClasses from './EditClasses.vue';
 
 export default {
     data: () => ({
         currentComp: -1,
         rigthComponents: {
             0: RegisterClasses,
-            1: editClasses,
+            1: EditClasses,
         },
         menuItems: [
             {
@@ -57,7 +57,7 @@ export default {
             return this.rigthComponents[this.currentComp]
         }
     },
-    components: { RegisterClasses, editClasses }
+    components: { RegisterClasses, EditClasses }
 
 }
 </script>

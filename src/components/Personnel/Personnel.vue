@@ -1,6 +1,6 @@
 <template>
     <v-row>
-        <v-col cols="3">
+        <v-col cols="2">
             <v-card title="Empleados" variant="flat" rounded="false" color="surface-lighter-1" class="ma-2">
                 <v-list dense nav>
                     <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1" rounded

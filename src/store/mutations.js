@@ -15,3 +15,7 @@ export function setDate(state, { date }) {
 export function setMyClasses(state, { myClasses }) {
   state.myClasses = myClasses
 }
+
+export function setEditItem(state, { newEditedObj }) {
+  state.editedObj = newEditedObj
+}

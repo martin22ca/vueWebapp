@@ -1,33 +1,31 @@
 <template>
     <base-container>
-        <div>
-            <v-parallax src="../assets/Paralax.jpg" style=" margin-right: 10px; border-radius: 1%;">
-                <div class="managementContainer">
-                    <v-row>
-                        <v-col cols="2" class="pa-0">
-                            <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"
-                                rounded="false" color="surface-lighter-1" class="ml-4 mr-2 mt-2">
-                                <v-list dense nav>
-                                    <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1"
-                                        rounded @click="selectComp(item.comp)">
-                                        <v-card :title="item.name" variant="outlined"
-                                            :color="currentComp == item.comp ? 'primary' : 'undefined'">
-                                            <template v-slot:prepend>
-                                                <v-icon :icon="item.icon" size="large" />
-                                            </template>
-                                        </v-card>
-                                    </v-list-item>
-                                </v-list>
-                            </v-card>
-                        </v-col>
-                        <v-col class="pa-0" cols="10">
-                            <v-card variant="text">
-                                <component class="enterAnim" :is="currentComponent"></component>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </div>
-            </v-parallax>
+        <div style="min-height: 75vh;">
+            <div class="managementContainer">
+                <v-row>
+                    <v-col cols="2" class="pa-0">
+                        <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"
+                            rounded="false" color="surface-lighter-1" class="ml-4 mr-2 mt-2">
+                            <v-list dense nav>
+                                <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1"
+                                    rounded @click="selectComp(item.comp)">
+                                    <v-card :title="item.name" variant="outlined"
+                                        :color="currentComp == item.comp ? 'primary' : 'undefined'">
+                                        <template v-slot:prepend>
+                                            <v-icon :icon="item.icon" size="large" />
+                                        </template>
+                                    </v-card>
+                                </v-list-item>
+                            </v-list>
+                        </v-card>
+                    </v-col>
+                    <v-col class="pa-0" cols="10">
+                        <v-card variant="text">
+                            <component class="enterAnim" :is="currentComponent"></component>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </div>
         </div>
     </base-container>
 </template>

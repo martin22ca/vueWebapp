@@ -14,7 +14,7 @@
     "core-js": "^3.8.3",
     "roboto-fontface": "*",
     "storejs": "^2.0.3",
-    "vee-validate": "^4.8.4",
+    "vee-validate": "^4.8.6",
     "vue": "^3.2.13",
     "vue-cal": "^4.8.1",
     "vue-router": "^4.0.0",

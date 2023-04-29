@@ -1,15 +1,16 @@
 <template>
-    <form @submit.prevent="submit" class="registerContainer" style="margin-right: 20px;">
+    <form @submit.prevent="submit" class="updateContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
                 <v-card-text style="padding-left: 50px;">{{ dialogText }} </v-card-text>
+                <v-card-item class="pb-2"> <v-btn title="Ok" @click="dialog=false" variant="tonal">OK</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1>Registrar Nuevo Curso</h1>
+                    <h1>Editar Curso</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -49,22 +50,21 @@
 </template>
   
 <script>
-;
-import { useStore } from 'vuex'
 import store from 'storejs';
+import { useStore } from 'vuex'
 import { ref } from 'vue'
 import * as Yup from "yup";
 import { axiosClient } from '@/plugins/axiosClient';
 import { useField, useForm } from 'vee-validate'
 
 export default {
-    name: 'RegisterClass',
+    name: 'UpdateClass',
     data: () => ({
         visible: false,
         visibleC: false,
     }),
     setup() {
-        const sotreX = useStore()
+        const storeX = useStore();
         const validationSchema = Yup.object().shape({
             year: Yup.number("Debe ser un Numero").typeError('Año Debe ser un Numero').required('Selecionar Año').positive("El Año debe ser positivo").integer(),
             section: Yup.string().required('La seccion es requerida').max(1, 'Solo un Caracter'),
@@ -75,15 +75,20 @@ export default {
             validationSchema,
             validateOnMount: false
         });
+        const editedObj = storeX.state.editedObj
 
         const year = useField('year');
         const section = useField('section');
         const select = useField('select');
+        const idClass = editedObj.id_cls
+
+        year.value.value = editedObj.school_year
+        section.value.value = editedObj.school_section
+        select.value.value = editedObj.id_emp
+
         const dialog = ref(false);
         const dialogText = ref('');
-
         const options = ref([]);
-
 
         const onYearInput = (event) => {
             const input = event.target.value;
@@ -95,7 +100,6 @@ export default {
                 year.value.value = input.replace(regex, '');
             }
         }
-
         const fetchOptions = async () => {
             try {
                 const accessToken = store.get('accessToken');
@@ -123,18 +127,18 @@ export default {
             const upperSection = values.section.toUpperCase()
 
             try {
-                let result = await axiosClient({
-                    method: 'post',
+                const result = await axiosClient({
+                    method: 'put',
                     timeout: 2000,
-                    url: "/classes/register",
-                    data: {
+                    url: '/classes/update',
+                    params: {
                         'accessToken': accessToken,
+                        'idClass': idClass,
                         'year': values.year,
                         'section': upperSection,
-                        'id_emp': values.select,
+                        'id_emp': values.select
                     }
                 });
-                console.log(result);
                 if (result.status == 200) {
                     console.log('success');
                     dialogText.value = result.data.message;
@@ -152,7 +156,9 @@ export default {
 
         return {
             year,
+            editedObj,
             section,
+            idClass,
             select,
             options,
             dialog,
@@ -179,11 +185,7 @@ h1 {
     margin: 10px;
 }
 
-.registerContainer {
-    border-radius: 10px;
-    margin: auto;
-    margin-bottom: 50px;
-    bottom: 50%;
+.updateContainer {
     background: rgb(var(--v-theme-surface-lighter-2));
     color: rgb(var(--v-theme-on-secondary));
 }
