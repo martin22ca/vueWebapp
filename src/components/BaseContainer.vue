@@ -52,11 +52,5 @@ export default {
   /* subtract top section height and padding */
 }
 
-.subBase {
-  font-size: 15px;
-  font-weight: 300;
-  font-style: italic;
-  padding-left: 45px;
-  margin-bottom: 10px;
-}
+
 </style>

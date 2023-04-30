@@ -1,7 +1,16 @@
 <template>
     <div class="Top">
-        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="background-lighter" rounded="lg">
-            <h1 class="h1Top">{{ pageTitle }}</h1>
+        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="background-lighter" >
+            <v-row>
+                <v-col align="center">
+                    <v-sheet color="surfaces" rounded="lg" class="ma-2 pa-2">
+                        <DigitalClock />
+                    </v-sheet>
+                </v-col>
+                <v-col cols="10">
+                    <h1 class="h1Top">{{ pageTitle }}</h1>
+                </v-col>
+            </v-row>
             <h2 style="padding-left: 5px; font-size: 40px; ">
                 <v-icon icon="mdi-account" class="pr-2" />{{ this.lastName }} , {{ this.firstName }}
             </h2>
@@ -14,6 +23,9 @@
 
 <script>
 import store from 'storejs';
+import DigitalClock from "../components/Clock.vue"
+
+
 export default {
     name: 'TopBar',
     data: () => ({
@@ -28,7 +40,8 @@ export default {
         pageSubtitle() {
             return this.$store.state.subtitle
         }
-    }
+    },
+    components: { DigitalClock }
 }
 </script>
 
@@ -41,9 +54,25 @@ export default {
 
 .h1Top {
     font-weight: bold;
-    padding-left: 50px;
+    text-align: center;
     padding-top: 3px;
     padding-bottom: 3px;
 
+}
+
+.subBase {
+    font-size: 15px;
+    font-weight: 300;
+    font-style: italic;
+    padding-left: 45px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.clock {
+    color: #17D4FE;
+    font-size: 60px;
+    font-family: Orbitron;
+    letter-spacing: 7px;
 }
 </style>

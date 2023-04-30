@@ -1,9 +1,11 @@
 <template>
     <form @submit.prevent="submit" class="registerContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
-            <v-card title="Informacion" prepend-icon="mdi-information" style="font-size: large; min-width: 50vh;"
+            <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
-                <v-card-text style="padding-left: 50px;">{{ dialogText }} </v-card-text>
+                <v-divider thickness="5"></v-divider>
+                <v-card-text style="padding-left: 50px;" ><v-icon :icon="dialogSucces ? 'mdi-check':'mdi-alert-circle'" :color="dialogSucces ? 'primary': 'error'"> </v-icon> {{ dialogText }} </v-card-text>
+                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false"> Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
@@ -80,6 +82,7 @@ export default {
         const section = useField('section');
         const select = useField('select');
         const dialog = ref(false);
+        const dialogSucces = ref(false)
         const dialogText = ref('');
 
         const options = ref([]);
@@ -138,14 +141,19 @@ export default {
                 if (result.status == 200) {
                     console.log('success');
                     dialogText.value = result.data.message;
+                    dialogSucces.value = true
                     dialog.value = true;
                 } else {
                     alert(JSON.stringify(result.status));
                 }
             } catch (error) {
                 console.log(error);
-                if (error.response.m)
-                    dialogText.value = 'Error message goes here';
+                if (error.response != undefined)
+                    {dialogText.value = 'Error message goes here';}
+                else {
+                    dialogText.value =  error.response.data.message;
+                }
+                dialogSucces.value = false
                 dialog.value = true;
             }
         });

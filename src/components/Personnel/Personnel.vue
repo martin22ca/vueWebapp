@@ -15,7 +15,7 @@
                 </v-list>
             </v-card>
         </v-col>
-        <v-col class="pa-2 pl-0 " cols="9">
+        <v-col class="pa-2 pl-0 " cols="10">
             <v-card variant="text" class="ma-0">
                 <component class="enterAnim" :is="currentComponent"></component>
             </v-card>
