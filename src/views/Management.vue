@@ -5,7 +5,7 @@
                 <v-row>
                     <v-col cols="2" class="pa-0">
                         <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"
-                            rounded="false" color="surface-lighter-1" class="ml-4 mr-2 mt-2">
+                            rounded="false" color="surface-lighter-1" class="ml-0 mr-2 mt-2 ">
                             <v-list dense nav>
                                 <v-list-item v-for="item in menuItems" :key="item.name" :value="item.comp" class="pa-1"
                                     rounded @click="selectComp(item.comp)">
@@ -36,6 +36,7 @@ import { checkAuth } from '@/plugins/auth';
 import BaseContainer from '@/components/BaseContainer.vue';
 import Personnel from '@/components/Personnel/Personnel.vue';
 import ClassesMan from '@/components/ClassManage/ClassesMan.vue';
+import Students from '@/components/StudentManage/Students.vue';
 
 export default {
     data: () => ({
@@ -43,7 +44,7 @@ export default {
         rigthComponents: {
             0: ClassesMan,
             1: Personnel,
-            2: 'Students',
+            2: Students,
         },
         menuItems: [
             {
@@ -66,7 +67,7 @@ export default {
     setup() {
         const store = useStore()
 
-        store.commit('setPageTitle', { title: 'Gestion', })
+        store.commit('setTitle', { title: 'Gestion', icon: 'mdi-cog' })
     },
     beforeCreate() {
         // Call the checkAuth function here
@@ -92,7 +93,7 @@ export default {
 .managementContainer {
     border-radius: 10px;
     margin-top: 2%;
-    margin-left: 1%;
+    margin-left: 10px;
     margin-right: 10px;
 }
 

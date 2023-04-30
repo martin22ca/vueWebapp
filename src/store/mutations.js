@@ -1,5 +1,6 @@
-export function setPageTitle(state, { title }) {
+export function setTitle(state, { title,icon }) {
   state.title = title
+  state.titleIcon = icon
 }
 
 export function setClass(state, { classId, year, section }) {

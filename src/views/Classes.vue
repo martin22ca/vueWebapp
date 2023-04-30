@@ -137,7 +137,7 @@ export default {
     },
     setup() {
         const store = useStore()
-        store.commit('setPageTitle', { title: 'Classes', subtitle: 'Analitica de Clases' })
+        store.commit('setTitle', { title: 'Analisis', icon: 'mdi-chart-line' })
     },
     mounted() {
         if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {

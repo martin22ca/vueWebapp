@@ -30,7 +30,7 @@ export default {
     },
     setup() {
         const store = useStore()
-        store.commit('setPageTitle', { title: 'Calendario' })
+        store.commit('setTitle', { title: 'Calendario', icon: 'mdi-calendar' })
     },
     methods: {
         onDateClick(date) {

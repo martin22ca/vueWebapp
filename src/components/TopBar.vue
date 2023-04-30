@@ -2,13 +2,13 @@
     <div class="Top">
         <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="background-lighter" >
             <v-row>
-                <v-col align="center">
-                    <v-sheet color="surfaces" rounded="lg" class="ma-2 pa-2">
+                <v-col align="center" cols="2">
+                    <v-sheet color="surface-lighter-1" rounded="lg" class="ma-2 pa-2" >
                         <DigitalClock />
                     </v-sheet>
                 </v-col>
-                <v-col cols="10">
-                    <h1 class="h1Top">{{ pageTitle }}</h1>
+                <v-col >
+                    <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
                 </v-col>
             </v-row>
             <h2 style="padding-left: 5px; font-size: 40px; ">
@@ -30,6 +30,7 @@ export default {
     name: 'TopBar',
     data: () => ({
         firstName: store.get('first_name'),
+        titleIcon: store.get('titleIcon'),
         lastName: store.get('last_name'),
         email: store.get('email'),
     }),
@@ -37,8 +38,8 @@ export default {
         pageTitle() {
             return this.$store.state.title
         },
-        pageSubtitle() {
-            return this.$store.state.subtitle
+        pageIcon() {
+            return this.$store.state.titleIcon
         }
     },
     components: { DigitalClock }

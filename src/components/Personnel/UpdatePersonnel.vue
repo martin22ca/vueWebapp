@@ -37,16 +37,13 @@
                         prepend-inner-icon="mdi-id-card"></v-text-field>
                 </v-col>
             </v-row>
-            <div class="text"> E-mail (opcional)</div>
+            <div class="text">Identificacion</div>
             <v-row>
                 <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="email.value.value"
-                        :error-messages="email.errorMessage.value" label="E-mail"
+                        :error-messages="email.errorMessage.value" label="E-mail (opcional)"
                         prepend-inner-icon="mdi-email"></v-text-field>
                 </v-col>
-            </v-row>
-            <div class="text"> Editar Nombre de usuario </div>
-            <v-row>
                 <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="username.value.value" autocomplete="off"
                         :error-messages="username.errorMessage.value" prepend-inner-icon="mdi-account"
@@ -164,8 +161,8 @@ export default {
                     timeout: 2000,
                     url: "/employees/update",
                     data: {
-                        'accessToken':accessToken,
-                        'id_emp':idEmp,
+                        'accessToken': accessToken,
+                        'id_emp': idEmp,
                         'firstName': values.firstName,
                         'lastName': values.lastName,
                         'dni': values.dni,

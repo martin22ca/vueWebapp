@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submit" class="registerContainer" style="margin-right: 20px;">
+    <form @submit.prevent="submit" class="updateContainer">
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
@@ -12,7 +12,7 @@
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1>Registrar Nuevo Empleado</h1>
+                    <h1>Editar Empleado</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -37,33 +37,33 @@
                         prepend-inner-icon="mdi-id-card"></v-text-field>
                 </v-col>
             </v-row>
-            <div class="text"> Identificacion </div>
+            <div class="text"> E-mail (opcional)</div>
             <v-row>
-                <v-col align-self="center" cols="8">
+                <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="email.value.value"
                         :error-messages="email.errorMessage.value" label="E-mail"
                         prepend-inner-icon="mdi-email"></v-text-field>
                 </v-col>
+            </v-row>
+            <div class="text"> Editar Nombre de usuario </div>
+            <v-row>
                 <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="username.value.value" autocomplete="off"
                         :error-messages="username.errorMessage.value" prepend-inner-icon="mdi-account"
                         hint=" El nombre de usuario debe tener al menos 4 digitos" label="Nombre de usuario"></v-text-field>
                 </v-col>
             </v-row>
-            <v-row>
-
-            </v-row>
-            <div class="text"> Contraseña </div>
+            <div class="text"> Nueva Contraseña </div>
             <v-row>
                 <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="password.value.value"
-                        :error-messages="password.errorMessage.value" label="Password" autocomplete="off"
+                        :error-messages="password.errorMessage.value" label="Contraseña" autocomplete="off"
                         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" prepend-inner-icon="mdi-lock-outline"
                         :type="visible ? 'text' : 'password'" @click:append-inner="visible = !visible"></v-text-field>
                 </v-col>
                 <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="passwordConfirmation.value.value"
-                        :error-messages="passwordConfirmation.errorMessage.value" label="Password"
+                        :error-messages="passwordConfirmation.errorMessage.value" label="Confirmar Contraseña"
                         :append-inner-icon="visibleC ? 'mdi-eye-off' : 'mdi-eye'" prepend-inner-icon="mdi-lock-outline"
                         :type="visibleC ? 'text' : 'password'" @click:append-inner="visibleC = !visibleC"></v-text-field>
                 </v-col>
@@ -92,24 +92,28 @@
   
 <script>
 import { ref } from 'vue'
+import store from 'storejs';
+import { useStore } from 'vuex'
 import * as Yup from "yup";
 import { axiosClient } from '@/plugins/axiosClient';
 import { useField, useForm } from 'vee-validate'
 
 export default {
+    name: "UpdatePersonnel",
     data: () => ({
         visible: false,
         visibleC: false,
     }),
     setup() {
+        const storeX = useStore();
         const validationSchema = Yup.object().shape({
             firstName: Yup.string().required('First name is required'),
             lastName: Yup.string().required('Last name is required'),
             dni: Yup.number().typeError('DNI debe ser un numero').required('DNI is required').test('len', 'El DNI debe contener al menos 8 digitos', val => (val.toString().length >= 8)),
-            email: Yup.string().email('Email no valido'),
+            email: Yup.string().email('Email no valido').nullable(),
             username: Yup.string().required('El Username es requerido').min(4, 'El Username debe contener al menos 4 digitos'),
-            password: Yup.string().required('La contraseñas es requerido').min(8, 'L contraseña debe contener al menos 8 digitos').matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/, 'Debe tener al menos una Mayuscula, una Minuscula y un numero'),
-            passwordConfirmation: Yup.string().required('Confrimar contraseña').oneOf([Yup.ref('password'), null], 'Las contraseñas no coinciden'),
+            password: Yup.string().min(8, 'L contraseña debe contener al menos 8 digitos').matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/, 'Debe tener al menos una Mayuscula, una Minuscula y un numero'),
+            passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Las contraseñas no coinciden'),
             select: Yup.string().required('Seleccionar rol')
         });
 
@@ -118,6 +122,8 @@ export default {
             validateOnMount: false
         });
 
+        const editedObj = storeX.state.editedObj
+        const idEmp = editedObj.id_emp
         const firstName = useField('firstName');
         const lastName = useField('lastName');
         const dni = useField('dni');
@@ -126,6 +132,14 @@ export default {
         const password = useField('password');
         const passwordConfirmation = useField('passwordConfirmation');
         const select = useField('select');
+
+
+        firstName.value.value = editedObj.first_name
+        lastName.value.value = editedObj.last_name
+        email.value.value = editedObj.email
+        username.value.value = editedObj.user_name
+        dni.value.value = editedObj.dni
+        select.value.value = editedObj.id_role
 
         const dialog = ref(false);
         const dialogSucces = ref(false)
@@ -144,11 +158,14 @@ export default {
 
         const submit = handleSubmit(async (values) => {
             try {
+                const accessToken = store.get('accessToken');
                 let result = await axiosClient({
-                    method: 'post',
+                    method: 'put',
                     timeout: 2000,
-                    url: "/register",
+                    url: "/employees/update",
                     data: {
+                        'accessToken':accessToken,
+                        'id_emp':idEmp,
                         'firstName': values.firstName,
                         'lastName': values.lastName,
                         'dni': values.dni,
@@ -161,7 +178,7 @@ export default {
                 console.log(result);
                 if (result.status == 200) {
                     console.log('success');
-                    dialogText.value = 'Usuario Creado Exitosamente'
+                    dialogText.value = result.data.message
                     dialog.value = true
                     dialogSucces.value = true
 
@@ -208,12 +225,8 @@ h1 {
     margin: 10px;
 }
 
-.registerContainer {
-    border-radius: 10px;
-    margin: auto;
-    margin-bottom: 50px;
-    bottom: 50%;
-    background: rgb(var(--v-theme-surface-lighter-1));
+.updateContainer {
+    background: rgb(var(--v-theme-surface-lighter-2));
     color: rgb(var(--v-theme-on-secondary));
 }
 

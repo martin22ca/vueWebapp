@@ -236,7 +236,7 @@ export default {
     setup() {
         const store = useStore()
 
-        store.commit('setPageTitle', { title: 'Asistencias', })
+        store.commit('setTitle', { title: 'Asistencias', icon: 'mdi-table-network' })
         const attDate = store.state.attDate
         if (attDate == '') {
             const date = new Date();

@@ -96,7 +96,7 @@ export default {
     }),
     setup() {
         const store = useStore()
-        store.commit('setPageTitle', { title: 'Control de aplicacion', })
+        store.commit('setTitle', { title: 'Control de Aplicacion', icon: 'mdi-download-box' })
     },
     beforeCreate() {
         // Call the checkAuth function here

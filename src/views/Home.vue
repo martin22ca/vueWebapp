@@ -91,7 +91,7 @@ export default {
     },
     setup() {
         const store = useStore()
-        store.commit('setPageTitle', { title: 'Home', subtitle: 'New ' })
+        store.commit('setTitle', { title: 'Home', icon: 'mdi-home' })
     },
     methods: {
         async fetchMessages() {

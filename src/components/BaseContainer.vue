@@ -6,7 +6,7 @@
     <v-col>
       <div class="containerB">
         <TopBar />
-        
+
         <slot></slot>
         <Footer />
       </div>
@@ -51,6 +51,4 @@ export default {
   height: calc(100% - 112px);
   /* subtract top section height and padding */
 }
-
-
 </style>
