@@ -1,30 +1,64 @@
 <template>
-    <v-card title="Empleados" subtitle="Editar informacion de los empleados" color="surface-lighter-1" class="ma-2 mr-5">
+    <v-dialog v-model="registerDialog" max-width="100vh">
+        <RegisterStudent />
+    </v-dialog>
+    <v-card title="Estudiantes" subtitle="Editar informacion de los Estudiantes" color="surface-lighter-1"
+        class="ma-2 mr-5">
+        <v-card-item>
+            <v-row>
+                <v-col>
+                    Selecionar Curso:
+                    <v-menu transition="scale-transition">
+                        <template v-slot:activator="{ props }">
+                            <v-chip v-if="currentClass != ''" v-bind:="props" variant="elevated" color="primary"
+                                append-icon="mdi-menu-down">{{ currentClass }}
+                            </v-chip>
+                            <v-chip v-else v-bind:="props" variant="elevated" color="primary" append-icon="mdi-menu-down">
+                                Select
+                            </v-chip>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="item in      myClasses     " value="value"
+                                @click="currentId = item.value; currentClass = item.text; fetchStudents()">
+                                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-col>
+                <v-col class="text-end">
+                    <v-btn color="primary" @click=" registerDialog = true " prepend-icon="mdi-plus" class="mt-0 ma-2">
+                        Registrar Estudiante
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-card-item>
         <v-sheet>
-            <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" hover>
+            <v-data-table v-if=" items.length > 0 " :headers=" headers " :items=" items " class="elevation-1 border-1"
+                density="compact" hover>
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
-                        <template v-if="dialog">
-                            <UpdatePersonnel />
+                    <v-dialog v-model=" dialog " max-width="100vh" style="position: fixed; margin-left: auto;">
+                        <template v-if=" dialog ">
+                            <UpdateStudent />
                         </template>
                     </v-dialog>
-                    <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
-                        <v-card title="Estas seguro que quiere eliminar el curso?" subtitle="Esta accion no es revertible."
-                            prepend-icon="mdi-alert" align="center" class="pb-4">
+                    <v-dialog v-model=" dailogDel " max-width="57vh" style="position: fixed; margin-left: auto;">
+                        <v-card title="Estas seguro que quiere eliminar al estudiante?"
+                            subtitle="Esta accion no es revertible." prepend-icon="mdi-alert" align="center" class="pb-4">
                             <v-card-item class="pb-4">
-                                <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
-                                <v-btn class="ma-2" variant="tonal" @click="deleteItem()" color="error">Eliminar</v-btn>
+                                <v-btn class="ma-2" variant="tonal" @click=" dailogDel = false "
+                                    color="grey">Cancelar</v-btn>
+                                <v-btn class="ma-2" variant="tonal" @click=" deleteItem() " color="error">Eliminar</v-btn>
                             </v-card-item>
                         </v-card>
                     </v-dialog>
                 </template>
-                <template v-slot:item.actions="{ item }">
-                    <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+                <template v-slot:item.actions=" { item } ">
+                    <v-icon size="small" class="me-2" @click=" editItem(item.raw) ">
                         mdi-pencil
                     </v-icon>
-                    <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_emp">
+                    <v-icon size="small" class="me-2" @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud ">
                         mdi-trash-can
                     </v-icon>
                 </template>
@@ -37,10 +71,20 @@
                     <div v-if=" item.value.email != null "> {{ item.value.email }}</div>
                     <div v-else class="noEmail"> No email</div>
                 </template>
-                <template v-slot:item.id_role=" { item } ">
-                    {{ this.roles[item.value.id_role] }}
+                <template v-slot:item.im_loc=" { item } ">
+                    <div v-if=" item.value.im_loc != null " style="color: rgb(var(--v-theme-primary));"> Habilitado</div>
+                    <div v-else class="noEmail"> No Habilitado </div>
                 </template>
             </v-data-table>
+            <div v-else>
+                <v-card variant="elevated">
+                    <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{ currentClass
+                        }}</v-card-title>
+                    <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
+                    <v-card-item>
+                    </v-card-item>
+                </v-card>
+            </div>
         </v-sheet>
     </v-card>
 </template>
@@ -51,7 +95,7 @@ import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { axiosClient } from '@/plugins/axiosClient';
 import UpdateStudent from './UpdateStudent.vue';
-
+import RegisterStudent from './RegisterStudent.vue';
 
 export default {
     name: 'Attendances',
@@ -60,50 +104,69 @@ export default {
             dialog: false,
             storeX: useStore(),
             dailogDel: false,
-            status: false,
-            roles: {
-                1: "Preceptor",
-                2: "Administrador",
-            },
+            registerDialog: false,
+            myClasses: [],
+            currentClass: '',
+            currentId: -1,
 
             headers: [
-                { title: 'id', key: 'id_emp', align: 'start', width: '3%' },
-                { title: 'Username', key: 'user_name', sortable: true, align: 'center', width: '10%' },
+                { title: 'id', key: 'id_stud', align: 'start', width: '3%' },
                 { title: 'Apellido', key: 'last_name', align: 'center' },
-                { title: 'Nombre', key: 'first_name', align: 'center', width: '10%' },
+                { title: 'Nombre', key: 'first_name', align: 'center' },
+                { title: 'Email', key: 'email', align: 'center' },
                 { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
-                { title: 'Email', key: 'email', align: 'center', width: '25%' },
-                { title: 'Rol', key: 'id_role', align: 'center', width: '3%' },
+                { title: 'Reconocimiento', key: 'im_loc', align: 'center', width: '3%' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
-            deleteItemIdx: -1,
             editedItem: {},
         }
     },
     mounted() {
-        this.fetchEmployees()
+        this.fetchClasses()
     },
     watch: {
         dialog(newVal) {
-            this.fetchEmployees()
+            this.fetchStudents()
         }
     },
     methods: {
-        async fetchEmployees() {
+        async fetchStudents() {
+            const accessToken = store.get('accessToken');
+            try {
+                let response = await axiosClient({
+                    method: 'get',
+                    timeout: 5000,
+                    url: "/students",
+                    params: {
+                        'accessToken': accessToken,
+                        'idClass': this.currentId,
+                    }
+                })
+                if (response.status == 200) {
+                    this.items = response.data.students;
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async fetchClasses() {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let response = await axiosClient({
                     method: 'get',
-                    timeout: 5000,
-                    url: "/employees",
+                    timeout: 2000,
+                    url: "/classes",
                     params: {
                         'accessToken': accessToken,
                     }
                 })
-                if (result.status == 200) {
-                    this.items = result.data.employeesInfo;
+                if (response.status == 200) {
+                    this.myClasses = response.data.schoolClasses.map(item => ({
+                        text: item.school_year + ' " ' + item.school_section + ' "',
+                        value: item.id_sc,
+                    }));
                 }
             } catch (error) {
                 console.log(error)
@@ -123,14 +186,14 @@ export default {
                 let result = await axiosClient({
                     method: 'put',
                     timeout: 5000,
-                    url: "/employees/remove",
+                    url: "/students/remove",
                     params: {
                         'accessToken': accessToken,
-                        'idEmp': this.deleteItemIdx,
+                        'idStud': this.deleteItemIdx,
                     }
                 })
                 if (result.status == 200) {
-                    this.fetchEmployees()
+                    this.fetchStudents()
                     this.dailogDel = false
                 }
             } catch (error) {
@@ -138,7 +201,7 @@ export default {
             }
         }
     },
-    components: { VDataTable, UpdateStudent }
+    components: { VDataTable, UpdateStudent, RegisterStudent }
 }
 
 </script>

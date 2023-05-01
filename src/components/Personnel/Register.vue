@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submit" class="registerContainer" style="margin-right: 20px;">
+    <form @submit.prevent="submit" class="registerPersonnelContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
@@ -12,7 +12,7 @@
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1>Registrar Nuevo Empleado</h1>
+                    <h1 style="color: rgb(var(--v-theme-primary))">Registrar Nuevo Empleado</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -208,11 +208,7 @@ h1 {
     margin: 10px;
 }
 
-.registerContainer {
-    border-radius: 10px;
-    margin: auto;
-    margin-bottom: 50px;
-    bottom: 50%;
+.registerPersonnelContainer {
     background: rgb(var(--v-theme-surface-lighter-1));
     color: rgb(var(--v-theme-on-secondary));
 }

@@ -154,7 +154,7 @@ export default {
                 let result = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: "/classes",
+                    url: "/classes/employee",
                     params: {
                         'accessToken': accessToken,
                         'userId': userId

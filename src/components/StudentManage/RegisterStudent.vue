@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submit" class="registerContainer" style="margin-right: 20px;">
+    <form @submit.prevent="submit" class="registerStudentContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
@@ -12,7 +12,7 @@
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1>Registrar Nuevo Estudiante</h1>
+                    <h1 style="color: rgb(var(--v-theme-primary))">Registrar Nuevo Estudiante</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -23,21 +23,21 @@
                         :error-messages="firstName.errorMessage.value" label="Nombre"
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
-                <v-col align-self="center">
+                <v-col align-self="center" >
                     <v-text-field class="pa-2" variant="outlined" v-model="lastName.value.value"
                         :error-messages="lastName.errorMessage.value" label="Apellido"
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
             </v-row>
             <div class="text"> Identificacion </div>
-            <v-row>
-                <v-col align-self="center">
+            <v-row >
+                <v-col align-self="center" cols="5">
                     <v-text-field class="pa-2" variant="outlined" v-model="dni.value.value"
                         :error-messages="dni.errorMessage.value" label="DNI"
                         prepend-inner-icon="mdi-id-card"></v-text-field>
                 </v-col>
                 <v-row>
-                    <v-col align-self="center">
+                    <v-col align-self="center" class="mr-3">
                         <v-text-field class="pa-2" variant="outlined" v-model="email.value.value"
                             :error-messages="email.errorMessage.value" label="E-mail (opcional)"
                             prepend-inner-icon="mdi-email"></v-text-field>
@@ -192,11 +192,7 @@ h1 {
     margin: 10px;
 }
 
-.registerContainer {
-    border-radius: 10px;
-    margin: auto;
-    margin-bottom: 50px;
-    bottom: 50%;
+.registerStudentContainer {
     background: rgb(var(--v-theme-surface-lighter-1));
     color: rgb(var(--v-theme-on-secondary));
 }

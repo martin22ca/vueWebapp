@@ -1,5 +1,15 @@
 <template>
+    <v-dialog v-model="registerDialog" max-width="100vh">
+        <Register />
+    </v-dialog>
     <v-card title="Empleados" subtitle="Editar informacion de los empleados" color="surface-lighter-1" class="ma-2 mr-5">
+        <v-row>
+            <v-col class="text-end">
+                <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
+                    Registrar Empleado
+                </v-btn>
+            </v-col>
+        </v-row>
         <v-sheet>
             <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" hover>
                 <template v-slot:top>
@@ -51,6 +61,7 @@ import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { axiosClient } from '@/plugins/axiosClient';
 import UpdatePersonnel from './UpdatePersonnel.vue';
+import Register from './Register.vue';
 
 
 export default {
@@ -60,6 +71,7 @@ export default {
             dialog: false,
             storeX: useStore(),
             dailogDel: false,
+            registerDialog: false,
             status: false,
             roles: {
                 1: "Preceptor",
@@ -138,7 +150,7 @@ export default {
             }
         }
     },
-    components: { VDataTable, UpdatePersonnel }
+    components: { VDataTable, UpdatePersonnel, Register }
 }
 
 </script>

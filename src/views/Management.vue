@@ -34,17 +34,17 @@
 import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
 import BaseContainer from '@/components/BaseContainer.vue';
-import Personnel from '@/components/Personnel/Personnel.vue';
-import ClassesMan from '@/components/ClassManage/ClassesMan.vue';
-import Students from '@/components/StudentManage/Students.vue';
+import EditPersonnel from '@/components/Personnel/EditPersonnel.vue';
+import EditClasses from '@/components/ClassManage/EditClasses.vue';
+import EditStudents from '@/components/StudentManage/EditStudents.vue';
 
 export default {
     data: () => ({
         currentComp: -1,
         rigthComponents: {
-            0: ClassesMan,
-            1: Personnel,
-            2: Students,
+            0: EditClasses,
+            1: EditPersonnel,
+            2: EditStudents,
         },
         menuItems: [
             {
@@ -83,7 +83,7 @@ export default {
             return this.rigthComponents[this.currentComp]
         }
     },
-    components: { BaseContainer, Personnel, ClassesMan }
+    components: { BaseContainer, EditStudents, EditPersonnel, EditClasses }
 
 }
 

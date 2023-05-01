@@ -1,20 +1,31 @@
 <template>
+    <v-dialog v-model="registerDialog" max-width="100vh">
+        <RegisterClasses />
+    </v-dialog>
     <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="ma-2 mr-5">
+        <v-row>
+            <v-col class="text-end">
+                <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
+                    Registrar Clases
+                </v-btn>
+            </v-col>
+        </v-row>
         <v-sheet>
             <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" hover>
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;" >
+                    <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
                         <template v-if="dialog">
                             <update-classes />
                         </template>
                     </v-dialog>
-                    <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;" >
-                        <v-card title="Estas seguro que quiere eliminar el curso?" subtitle="Esta accion no es revertible." prepend-icon="mdi-alert" align="center" class="pb-4">
-                            <v-card-item class="pb-4">                            
-                                <v-btn class="ma-2" variant="tonal" @click="dailogDel=false" color="grey">Cancelar</v-btn>
-                                <v-btn class="ma-2" variant="tonal" @click="deleteItem()" color="error" >Eliminar</v-btn>
+                    <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
+                        <v-card title="Estas seguro que quiere eliminar el curso?" subtitle="Esta accion no es revertible."
+                            prepend-icon="mdi-alert" align="center" class="pb-4">
+                            <v-card-item class="pb-4">
+                                <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
+                                <v-btn class="ma-2" variant="tonal" @click="deleteItem()" color="error">Eliminar</v-btn>
                             </v-card-item>
 
                         </v-card>
@@ -24,7 +35,7 @@
                     <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                         mdi-pencil
                     </v-icon>
-                    <v-icon size="small" class="me-2" @click="dailogDel=true; this.deleteItemIdx=item.value.id_cls">
+                    <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_cls">
                         mdi-trash-can
                     </v-icon>
                 </template>
@@ -33,8 +44,8 @@
                         No data
                     </div>
                 </template>
-                <template v-slot:item.preceptor="{ item }">
-                    <div v-if="item.value.preceptor != null"> {{ item.value.preceptor }}</div>
+                <template v-slot:item.preceptor=" { item } ">
+                    <div v-if=" item.value.preceptor != null "> {{ item.value.preceptor }}</div>
                     <div v-else class="noEmail"> Ningun preceptor asociado</div>
                 </template>
             </v-data-table>
@@ -48,6 +59,7 @@ import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { axiosClient } from '@/plugins/axiosClient';
 import UpdateClasses from './UpdateClasses.vue';
+import RegisterClasses from './RegisterClasses.vue';
 
 export default {
     name: 'Attendances',
@@ -55,6 +67,7 @@ export default {
         return {
             storeX: useStore(),
             dialog: false,
+            registerDialog: false,
             dailogDel: false,
             deleteItemIdx: -1,
 
@@ -63,7 +76,7 @@ export default {
                 { title: 'Año', key: 'school_year', sortable: true, align: 'center', width: '10%' },
                 { title: 'Seccion', key: 'school_section', align: 'center' },
                 { title: 'Preceptor Asignado', key: 'preceptor', align: 'center' },
-                { title: 'Editar', key: 'actions', sortable: false, align: 'end'},
+                { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
             editedItem: {},
@@ -76,7 +89,7 @@ export default {
         dialog(newVal) {
             this.fetchClasses()
         },
-  },
+    },
     methods: {
         async fetchClasses() {
             const accessToken = store.get('accessToken');
@@ -99,16 +112,16 @@ export default {
             }
         },
         async editItem(item) {
-            
+
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
 
             this.dialog = true
         },
-        async deleteItem(){
+        async deleteItem() {
             const accessToken = store.get('accessToken');
-            
+
             try {
                 let result = await axiosClient({
                     method: 'put',
@@ -128,7 +141,7 @@ export default {
             }
         }
     },
-    components: { VDataTable,UpdateClasses }
+    components: { VDataTable, UpdateClasses, RegisterClasses }
 }
 
 </script>

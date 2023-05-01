@@ -12,7 +12,7 @@
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1>Editar Empleado</h1>
+                    <h1 style="color: rgb(var(--v-theme-secondary))">Editar Empleado</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -76,7 +76,7 @@
             <v-row>
                 <v-col align-self="center">
                     <v-btn class="ma-2" type="submit">
-                        Registrar
+                        Actualizar
                     </v-btn>
                     <v-btn class="ma-2" @click="handleReset">
                         Limpiar
