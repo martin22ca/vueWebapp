@@ -29,12 +29,12 @@
                         Si no recuerda su contraseña y/o usuario comuníquese con un administrador para realizar un cambio de
                         contraseña.
                     </p>
-                    <v-btn class="me-4 mt-4" type="submit">
+                    <v-btn color="primary" class="me-4 mt-4" type="submit">
                         Log in
                     </v-btn>
 
-                    <v-btn class="me-4 mt-4" @click="handleReset">
-                        clear
+                    <v-btn  class="me-4 mt-4" @click="handleReset">
+                        Limpiar
                     </v-btn>
                 </form>
             </div>

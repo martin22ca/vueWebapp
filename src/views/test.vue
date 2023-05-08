@@ -1,46 +1,10 @@
 <template>
-  <div class="d-flex justify-space-around">
-    <v-menu>
-      <template v-slot:activator="{ props }">
-        <v-chip color="primary" v-bind="props">
-          Activator slot
-        </v-chip>
-      </template>
-      <v-list>
-        <v-list-item v-for="(item, index) in items" :key="index" :value="index">
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-
-    <v-btn color="primary">
-      Parent activator
-
-      <v-menu activator="parent">
-        <v-list>
-          <v-list-item v-for="(item, index) in items" :key="index" :value="index">
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-btn>
-
-    <v-btn id="menu-activator" color="primary">
-      Sibling activator
-    </v-btn>
-
-    <v-menu activator="#menu-activator">
-      <v-list>
-        <v-list-item v-for="(item, index) in items" :key="index" :value="index">
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </div>
+    <OpenCamera/>
 </template>
 
 
 <script>
+import OpenCamera from '@/components/faceRecog/OpenCamera.vue';
 export default {
   data: () => ({
     items: [
@@ -50,5 +14,6 @@ export default {
       { title: 'Click Me 2' },
     ],
   }),
+  components:{ OpenCamera}
 }
 </script>

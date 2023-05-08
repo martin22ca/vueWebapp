@@ -3,13 +3,11 @@
         <RegisterClasses />
     </v-dialog>
     <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="ma-2 mr-5">
-        <v-row>
-            <v-col class="text-end">
-                <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
-                    Registrar Clases
-                </v-btn>
-            </v-col>
-        </v-row>
+        <template v-slot:append>
+            <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
+                Registrar Curso
+            </v-btn>
+        </template>
         <v-sheet>
             <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact" hover>
                 <template v-slot:top>

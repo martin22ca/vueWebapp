@@ -1,12 +1,43 @@
 <template>
     <BaseContainer>
         <div class="classesContainer">
-            <v-row no-gutters>
-                <v-col>
-                    <v-card color="surface-lighter-1" title="Class info" subtitle="Subtitle" class="mb-2 ">
-                        <div v-if="classYear != -1">
-                            <h4 style="padding: 5px;">
-                                Curso: <v-menu transition="scale-transition">
+            <v-sheet width="100%">
+                <v-row no-gutters>
+                    <v-col>
+                        <v-card color="surface-lighter-1" prepend-icon="mdi-information-variant"
+                            title="Informacion del curso" subtitle="Info" class="mb-2 ">
+                            <div v-if="classYear != -1">
+                                <h4 style="padding-left: 20px;">
+                                    Curso: <v-menu transition="scale-transition">
+                                        <template v-slot:activator="{ props }">
+                                            <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated"
+                                                color="primary" append-icon="mdi-menu-down">{{ classYear }} - "{{
+                                                    classSection
+                                                }}"
+                                            </v-chip>
+                                            <v-chip v-else v-bind:="props" variant="elevated" color="primary"
+                                                append-icon="mdi-menu-down"> Select
+                                            </v-chip>
+                                        </template>
+                                        <v-list>
+                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
+                                                @click="fetchClassInfo(item.sc)">
+                                                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                            </v-list-item>
+                                        </v-list>
+                                    </v-menu>
+                                </h4>
+                                <h4 style="padding: 20px;">
+                                    Estado Actual: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
+                                        {{ classStatus ? "ABIERTO" : "CERRADO" }}
+                                    </v-chip>
+                                </h4>
+                            </div>
+                            <div v-else style="padding: 2%; ">
+                                <v-chip color="primary" class="ma-2">
+                                    Ningun Curso Seleccionado
+                                </v-chip>
+                                <v-menu transition="scale-transition">
                                     <template v-slot:activator="{ props }">
                                         <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated" color="primary"
                                             append-icon="mdi-menu-down">{{ classYear }} - "{{
@@ -14,57 +45,29 @@
                                             }}"
                                         </v-chip>
                                         <v-chip v-else v-bind:="props" variant="elevated" color="primary"
-                                            append-icon="mdi-menu-down"> Select
+                                            append-icon="mdi-menu-down"> Selecionar
                                         </v-chip>
                                     </template>
                                     <v-list>
                                         <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
                                             @click="fetchClassInfo(item.sc)">
-                                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                            <v-list-item-title>{{ item.text }} </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
-                            </h4>
-                            <h4 style="padding: 5px;">
-                                Estado Actual: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
-                                    {{ classStatus ? "ABIERTO" : "CERRADO" }}
-                                </v-chip>
-                            </h4>
-                        </div>
-                        <div v-else style="padding: 2%; ">
-                            <v-chip color="primary" class="ma-2">
-                                Ningun Curso Seleccionado
-                            </v-chip>
-                            <v-menu transition="scale-transition">
-                                <template v-slot:activator="{ props }">
-                                    <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated" color="primary"
-                                        append-icon="mdi-menu-down">{{ classYear }} - "{{
-                                            classSection
-                                        }}"
-                                    </v-chip>
-                                    <v-chip v-else v-bind:="props" variant="elevated" color="primary"
-                                        append-icon="mdi-menu-down"> Select
-                                    </v-chip>
-                                </template>
-                                <v-list>
-                                    <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
-                                        @click="fetchClassInfo(item.sc)">
-                                        <v-list-item-title>{{ item.text }} </v-list-item-title>
-                                    </v-list-item>
-                                </v-list>
-                            </v-menu>
-                        </div>
-                    </v-card>
-                </v-col>
-                <v-col cols="8">
-                    <v-card color="surface-lighter-1" class="ml-2 mb-2" title="Buscar Estudiante" subtitle="Escribir">
-                        <div style="padding-bottom: 2%">
-                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
-                                class="pl-5 pr-5" variant="outlined"></v-text-field>
-                        </div>
-                    </v-card>
-                </v-col>
-            </v-row>
+                            </div>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-card color="surface-lighter-1" class="ml-2 mb-2" title="Buscar Estudiante" subtitle="Escribir">
+                            <div style="padding-bottom: 2%">
+                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                    hide-details class="pl-5 pr-5" variant="outlined"></v-text-field>
+                            </div>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-sheet>
             <v-row no-gutters>
                 <v-col style="display: table-cell;">
                     <v-card class="pt-2 pb-2" variant="tonal">
@@ -74,8 +77,8 @@
                         <v-spacer></v-spacer>
                     </v-card>
                     <div v-if="items.length != 0">
-                        <v-data-table :headers="headers" :items="items" class="elevation-1 border-1" density="compact"
-                            :search="search" hover>
+                        <v-data-table v-if="studentId == -1" :headers="headers" :items="items" class="elevation-1 border-1"
+                            density="compact" :search="search" hover>
                             <template v-slot:no-data>
                                 No data
                             </template>
@@ -84,6 +87,7 @@
                                     {{ getValue(item.value.present, item.value.total) }} </v-chip>
                             </template>
                         </v-data-table>
+                        <CamViewer/>
                     </div>
                     <div v-else>
                         <v-sheet style="text-align: center; font-size: xx-large; margin-top: 80px;" class="pa-2"
@@ -115,6 +119,7 @@ export default {
             myClasses: useStore().state.myClasses,
             classYear: -1,
             classSection: '',
+            studentId: -1,
             classStatus: false,
 
             headers: [

@@ -3,11 +3,14 @@
         <Register />
     </v-dialog>
     <v-card title="Empleados" subtitle="Editar informacion de los empleados" color="surface-lighter-1" class="ma-2 mr-5">
+        <template v-slot:append>
+            <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
+                Registrar Empleado
+            </v-btn>
+        </template>
         <v-row>
             <v-col class="text-end">
-                <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
-                    Registrar Empleado
-                </v-btn>
+
             </v-col>
         </v-row>
         <v-sheet>

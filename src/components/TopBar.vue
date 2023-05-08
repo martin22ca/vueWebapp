@@ -1,22 +1,37 @@
 <template>
     <div class="Top">
-        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="background-lighter" >
+        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="surface-lighter-1" rounded="lg">
             <v-row>
+                <v-col cols="4">
+                    <v-card variant="text" prepend-icon="mdi-account">
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-account" style="font-size: 50px;"/>
+                        </template>
+                        <template v-slot:title>
+                            <h2 style="font-size: 33px; ">
+                                {{ this.lastName }}, {{ this.firstName }}
+                            </h2>
+                        </template>
+                        <template v-slot:subtitle>
+                            <h3 class="subBase">
+                            {{ this.email }}
+                        </h3>
+                        </template>
+                    </v-card>
+                </v-col>
+                <v-col>
+                    <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
+                </v-col>
                 <v-col align="center" cols="2">
-                    <v-sheet color="surface-lighter-1" rounded="lg" class="ma-2 pa-2" >
+                    <v-sheet color="transparent" rounded="lg" class="ma-2 pa-2">
+                    </v-sheet>
+                </v-col>
+                <v-col align="center" cols="2">
+                    <v-sheet color="surface-lighter-2" rounded="lg" class="ma-2 pa-2">
                         <DigitalClock />
                     </v-sheet>
                 </v-col>
-                <v-col >
-                    <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
-                </v-col>
             </v-row>
-            <h2 style="padding-left: 5px; font-size: 40px; ">
-                <v-icon icon="mdi-account" class="pr-2" />{{ this.lastName }} , {{ this.firstName }}
-            </h2>
-            <h3 class="subBase">
-                {{ this.email }}
-            </h3>
         </v-sheet>
     </div>
 </template>
@@ -65,7 +80,7 @@ export default {
     font-size: 15px;
     font-weight: 300;
     font-style: italic;
-    padding-left: 45px;
+    padding-top: 10px;
     margin-bottom: 10px;
     padding-bottom: 5px;
 }

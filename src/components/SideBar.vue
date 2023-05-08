@@ -7,7 +7,7 @@
                 </v-sheet>
             </v-list>
 
-            <v-sheet height="80vh" rounded="lg">
+            <v-sheet height="75vh" rounded="lg">
                 <v-list dense nav>
                     <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
                         :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
@@ -21,6 +21,7 @@
             </v-sheet>
             <template v-slot:append>
                 <v-sheet rounded="lg">
+                    <v-btn color="black" class="ma-2" align="center" @click="toggleTheme">Th</v-btn>
                     <v-list-item value="Logout" rounded="true" variant="tonal" @click="closeSession"
                         style="border-radius: 10%;" color="primary">
                         <div class="iconS">
@@ -37,6 +38,7 @@
 <script>
 import store from 'storejs';
 import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
 
 export default {
     name: "SideBar",
@@ -46,6 +48,7 @@ export default {
             lastName: store.get('last_name'),
             role: store.get('role'),
             router: useRouter(),
+            theme: useTheme(),
             menuItems: [
                 {
                     name: 'Home',
@@ -109,6 +112,10 @@ export default {
         async goTo(route) {
             this.router.push({ name: route })
         },
+        toggleTheme() {
+            console.log(this.theme)
+            this.theme.global.name = this.theme.global.current.dark ? 'lightTheme' : 'darkTheme'
+        }
     },
 
 }
