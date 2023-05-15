@@ -14,8 +14,12 @@
                     </v-sheet>
                     <v-sheet class="pa-2">
                         Estado Reconocimiento:
-                        <v-chip :color="this.recogStatus[editedObj.status].color">{{ this.recogStatus[editedObj.status].text
-                        }} </v-chip>
+                        <v-chip v-if="editedObj.status != null" :color="this.recogStatus[editedObj.status].color">
+                            {{ this.recogStatus[editedObj.status].text }}
+                        </v-chip>
+                        <v-chip v-else color="warning">
+                            No Habilitado
+                        </v-chip>
                     </v-sheet>
                 </v-col>
             </v-col>

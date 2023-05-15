@@ -4,14 +4,17 @@
             <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
                 <v-divider thickness="5"></v-divider>
-                <v-card-text style="padding-left: 50px;" ><v-icon :icon="dialogSucces ? 'mdi-check':'mdi-alert-circle'" :color="dialogSucces ? 'primary': 'error'"> </v-icon> {{ dialogText }} </v-card-text>
+                <v-card-text style="padding-left: 50px;">
+                    <v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
+                        :color="dialogSucces ? 'primary' : 'error'">
+                    </v-icon> {{ dialogText }} </v-card-text>
                 <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false"> Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
             <v-row>
                 <v-col align-self="center">
-                    <h1 style="color: rgb(var(--v-theme-primary))" >Registrar Nuevo Curso</h1>
+                    <h1 style="color: rgb(var(--v-theme-primary))">Registrar Nuevo Curso</h1>
                 </v-col>
             </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
@@ -141,17 +144,16 @@ export default {
                 if (result.status == 200) {
                     console.log('success');
                     dialogText.value = result.data.message;
-                    dialogSucces.value = true
+                    dialogSucces.value = true;
                     dialog.value = true;
                 } else {
                     alert(JSON.stringify(result.status));
                 }
             } catch (error) {
                 console.log(error);
-                if (error.response != undefined)
-                    {dialogText.value = 'Error message goes here';}
+                if (error.response != undefined) { dialogText.value = 'Error del servidor'; }
                 else {
-                    dialogText.value =  error.response.data.message;
+                    dialogText.value = error.response.data.message;
                 }
                 dialogSucces.value = false
                 dialog.value = true;
@@ -164,6 +166,7 @@ export default {
             select,
             options,
             dialog,
+            dialogSucces,
             dialogText,
             onYearInput,
             submit,

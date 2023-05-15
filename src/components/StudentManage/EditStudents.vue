@@ -82,7 +82,7 @@
                         </v-tooltip>
                         {{ this.recogStatus[item.value.status].text }}
                     </v-btn>
-                    <v-btn class="ma-1" v-else color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
+                    <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
                         <v-tooltip activator="parent" location="left">
                             <v-card prepend-icon="mdi-information-variant" title="No Habilitado"
                                 subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
@@ -232,7 +232,7 @@ export default {
             this.currentStudId = item.id_stud
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
-
+            console.log(this.editedItem)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
         }
     },

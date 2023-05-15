@@ -19,8 +19,14 @@
                         </template>
                     </v-dialog>
                     <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
-                        <v-card title="Estas seguro que quiere eliminar el curso?" subtitle="Esta accion no es revertible."
+                        <v-card title="Estas seguro que quiere eliminar el curso?" subtitle=""
                             prepend-icon="mdi-alert" align="center" class="pb-4">
+                            <v-card-text style="font-style: italic; padding: 2px;">
+                                Esta accion eliminara los estudiantes dentro del curso. 
+                            </v-card-text>
+                            <v-card-text style="font-style: italic; padding: 5px;">
+                                Desea continuear?
+                            </v-card-text>
                             <v-card-item class="pb-4">
                                 <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
                                 <v-btn class="ma-2" variant="tonal" @click="deleteItem()" color="error">Eliminar</v-btn>

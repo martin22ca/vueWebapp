@@ -268,7 +268,7 @@ export default {
                 let result = await axiosClient({
                     method: 'get',
                     timeout: 5000,
-                    url: "/attendence",
+                    url: "/attendance",
                     params: {
                         'accessToken': accessToken,
                         'classId': this.classId,
@@ -276,7 +276,7 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-                    this.items = result.data.attendencesRows;
+                    this.items = result.data.attendancesRows;
                     this.status = result.data.status;
                 }
             } catch (error) {
@@ -349,7 +349,7 @@ export default {
                 let result = await axiosClient({
                     method: 'put',
                     timeout: 2000,
-                    url: "/attendence/edit",
+                    url: "/attendance/edit",
                     headers: {
                         'content-type': 'application/json',
                     },

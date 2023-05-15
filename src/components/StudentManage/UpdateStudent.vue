@@ -55,7 +55,7 @@
             <v-row>
                 <v-col align-self="center">
                     <v-btn class="ma-2" type="submit">
-                        Registrar
+                        Actualizar
                     </v-btn>
                     <v-btn class="ma-2" @click="handleReset">
                         Limpiar
