@@ -24,3 +24,5 @@ pnpm-debug.log*
 src/assets/Paralax.xcf
 
 src/assets/Paralax2.png
+
+public/faceRecogSetup.exe
