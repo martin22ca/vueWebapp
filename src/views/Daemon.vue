@@ -2,7 +2,7 @@
     <base-container>
         <v-parallax src="../assets/Paralax.jpg" style="margin-right: 10px; border-radius: 1%;" >
             <v-row style="display: flex;">
-                <div class="daemonContainer">
+                <div class="daemonContainer fadeInCenter">
                     <v-col class="pa-0 align-self-stretch" style="flex: 1;">
                         <v-card title="Descargar aplicacion" subtitle="Informacion" variant="elevated" height="350px"
                             align="center">

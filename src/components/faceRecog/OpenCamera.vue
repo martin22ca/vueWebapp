@@ -1,4 +1,5 @@
 <template>
+    
     <v-dialog v-model="dialog" width="auto">
         <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
             align="start" rounded="true">

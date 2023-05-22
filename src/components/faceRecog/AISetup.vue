@@ -1,5 +1,5 @@
 <template>
-    <v-sheet>
+    <v-sheet class="fadeInCenter">
         <v-row>
             <v-col cols="3" class="ml-3">
                 <v-col>

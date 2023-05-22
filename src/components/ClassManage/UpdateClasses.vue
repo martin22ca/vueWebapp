@@ -3,16 +3,13 @@
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
-                <v-card-text style="padding-left: 50px;">{{ dialogText }} </v-card-text>
-                <v-card-item class="pb-2"> <v-btn title="Ok" @click="dialog=false" variant="tonal">OK</v-btn></v-card-item>
+                <v-card-text style="padding-left: 50px;">
+                  <v-icon icon="mdi-check" color="secondary"></v-icon>  {{ dialogText }} 
+                </v-card-text>
+                <v-card-item class="pb-2"> <v-btn title="Ok" @click="dialog=false" variant="outlined" color="secondary">OK</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
-            <v-row>
-                <v-col  align-self="center">
-                    <h1 style="color: rgb(var(--v-theme-secondary))">Editar Curso</h1>
-                </v-col>
-            </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
             <div class="text"> Datos del curso </div>
             <v-row>
@@ -37,10 +34,10 @@
             </v-row>
             <v-row>
                 <v-col align-self="center">
-                    <v-btn class="ma-2" type="submit">
+                    <v-btn class="ma-2" type="submit" variant="outlined" color="secondary">
                         Actualizar
                     </v-btn>
-                    <v-btn class="ma-2" @click="handleReset">
+                    <v-btn class="ma-2" @click="handleReset" variant="tonal">
                         Limpiar
                     </v-btn>
                 </v-col>
@@ -186,8 +183,7 @@ h1 {
 }
 
 .updateContainer {
-    background: rgb(var(--v-theme-surface-lighter-2));
-    color: rgb(var(--v-theme-on-secondary));
+    background: transparent;
 }
 
 .text {

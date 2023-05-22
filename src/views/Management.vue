@@ -1,7 +1,7 @@
 <template>
     <base-container>
         <div style="min-height: 75vh;">
-            <div class="managementContainer">
+            <div class="managementContainer fadeInCenter">
                 <v-row>
                     <v-col cols="2" class="pa-0">
                         <v-card title="Categoria" subtitle="Cada categoria tiene sus opciones" variant="flat"

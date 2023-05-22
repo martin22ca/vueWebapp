@@ -1,6 +1,6 @@
 <template>
     <BaseContainer>
-        <div class="classesContainer">
+        <div class="classesContainer fadeInCenter">
             <v-sheet width="100%">
                 <v-row no-gutters>
                     <v-col>
@@ -83,11 +83,10 @@
                                 No data
                             </template>
                             <template v-slot:item.percentage="{ item }">
-                                <v-chip :color="getColor(item.value.present, item.value.total)">
-                                    {{ getValue(item.value.present, item.value.total) }} </v-chip>
+                                <v-chip :color="getColor(item.value.present, item.value.late, item.value.total)">
+                                    {{ getValue(item.value.present, item.value.late, item.value.total) }} </v-chip>
                             </template>
                         </v-data-table>
-                        <CamViewer/>
                     </div>
                     <div v-else>
                         <v-sheet style="text-align: center; font-size: xx-large; margin-top: 80px;" class="pa-2"
@@ -194,15 +193,15 @@ export default {
             } catch (error) {
                 console.log(error)
             }
-        }, getColor(present, total) {
-            const pre = Number(present)
+        }, getColor(present, late, total) {
+            const pre = Number(present) - Number(late)*0.5 
             const tot = Number(total)
             const percent = pre / tot * 100
             if (percent < 30) return 'red'
-            else if (percent < 50) return 'orange'
+            else if (percent <= 50) return 'orange'
             else return 'green'
-        }, getValue(present, total) {
-            const pre = Number(present)
+        }, getValue(present, late, total) {
+            const pre = Number(present) - Number(late)*0.5
             const tot = Number(total)
             if (total == 0) return 0
             else {

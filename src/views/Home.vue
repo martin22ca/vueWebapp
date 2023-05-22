@@ -1,6 +1,6 @@
 <template>
     <BaseContainer>
-        <div class="dashContainer">
+        <div class="dashContainer fadeInCenter">
             <div class="left-panel">
                 <h3><v-icon icon="mdi-information" class="pa-8" />
                     Mensajes</h3>
@@ -9,7 +9,7 @@
                         <h3>No hay mensajes nuevos.</h3>
                     </div>
                 </div>
-                <div v-else class="scroll">
+                <div v-else style="overflow-y: scroll; max-height: 80vh;">
                     <v-card v-for="message in messages" :key="message.id" :title="message.title"
                         subtitle="Mensaje de aistencia" :text="message.info"
                         :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-1" variant="tonal"
@@ -38,9 +38,9 @@
                     <div v-else class="scroll">
                         <v-row>
                             <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
-                                <v-card align="center"
-                                    :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
-                                    class="ma-1 " subtitle="Curso Secundario" color="surface-lighter-2" rounded="true">
+                                <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
+                                    class="ma-2 pa-1" subtitle="Curso Secundario" color="surface-lighter-2" rounded="xl">
+                                    <v-divider thickness="3"></v-divider>
                                     <h4 class="classText"> Estudiantes presentes: <v-chip> {{ schoolClass.present }}
                                         </v-chip></h4>
                                     <h4 class="classText"> Estudiantes Totales: <v-chip>{{ schoolClass.total }} </v-chip>

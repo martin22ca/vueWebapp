@@ -5,16 +5,11 @@
                 align="start" rounded="true">
                 <v-divider thickness="5"></v-divider>
                 <v-card-text style="padding-left: 50px;"><v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
-                        :color="dialogSucces ? 'primary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
-                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false"> Ok</v-btn></v-card-item>
+                        :color="dialogSucces ? 'secondary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
+                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="secondary"> Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
-            <v-row>
-                <v-col align-self="center">
-                    <h1 style="color: rgb(var(--v-theme-secondary))">Actualizar Estudiante</h1>
-                </v-col>
-            </v-row>
             <v-divider :thickness="7" class="pa-2"></v-divider>
             <div class="text"> Nombre </div>
             <v-row>
@@ -54,10 +49,10 @@
             </v-row>
             <v-row>
                 <v-col align-self="center">
-                    <v-btn class="ma-2" type="submit">
+                    <v-btn class="ma-2" type="submit" variant="outlined" color="secondary">
                         Actualizar
                     </v-btn>
-                    <v-btn class="ma-2" @click="handleReset">
+                    <v-btn class="ma-2" @click="handleReset" variant="tonal">
                         Limpiar
                     </v-btn>
                 </v-col>
@@ -201,8 +196,7 @@ h1 {
 }
 
 .registerStudentContainer {
-    background: rgb(var(--v-theme-surface-lighter-1));
-    color: rgb(var(--v-theme-on-secondary));
+    background: transparent
 }
 
 .text {

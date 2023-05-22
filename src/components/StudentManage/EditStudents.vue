@@ -1,114 +1,144 @@
 <template>
-    <v-dialog v-model="registerDialog" max-width="100vh">
-        <RegisterStudent />
-    </v-dialog>
-    <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar informacion de los Estudiantes"
-        color="surface-lighter-1" class="ma-2 mr-5">
-        <template v-slot:append>
-            <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
-                Registrar Estudiante
-            </v-btn>
-        </template>
-        <v-card-item>
-            <v-row>
-                <v-col>
-                    Selecionar Curso:
-                    <v-menu transition="scale-transition">
-                        <template v-slot:activator="{ props }">
-                            <v-chip v-if="currentClass != ''" v-bind:="props" variant="elevated" color="primary"
-                                append-icon="mdi-menu-down">{{ currentClass }}
-                            </v-chip>
-                            <v-chip v-else v-bind:="props" variant="elevated" color="primary" append-icon="mdi-menu-down">
-                                Select
-                            </v-chip>
-                        </template>
-                        <v-list>
-                            <v-list-item v-for="item in  myClasses " value="value"
-                                @click="currentClassId = item.value; currentClass = item.text; fetchStudents()">
-                                <v-list-item-title>{{ item.text }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
-                </v-col>
-                <v-col class="text-end">
-                </v-col>
-            </v-row>
-        </v-card-item>
-        <v-sheet>
-            <v-data-table v-if="items.length > 0" :headers="headers" :items="items" class="elevation-1 border-1" hover>
-                <template v-slot:top>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
-                        <template v-if="dialog">
-                            <UpdateStudent />
-                        </template>
-                    </v-dialog>
-                    <v-dialog v-model="dailogDel" max-width="57vh" style="position: fixed; margin-left: auto;">
-                        <v-card title="Estas seguro que quiere eliminar al estudiante?"
-                            subtitle="Esta accion no es revertible." prepend-icon="mdi-alert" align="center" class="pb-4">
-                            <v-card-item class="pb-4">
-                                <v-btn class="ma-2" variant="tonal" @click=" dailogDel = false"
-                                    color="grey">Cancelar</v-btn>
-                                <v-btn class="ma-2" variant="tonal" @click=" deleteItem()" color="error">Eliminar</v-btn>
-                            </v-card-item>
-                        </v-card>
-                    </v-dialog>
+    <div class="fadeInLeft">
+        <v-dialog v-model="registerDialog" max-width="100vh">
+            <v-card rounded="xl">
+                <template v-slot:title>
+                    <h1 style="color:rgb(var(--v-theme-primary));">
+                        Registrar Estudiante
+                    </h1>
                 </template>
-                <template v-slot:item.actions="{ item }">
-                    <v-icon size="small" class="me-2" @click=" editItem(item.raw)">
-                        mdi-pencil
-                    </v-icon>
-                    <v-icon size="small" class="me-2" @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud">
-                        mdi-trash-can
-                    </v-icon>
-                </template>
-                <template v-slot:no-data>
-                    <div class="noList">
-                        No data
-                    </div>
-                </template>
-                <template v-slot:item.email="{ item }">
-                    <div v-if="item.value.email != null"> {{ item.value.email }}</div>
-                    <div v-else class="noEmail"> No email</div>
-                </template>
-                <template v-slot:item.status="{ item }">
-                    <v-btn v-if="item.value.status != null" :color="this.recogStatus[item.value.status].color"
-                        variant="tonal" @click=" enableFaceRecog(item.raw)">
-                        <v-tooltip activator="parent" location="left">
-                            <v-card prepend-icon="mdi-information-variant" title="Registrado"
-                                :subtitle="this.recogStatus[item.value.status].info"
-                                :color="this.recogStatus[item.value.status].color" />
-                        </v-tooltip>
-                        {{ this.recogStatus[item.value.status].text }}
-                    </v-btn>
-                    <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
-                        <v-tooltip activator="parent" location="left">
-                            <v-card prepend-icon="mdi-information-variant" title="No Habilitado"
-                                subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
-                        </v-tooltip>
-                        Habilitar
+                <template v-slot:append>
+                    <v-btn color="primary" @click="fetchStudents(); registerDialog = false"
+                        prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                        Regresar
                     </v-btn>
                 </template>
-            </v-data-table>
-            <div v-else>
-                <v-card variant="elevated">
-                    <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{ currentClass
-                    }}</v-card-title>
-                    <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
-                    <v-card-item>
-                    </v-card-item>
-                </v-card>
-            </div>
-        </v-sheet>
-    </v-card>
-    <v-card v-else title="Reconocimiento Facial" subtitle="Control" class="ma-2 mr-5" prepend-icon="mdi-image">
-        <template v-slot:append>
-            <v-btn @click=" currentStudId = -1; fetchStudents()" prepend-icon="mdi-arrow-left" color="primary"> Regresar
-            </v-btn>
-        </template>
-        <AISetup />
-    </v-card>
+                <RegisterStudent />
+            </v-card>
+        </v-dialog>
+        <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar informacion de los Estudiantes"
+            color="surface-lighter-1" class="ma-2 mr-5">
+            <template v-slot:append>
+                <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
+                    Registrar Estudiante
+                </v-btn>
+            </template>
+            <v-card-item>
+                <v-row>
+                    <v-col>
+                        Selecionar Curso:
+                        <v-menu transition="scale-transition">
+                            <template v-slot:activator="{ props }">
+                                <v-chip v-if="currentClass != ''" v-bind:="props" variant="elevated" color="primary"
+                                    append-icon="mdi-menu-down">{{ currentClass }}
+                                </v-chip>
+                                <v-chip v-else v-bind:="props" variant="elevated" color="primary"
+                                    append-icon="mdi-menu-down">
+                                    Select
+                                </v-chip>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="item in  myClasses " value="value"
+                                    @click="currentClassId = item.value; currentClass = item.text; fetchStudents()">
+                                    <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-col>
+                    <v-col class="text-end">
+                    </v-col>
+                </v-row>
+            </v-card-item>
+            <v-sheet>
+                <v-data-table v-if="items.length > 0" :headers="headers" :items="items" class="elevation-1 border-1" hover>
+                    <template v-slot:top>
+                        <v-divider class="mx-4" inset vertical></v-divider>
+                        <v-spacer></v-spacer>
+                        <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
+                            <v-card rounded="xl">
+                                <template v-slot:title>
+                                    <h1 style="color:rgb(var(--v-theme-secondary));">
+                                        Modificar Estudiante
+                                    </h1>
+                                </template>
+                                <template v-slot:append>
+                                    <v-btn color="secondary" @click="fetchStudents(); dialog = false"
+                                        prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                                        Regresar
+                                    </v-btn>
+                                </template>
+                                <UpdateStudent />
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="dailogDel" max-width="57vh" style="position: fixed; margin-left: auto;">
+                            <v-card title="Estas seguro que quiere eliminar al estudiante?"
+                                subtitle="Esta accion no es revertible." prepend-icon="mdi-alert" align="center"
+                                class="pb-4" rounded="xl">
+                                <v-card-item class="pb-4">
+                                    <v-btn class="ma-2" variant="tonal" @click=" dailogDel = false"
+                                        color="grey">Cancelar</v-btn>
+                                    <v-btn class="ma-2" variant="tonal" @click=" deleteItem()"
+                                        color="error">Eliminar</v-btn>
+                                </v-card-item>
+                            </v-card>
+                        </v-dialog>
+                    </template>
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon size="small" class="me-2" @click=" editItem(item.raw)">
+                            mdi-pencil
+                        </v-icon>
+                        <v-icon size="small" class="me-2"
+                            @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud">
+                            mdi-trash-can
+                        </v-icon>
+                    </template>
+                    <template v-slot:no-data>
+                        <div class="noList">
+                            No data
+                        </div>
+                    </template>
+                    <template v-slot:item.email="{ item }">
+                        <div v-if="item.value.email != null"> {{ item.value.email }}</div>
+                        <div v-else class="noEmail"> No email</div>
+                    </template>
+                    <template v-slot:item.status="{ item }">
+                        <v-btn v-if="item.value.status != null" :color="this.recogStatus[item.value.status].color"
+                            variant="tonal" @click=" enableFaceRecog(item.raw)">
+                            <v-tooltip activator="parent" location="left">
+                                <v-card prepend-icon="mdi-information-variant" title="Registrado"
+                                    :subtitle="this.recogStatus[item.value.status].info"
+                                    :color="this.recogStatus[item.value.status].color" class="pa-0 ma-0" />
+                            </v-tooltip>
+                            {{ this.recogStatus[item.value.status].text }}
+                        </v-btn>
+                        <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
+                            <v-tooltip activator="parent" location="left">
+                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado"
+                                    subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
+                            </v-tooltip>
+                            Habilitar
+                        </v-btn>
+                    </template>
+                </v-data-table>
+                <div v-else>
+                    <v-card variant="elevated">
+                        <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{ currentClass
+                        }}</v-card-title>
+                        <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
+                        <v-card-item>
+                        </v-card-item>
+                    </v-card>
+                </div>
+            </v-sheet>
+        </v-card>
+        <v-card v-else title="Reconocimiento Facial" subtitle="Control" class="ma-2 mr-5" prepend-icon="mdi-image">
+            <template v-slot:append>
+                <v-btn @click=" currentStudId = -1; fetchStudents()" prepend-icon="mdi-arrow-left" color="primary"> Regresar
+                </v-btn>
+            </template>
+            <AISetup />
+        </v-card>
+    </div>
 </template>
 
 <script>

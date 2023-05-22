@@ -1,36 +1,39 @@
 <template>
     <div style="width:85px;">
         <v-navigation-drawer :width="100" rounded="true" color="transparent" class="pa-1" border="0" permanent>
-            <v-list>
-                <v-sheet rounded="lg" class="pa-2">
-                    <img src="../assets/logo.png" width="70" class="image" />
-                </v-sheet>
-            </v-list>
+            <v-row>
+                <v-col>
+                    <v-list>
+                        <v-sheet rounded="lg" class="pa-2">
+                            <img src="../assets/logo.png" width="70" class="image" />
+                        </v-sheet>
+                    </v-list>
 
-            <v-sheet height="75vh" rounded="lg">
-                <v-list dense nav>
-                    <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
-                        :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2" rounded
-                        @click="goTo(item.route)">
-                        <div class="iconS">
-                            <v-icon :icon="item.icon" size="x-large" />
-                        </div>
-                        <h4 class="sideText">{{ item.name }}</h4>
-                    </v-list-item>
-                </v-list>
-            </v-sheet>
-            <template v-slot:append>
-                <v-sheet rounded="lg">
-                    <v-btn color="black" class="ma-2" align="center" @click="toggleTheme">Th</v-btn>
-                    <v-list-item value="Logout" rounded="true" variant="tonal" @click="closeSession"
-                        style="border-radius: 10%;" color="primary">
-                        <div class="iconS">
-                            <v-icon icon="mdi-logout" size="x-large" />
-                        </div>
-                        <h4 class="sideText">Logout</h4>
-                    </v-list-item>
-                </v-sheet>
-            </template>
+                    <v-sheet rounded="lg" class="mb-2">
+                        <v-list dense nav>
+                            <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
+                                :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-2 pb-2"
+                                rounded @click="goTo(item.route)">
+                                <div class="iconS">
+                                    <v-icon :icon="item.icon" size="x-large" />
+                                </div>
+                                <h4 class="sideText">{{ item.name }}</h4>
+                            </v-list-item>
+                        </v-list>
+                    </v-sheet>
+
+                    <v-sheet rounded="lg" style="align-self: flex-end;">
+                        <v-btn color="black" class="ma-2" align="center" @click="toggleTheme">Th</v-btn>
+                        <v-list-item value="Logout" rounded="true" variant="tonal" @click="closeSession"
+                            style="border-radius: 10%;" color="primary">
+                            <div class="iconS">
+                                <v-icon icon="mdi-logout" size="x-large" />
+                            </div>
+                            <h4 class="sideText">Logout</h4>
+                        </v-list-item>
+                    </v-sheet>
+                </v-col>
+            </v-row>
         </v-navigation-drawer>
     </div>
 </template>

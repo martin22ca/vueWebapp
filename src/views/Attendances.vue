@@ -58,101 +58,66 @@
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="400px">
-                        <v-card>
-                            <v-card-title>
-                                <span class="text-h5 pa-5">Editar asistencia</span>
-                            </v-card-title>
-                            <v-divider thickness="5"></v-divider>
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-card variant="text" align="start">
-                                                <v-card-title class="text-decoration-underline">Nombre</v-card-title>
-                                                <v-card-text class="text-lg-h6">
-                                                    {{ editedItem.first_name }}
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6" align="end">
-                                            <v-card variant="text">
-                                                <v-card-title class="text-decoration-underline">Apellido</v-card-title>
-                                                <v-card-text class="text-lg-h6">
-                                                    {{ editedItem.last_name }}
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col cols="12" sm="6" md="12">
-                                            <v-card variant="text">
-                                                <v-card-title align="start" class="text-decoration-underline">Hora
-                                                    Ingreso</v-card-title>
-                                                <v-card-text>
-                                                    <v-text-field v-model="editedItem.time_arrival"
-                                                        type="time"></v-text-field>
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-col>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col cols="12" sm="6" md="6" align="center">
-                                            <v-card variant="text">
-                                                <v-card-title class="text-decoration-underline">Presente</v-card-title>
-                                                <v-card-text>
-                                                    <v-checkbox-btn v-model="editedItem.present"
-                                                        :color="editedItem.present ? 'primary' : 'surface'" />
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6" align="center">
-                                            <v-card variant="text">
-                                                <v-card-title class="text-decoration-underline">Tarde</v-card-title>
-                                                <v-card-text>
-                                                    <v-checkbox-btn v-if="editedItem.present" v-model="editedItem.late"
-                                                        :color="editedItem.late ? 'primary' : 'surface'" />
-                                                    <v-checkbox-btn v-else disabled />
-                                                </v-card-text>
-                                            </v-card>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
+                    <v-dialog v-model="editDialog" max-width="60%">
+                        <v-card rounded="xl">
+                            <template v-slot:title>
+                                <h1 style="color:rgb(var(--v-theme-secondary));">
+                                    Asistencia
+                                </h1>
+                            </template>
+                            <template v-slot:append>
+                                <v-btn color="secondary" @click="fetchAttendences(); editDialog = false"
+                                    prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                                    Regresar
+                                </v-btn>
+                            </template>
+                            <updateAttendance />
+                        </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="deleteDialog" max-width="70vh" style="position: fixed; margin-left: auto;">
+                        <v-card title="Estas seguro que quieres eliminar la asistencia?" subtitle=""
+                            prepend-icon="mdi-alert" align="center" class="pb-4" rounded="xl">
+                            <v-card-text style="font-style: italic; padding: 2px;">
+                                Esta accion eliminara los estudiantes dentro del curso.
                             </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn class="ma-2" color="secondary" variant="tonal" @click="close">
-                                    Cancel
-                                </v-btn>
-                                <v-btn class="ma-2" color="secondary" variant="tonal" @click="save">
-                                    Guardar
-                                </v-btn>
-                            </v-card-actions>
+                            <v-card-text style="font-style: italic; padding: 5px;">
+                                Desea continuear?
+                            </v-card-text>
+                            <v-card-item class="pb-4">
+                                <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
+                                <v-btn class="ma-2" variant="tonal" @click="removeAtt()" color="error">Eliminar</v-btn>
+                            </v-card-item>
+
                         </v-card>
                     </v-dialog>
                 </template>
                 <template v-slot:item.time_arrival="{ item }" type="time">
-                    <v-text-field class="mt-5" v-model="item.value.time_arrival" readonly type="time"></v-text-field>
+                    <v-text-field class="mt-5" v-model="item.value.time_arrival" readonly type="time"
+                        variant="plain"></v-text-field>
                 </template>
                 <template v-slot:item.img_encoded="{ item }">
                     <img v-if="item.value.img_encoded != null" class="attImg"
                         v-bind:src="this.decodeImage(item.value.img_encoded)" />
-                    <div v-else>
-                        No Image
-                    </div>
+                    <img v-else class="attImgP" src="@/assets/Placeholder.png" />
                 </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                         mdi-pencil
                     </v-icon>
-                    <v-icon size="small" @click="moreInfo(item.raw)">
-                        mdi-dots-horizontal-circle
+                    <v-icon v-if="item.value.id_att != null" size="small"
+                        @click="editedIndex = item.value.id_att; deleteDialog = true;">
+                        mdi-trash-can
                     </v-icon>
                 </template>
                 <template v-slot:no-data>
                     <div class="noList">
                         No data
                     </div>
+                </template>
+                <template v-slot:item.certainty="{ item }">
+                    <v-chip :color="getColor(item.value.certainty)">
+                        {{ getPercentage(item.value.certainty) }}
+                    </v-chip>
                 </template>
                 <template v-slot:item.present="{ item }">
                     <v-checkbox-btn v-model="item.value.present" readonly
@@ -171,6 +136,7 @@
 
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import updateAttendance from '@/components/updateAttendance.vue';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
@@ -181,8 +147,10 @@ export default {
     name: 'Attendances',
     data() {
         return {
-            dialog: false,
+            deleteDialog: false,
+            editDialog: false,
             status: false,
+            storeX: useStore(),
             attDate: useStore().state.attDate,
             myClasses: useStore().state.myClasses,
             classId: useStore().state.classId,
@@ -196,6 +164,7 @@ export default {
                 { title: 'Nombre', key: 'first_name', align: 'center' },
                 { title: 'Hora entrada', key: 'time_arrival', align: 'center', width: '10%' },
                 { title: 'Foto', key: 'img_encoded', sortable: false, align: 'center', },
+                { title: 'Distancia', key: 'certainty', sortable: false, align: 'center', width: '10%' },
                 { title: 'Presente', key: 'present', align: 'center', width: '3%' },
                 { title: 'Tarde', key: 'late', align: 'center', width: '3%' },
                 { title: 'Acciones', key: 'actions', sortable: false, align: 'end', width: '8%' },
@@ -256,7 +225,7 @@ export default {
         },
     },
     watch: {
-        dialog(val) {
+        editDialog(val) {
             val || this.close()
         },
     },
@@ -328,52 +297,52 @@ export default {
         editItem(item) {
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
-            this.dialog = true
+            this.editedItem['att_date'] = this.$store.state.attDate
+            console.log(this.editedItem)
+            this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
+            this.editDialog = true
         },
         close() {
-            this.dialog = false
+            this.editDialog = false
             this.$nextTick(() => {
                 this.editedIndex = -1
             })
         },
-
-        save() {
-            Object.assign(this.items[this.editedIndex], this.editedItem)
-            this.saveEdits()
-            this.close()
-        },
-        async saveEdits() {
+        async removeAtt() {
             const accessToken = store.get('accessToken');
-
+            const delId = this.editedIndex
+            this.editedIndex = -1
             try {
                 let result = await axiosClient({
                     method: 'put',
-                    timeout: 2000,
-                    url: "/attendance/edit",
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    data: {
+                    timeout: 5000,
+                    url: "/attendance/remove",
+                    params: {
                         'accessToken': accessToken,
-                        'idRollCall': this.idRollCall,
-                        'idAtt': this.editedItem.id_att,
-                        'idStud': this.editedItem.id_stud,
-                        'timeArrival': this.editedItem.time_arrival,
-                        'present': this.editedItem.present,
-                        'late': this.editedItem.late
+                        'id_att': delId,
                     }
                 })
-                if (result.status == 200)
-                    this.messages = result.data.messages;
+                if (result.status == 200) {
+                    this.fetchAttendences()
+                    this.deleteDialog = false
+                }
             } catch (error) {
                 console.log(error)
             }
         },
-        moreInfo(item) {
-            console.log(item)
+        getColor(value) {
+            if (value == null) return 'secondary'
+            if (value == 0) return ''
+            if (value > 1.5) return 'error'
+            else if (value < 1.2) return 'primary'
+            else return 'warning'
+        }, getPercentage(value) {
+            if (value == null) return 'No Hay datos'
+            if (value == 0) return 'Asistencia Manual'
+            return value.toFixed(2)
         }
     },
-    components: { BaseContainer, VDataTable, }
+    components: { BaseContainer, VDataTable, updateAttendance }
 }
 
 </script>
@@ -396,10 +365,24 @@ export default {
     border: solid 1px;
     width: 100px;
     transition: transform .2s;
+    position: relative;
+    z-index: 1;
 }
 
 .attImg:hover {
-    transform: scale(2);
-    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    transform: scale(1.5);
+    overflow: unset;
+    z-index: 2;
+}
+
+.attImgP {
+    margin: 5px;
+    border-radius: 8px;
+    padding: 5px;
+    border: solid 1px;
+    width: 100px;
+    transition: transform .2s;
+    position: relative;
+    z-index: 1;
 }
 </style>
