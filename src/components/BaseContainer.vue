@@ -6,7 +6,6 @@
     <v-col>
       <div class="containerB">
         <TopBar />
-
         <slot></slot>
         <Footer />
       </div>

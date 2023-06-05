@@ -1,6 +1,6 @@
 <template>
     <div class="fadeInLeft">
-        <v-dialog v-model="registerDialog" max-width="100vh">
+        <v-dialog v-model="registerDialog" >
             <v-card rounded="xl">
                 <template v-slot:title>
                     <h1 style="color:rgb(var(--v-theme-primary));">
@@ -28,7 +28,7 @@
                     <template v-slot:top>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
+                        <v-dialog v-model="dialog" max-width="90%" style="position: fixed; margin-left: auto;">
                             <v-card rounded="xl">
                                 <template v-slot:title>
                                     <h1 style="color:rgb(var(--v-theme-secondary));">
@@ -184,5 +184,8 @@ export default {
 <style>
 .noEmail {
     color: rgb(var(--v-theme-warning));
+}
+.v-container{
+    max-width: 100%;
 }
 </style>

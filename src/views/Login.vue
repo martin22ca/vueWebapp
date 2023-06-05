@@ -92,6 +92,7 @@ export default {
                 if (result.status == 200) {
                     console.log('success');
                     store(result.data);
+                    store({theme:true})
 
                     router.push({
                         name: 'Home',

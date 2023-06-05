@@ -9,7 +9,7 @@
                         <h3>No hay mensajes nuevos.</h3>
                     </div>
                 </div>
-                <div v-else style="overflow-y: scroll; max-height: 80vh;">
+                <div v-else class="msgBox">
                     <v-card v-for="message in messages" :key="message.id" :title="message.title"
                         subtitle="Mensaje de aistencia" :text="message.info"
                         :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-1" variant="tonal"
@@ -208,6 +208,14 @@ export default {
      padding-top: 5%;
  }
 
+ .msgBox{
+    overflow-y: scroll; 
+    max-height: 80vh; 
+ }
+ .msgBox::-webkit-scrollbar {
+  display: none;
+}
+
  .cardTitle {
      padding: 10px;
  }
@@ -224,8 +232,6 @@ export default {
      margin: 7px;
      margin-left: 0;
      background-color: rgb(var(--v-theme-surface-lighter-1));
-     overflow-y: scroll;
-
  }
 
  .right-panel {

@@ -1,5 +1,4 @@
 <template>
-    
     <v-dialog v-model="dialog" width="auto">
         <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
             align="start" rounded="true">
@@ -24,14 +23,14 @@
                 </template>
             </v-card>
         </div>
-        <video ref="videoEl" autoplay="true" playsinline @loadedmetadata="runModel" style="transform: scaleX(-1);" />
+        <video ref="videoEl" autoplay="true" playsinline @loadedmetadata="runModel" style="transform: scaleX(-1);"  :class="shutterValue.val ? 'shutter' : ''" />
         <canvas ref="canvasEl" style="transform: scaleX(-1);" />
         <div class="bottom-bar">
-            <v-card class="pa-4" color="transparent"
+            <v-card class="pa-4" color="transparent" variant="flat"
                 style="display: flex; align-items: center;left: 0;right: 0; margin: auto;">
                 <v-row>
                     <v-col>
-                        <v-btn icon="mdi-arrow-left" class="BottomBtn" rounded="lg" variant="tonal"
+                        <v-btn icon="mdi-arrow-left" class="BottomBtn" rounded="lg" variant="elevated"
                             @click="prevImage()"></v-btn>
                     </v-col>
                     <v-col>
@@ -40,7 +39,8 @@
                             @click="takePhoto.value = true" />
                     </v-col>
                     <v-col>
-                        <v-btn icon="mdi-arrow-right" class="BottomBtn" rounded="lg" variant="tonal" @click="nextImage()" />
+                        <v-btn icon="mdi-arrow-right" class="BottomBtn" rounded="lg" variant="elevated"
+                            @click="nextImage()" />
                     </v-col>
                     <v-col>
                         <v-btn class="BottomBtn mt-2" rounded="lg" prepend-icon="mdi-send" variant="elevated"
@@ -54,7 +54,7 @@
         <div class="captured-images">
             <v-sheet width="200" class="ma-2" style="text-align: center;">
                 <img v-if="currentImage != ''" :src="currentImage" />
-                <v-sheet v-else width="200" height="209" />
+                <img v-else src="@/assets/Placeholder.png" style="width: 200px;" />
                 {{ currentImageIndex.value + 1 }} / 10
             </v-sheet>
         </div>
@@ -83,7 +83,7 @@ export default {
         })
         const storeX = useStore()
         const editedObj = storeX.state.editedObj
-        const PADDING_PERCENTAGE = 0.05; // 5% padding
+        const PADDING_PERCENTAGE = 0.02; // 5% padding
         const videoEl = ref(null)
         const canvasEl = ref(null)
         const dialog = ref(false);
@@ -101,6 +101,7 @@ export default {
             { src: "", instruction: "Mirra Hacia Centro Sonriendo", icon: 'mdi-emoticon' },
         ]);
         let currentImageIndex = reactive({ value: 0 })
+        let shutterValue = reactive({ val: false })
         let currentImage = ref('')
         let currentInstruction = ref('')
         let currentIcon = ref('')
@@ -147,7 +148,7 @@ export default {
             setTimeout(() => runModel())
         }
 
-        const captureImage = (correctX, correctY, correctWidth, correctHeight) => {
+        const captureImage = async (correctX, correctY, correctWidth, correctHeight) => {
             const video = videoEl.value;
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -183,11 +184,20 @@ export default {
 
 
             // Get the data URL of the resized face image and add it to the captured faces list
-            capturedFaces.value[currentImageIndex.value].src = (resizedCanvas.toDataURL('image/jpeg', 0.8));
-            if (currentImageIndex.value < 9) currentImageIndex.value++;
-            currentImage.value = capturedFaces.value[currentImageIndex.value].src
-            currentInstruction.value = capturedFaces.value[currentImageIndex.value].instruction
-            currentIcon.value = capturedFaces.value[currentImageIndex.value].icon
+            if (capturedFaces.value[currentImageIndex.value].src == "") {
+                capturedFaces.value[currentImageIndex.value].src = (resizedCanvas.toDataURL('image/jpeg', 0.8));
+                if (currentImageIndex.value < 9) currentImageIndex.value++;
+                currentImage.value = capturedFaces.value[currentImageIndex.value].src
+                currentInstruction.value = capturedFaces.value[currentImageIndex.value].instruction
+                currentIcon.value = capturedFaces.value[currentImageIndex.value].icon
+            } else {
+                capturedFaces.value[currentImageIndex.value].src = (resizedCanvas.toDataURL('image/jpeg', 0.8));
+                currentImage.value = capturedFaces.value[currentImageIndex.value].src
+            }
+            console.log(shutterValue.val)
+            shutterValue.val = true
+            await new Promise(r => setTimeout(r, 500));
+            shutterValue.val = false
         };
 
         const nextImage = () => {
@@ -292,6 +302,7 @@ export default {
 
         return {
             dialog,
+            shutterValue,
             dialogText,
             videoEl,
             canvasEl,
@@ -369,5 +380,19 @@ export default {
         z-index: 20;
     }
 
+}
+
+.shutter {
+    animation: shutter 0.3s linear 0s 1 normal forwards;
+}
+
+@keyframes shutter {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 </style>

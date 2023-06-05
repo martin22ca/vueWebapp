@@ -105,7 +105,7 @@
                         <v-btn v-if="item.value.status != null" :color="this.recogStatus[item.value.status].color"
                             variant="tonal" @click=" enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
-                                <v-card prepend-icon="mdi-information-variant" title="Registrado"
+                                <v-card prepend-icon="mdi-information-variant" title="Registrado" rounded="xl"
                                     :subtitle="this.recogStatus[item.value.status].info"
                                     :color="this.recogStatus[item.value.status].color" class="pa-0 ma-0" />
                             </v-tooltip>
@@ -113,7 +113,7 @@
                         </v-btn>
                         <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
-                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado"
+                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado" rounded="xl" color="warning"
                                     subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
                             </v-tooltip>
                             Habilitar
@@ -273,5 +273,9 @@ export default {
 <style>
 .noEmail {
     color: rgb(var(--v-theme-warning));
+}
+
+.v-tooltip>.v-overlay__content {
+    background-color: transparent !important;
 }
 </style>

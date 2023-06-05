@@ -1,87 +1,89 @@
 <template>
     <v-divider :thickness="7" class="pa-2"></v-divider>
-    <v-row>
-        <v-col cols=3 align="center">
-            <h4> Imagen </h4>
-            <img v-if="img_encoded != null" class="attImgEdit" v-bind:src="this.decodeImage(img_encoded)" />
-            <img v-else class="attImgEdit" src="@/assets/Placeholder.png" />
-        </v-col>
-        <v-col>
-            <form @submit.prevent="submit" style="margin-right: 20px;">
-                <v-dialog v-model="dialog" width="auto">
-                    <v-card title="Informacion" prepend-icon="mdi-information-variant"
-                        style="font-size: large; min-width: 50vh;" align="start" rounded="true">
-                        <v-divider thickness="5"></v-divider>
-                        <v-card-text style="padding-left: 50px;"><v-icon
-                                :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
-                                :color="dialogSucces ? 'secondary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
-                        <v-card-item>
-                            <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="secondary">Ok
-                            </v-btn>
-                        </v-card-item>
-                    </v-card>
-                </v-dialog>
-                <v-container class="ma-3 mr-10">
-                    <v-row>
-                        <v-col align-self="center" cols="7">
-                            <div class="text"> Nombre </div>
-                            <v-row>
-                                <v-col style="display: flex;">
-                                    <v-text-field class="pa-0" v-model="firstName" variant="outlined"
-                                        prepend-inner-icon="mdi-card-account-details" readonly></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col align-self="center">
-                            <div class="text"> Apellido </div>
-                            <v-row>
-                                <v-col style="display: flex;">
-                                    <v-text-field class="pl-2" v-model="lastName" readonly variant="outlined"
-                                        prepend-inner-icon="mdi-card-account-details"></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col align-self="center" cols="5">
-                            <div class="text" style="padding-bottom: 10px;"> Hora llegada </div>
-                            <v-row>
-                                <v-text-field class="pa-2" v-model="time_arrival.value.value"
-                                    :error-messages="time_arrival.errorMessage.value" prepend-inner-icon="mdi-clock"
-                                    type="time" variant="outlined"></v-text-field>
-                            </v-row>
-                        </v-col>
-                        <v-col align-self="center">
-                            <div class="text"> Presente </div>
-                            <v-col style="display: flex;">
-                                <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
-                                    :icon="present.value.value ? 'mdi-check' : ''"
-                                    @click="present.value.value = !present.value.value" rounded="lg"
-                                    :color="present.value.value ? 'secondary' : ''" />
+    <v-sheet class="ma-2 pb-1">
+        <v-row>
+            <v-col cols=3 align="center">
+                <h4> Imagen </h4>
+                <img v-if="img_encoded != null" class="attImgEdit" v-bind:src="this.decodeImage(img_encoded)" />
+                <img v-else class="attImgEdit" src="@/assets/Placeholder.png" />
+            </v-col>
+            <v-col style="overflow-y: hidden;">
+                <form @submit.prevent="submit" style="margin-right: 20px;">
+                    <v-dialog v-model="dialog" width="auto">
+                        <v-card title="Informacion" prepend-icon="mdi-information-variant"
+                            style="font-size: large; min-width: 50vh;" align="start" rounded="true">
+                            <v-divider thickness="5"></v-divider>
+                            <v-card-text style="padding-left: 50px;"><v-icon
+                                    :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
+                                    :color="dialogSucces ? 'secondary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
+                            <v-card-item>
+                                <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="secondary">Ok
+                                </v-btn>
+                            </v-card-item>
+                        </v-card>
+                    </v-dialog>
+                    <v-container class="ma-3 mr-10">
+                        <v-row>
+                            <v-col align-self="center" cols="7">
+                                <div class="text"> Nombre </div>
+                                <v-row>
+                                    <v-col style="display: flex;">
+                                        <v-text-field class="pa-0" v-model="firstName" variant="outlined"
+                                            prepend-inner-icon="mdi-card-account-details" readonly></v-text-field>
+                                    </v-col>
+                                </v-row>
                             </v-col>
-                        </v-col>
-                        <v-col align-self="center">
-                            <div class="text"> Tarde </div>
-                            <v-btn class="mb-4 pa-2 ml-4" variant="outlined" :icon="late.value.value ? 'mdi-check' : ''"
-                                @click="late.value.value = !late.value.value" rounded="lg"
-                                :color="late.value.value ? 'secondary' : ''" :disabled="!present.value.value" />
-                        </v-col>
-                        <v-col />
-                    </v-row>
-                    <v-row>
-                        <v-col align="end" style="display: flex; align-self: end; justify-content: end;">
-                            <v-btn class="ma-2" type="submit" variant="outlined" color="secondary">
-                                Actualizar
-                            </v-btn>
-                            <v-btn class="ma-2" @click="handleReset" variant="tonal">
-                                Limpiar
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </form>
-        </v-col>
-    </v-row>
+                            <v-col align-self="center">
+                                <div class="text"> Apellido </div>
+                                <v-row>
+                                    <v-col style="display: flex;">
+                                        <v-text-field class="pl-2" v-model="lastName" readonly variant="outlined"
+                                            prepend-inner-icon="mdi-card-account-details"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col align-self="center" cols="5">
+                                <div class="text" style="padding-bottom: 10px;"> Hora llegada </div>
+                                <v-row>
+                                    <v-text-field class="pa-2" v-model="time_arrival.value.value"
+                                        :error-messages="time_arrival.errorMessage.value" prepend-inner-icon="mdi-clock"
+                                        type="time" variant="outlined"></v-text-field>
+                                </v-row>
+                            </v-col>
+                            <v-col align-self="center">
+                                <div class="text"> Presente </div>
+                                <v-col style="display: flex;">
+                                    <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
+                                        :icon="present.value.value ? 'mdi-check' : ''"
+                                        @click="present.value.value = !present.value.value" rounded="lg"
+                                        :color="present.value.value ? 'secondary' : ''" />
+                                </v-col>
+                            </v-col>
+                            <v-col align-self="center">
+                                <div class="text"> Tarde </div>
+                                <v-btn class="mb-4 pa-2 ml-4" variant="outlined" :icon="late.value.value ? 'mdi-check' : ''"
+                                    @click="late.value.value = !late.value.value" rounded="lg"
+                                    :color="late.value.value ? 'secondary' : ''" :disabled="!present.value.value" />
+                            </v-col>
+                            <v-col />
+                        </v-row>
+                        <v-row>
+                            <v-col align="end" style="display: flex; align-self: end; justify-content: end;">
+                                <v-btn class="ma-1" type="submit" variant="outlined" color="secondary">
+                                    Actualizar
+                                </v-btn>
+                                <v-btn class="ma-1" @click="handleReset" variant="tonal">
+                                    Limpiar
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </form>
+            </v-col>
+        </v-row>
+    </v-sheet>
 </template>
   
 <script>
@@ -224,8 +226,6 @@ h1 {
     z-index: 1;
     transition: transform .2s;
 }
-
-
 </style>
   
 

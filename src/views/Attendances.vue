@@ -58,23 +58,23 @@
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="editDialog" max-width="60%">
-                        <v-card rounded="xl">
+                    <v-dialog v-model="editDialog" max-width="70%" >
+                        <v-card rounded="xl" style="overflow-y: auto; padding-top: 0;">
                             <template v-slot:title>
-                                <h1 style="color:rgb(var(--v-theme-secondary));">
+                                <h1 style="color:rgb(var(--v-theme-secondary)); overflow-y: hidden;">
                                     Asistencia
                                 </h1>
                             </template>
                             <template v-slot:append>
                                 <v-btn color="secondary" @click="fetchAttendences(); editDialog = false"
-                                    prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                                    prepend-icon="mdi-keyboard-return" class="mt-2 ma-2">
                                     Regresar
                                 </v-btn>
                             </template>
                             <updateAttendance />
                         </v-card>
                     </v-dialog>
-                    <v-dialog v-model="deleteDialog" max-width="70vh" style="position: fixed; margin-left: auto;">
+                    <v-dialog v-model="deleteDialog" max-width="70%" style="position: fixed; margin-left: auto;">
                         <v-card title="Estas seguro que quieres eliminar la asistencia?" subtitle=""
                             prepend-icon="mdi-alert" align="center" class="pb-4" rounded="xl">
                             <v-card-text style="font-style: italic; padding: 2px;">
@@ -116,6 +116,10 @@
                 </template>
                 <template v-slot:item.certainty="{ item }">
                     <v-chip :color="getColor(item.value.certainty)">
+                        <v-tooltip activator="parent" location="left" color="#000000">
+                                <v-card prepend-icon="mdi-information-variant" title="Distancia euclidiana" subtitle="indicador de certeza" max-width="300px" variant="elevated" color="surface-lighter-2" rounded="xl"
+                                    class="pa-0 ma-0"  text="La distancia indica que tan seguro esta el sistema del reconocimiento. Los valores normales estan alrededor de 1"/>
+                            </v-tooltip>
                         {{ getPercentage(item.value.certainty) }}
                     </v-chip>
                 </template>
@@ -359,6 +363,7 @@ export default {
 }
 
 .attImg {
+    background-color: rgb(var(--v-theme-surface));
     margin: 5px;
     border-radius: 8px;
     padding: 5px;
@@ -370,7 +375,7 @@ export default {
 }
 
 .attImg:hover {
-    transform: scale(1.5);
+    transform: scale(2);
     overflow: unset;
     z-index: 2;
 }
@@ -384,5 +389,9 @@ export default {
     transition: transform .2s;
     position: relative;
     z-index: 1;
+}
+
+.v-tooltip > .v-overlay__content {
+  background-color: transparent!important;
 }
 </style>

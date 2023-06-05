@@ -2,7 +2,7 @@
     <div class="Top">
         <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="surface-lighter-1" rounded="lg">
             <v-row>
-                <v-col cols="4">
+                <v-col>
                     <v-card variant="text" prepend-icon="mdi-account">
                         <template v-slot:prepend>
                             <v-icon icon="mdi-account" style="font-size: 50px;"/>
@@ -22,11 +22,7 @@
                 <v-col>
                     <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
                 </v-col>
-                <v-col align="center" cols="2">
-                    <v-sheet color="transparent" rounded="lg" class="ma-2 pa-2">
-                    </v-sheet>
-                </v-col>
-                <v-col align="center" cols="2">
+                <v-col align="center" >
                     <v-sheet color="surface-lighter-2" rounded="lg" class="ma-2 pa-2">
                         <DigitalClock />
                     </v-sheet>
@@ -39,8 +35,6 @@
 <script>
 import store from 'storejs';
 import DigitalClock from "../components/Clock.vue"
-
-
 export default {
     name: 'TopBar',
     data: () => ({

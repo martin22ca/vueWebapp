@@ -1,7 +1,7 @@
 <template>
     <BaseContainer>
         <div class="classesContainer fadeInCenter">
-            <v-sheet width="100%">
+            <v-sheet width="100%" color="transparent">
                 <v-row no-gutters>
                     <v-col>
                         <v-card color="surface-lighter-1" prepend-icon="mdi-information-variant"
@@ -115,7 +115,7 @@ export default {
             search: '',
             dialog: false,
             currDate: '',
-            myClasses: useStore().state.myClasses,
+            myClasses: {},
             classYear: -1,
             classSection: '',
             studentId: -1,
@@ -194,14 +194,14 @@ export default {
                 console.log(error)
             }
         }, getColor(present, late, total) {
-            const pre = Number(present) - Number(late)*0.5 
+            const pre = Number(present) - Number(late) * 0.5
             const tot = Number(total)
             const percent = pre / tot * 100
             if (percent < 30) return 'red'
             else if (percent <= 50) return 'orange'
             else return 'green'
         }, getValue(present, late, total) {
-            const pre = Number(present) - Number(late)*0.5
+            const pre = Number(present) - Number(late) * 0.5
             const tot = Number(total)
             if (total == 0) return 0
             else {
