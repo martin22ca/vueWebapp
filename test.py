@@ -1,37 +1,49 @@
-class Solution(object):
-    def checkStraightLine(self, coordinates):
+class SnapshotArray(object):
+    def __init__(self, length):
         """
-        :type coordinates: List[List[int]]
-        :rtype: bool
+        :type length: int
         """
-        x0 = coordinates[0][0]
-        y0 = coordinates[0][1]
-        x1 = coordinates[1][0]
-        y1 = coordinates[1][1]
-        coordinates.pop(0)
-        coordinates.pop(0)
+        self.aLen = length
+        self.lst = [0] * length
+        self.snapCounter = 0
+        self.snapshots = [{}]
 
-        if (y1 == y0):
-            return self.noDiag(1,y0,coordinates)
-        elif (x1 == x0) :
-            return self.noDiag(0,x0,coordinates)
-        else:
-            m = float(y1 - y0 ) / float(x1 - x0)
-            b = y1 - (m*x1)
-            return self.diagonal(m,b,coordinates)
-    
-    def noDiag(self,item,val,coordinates):
-        for tup in coordinates:
-            if tup[item] != val: return False
-        return True
+    def set(self, index, val):
+        """
+        :type index: int
+        :type val: int
+        :rtype: None
+        """
+        self.lst[index] = val
+        self.snapshots[self.snapCounter][index] = val
+        return None
 
-    def diagonal(self,m,b,coordinates):
-        for tup in coordinates:
-            if (m*tup[0]) + b != tup[1]:
-                return False
-        return True
-             
-coordinates = [[2,4],[2,5],[2,8]]
+    def snap(self):
+        """
+        :rtype: int
+        """
+        self.snapshots.append({})
+        self.snapCounter += 1
+        return self.snapCounter - 1
+        
+    def get(self, index, snap_id):
+        """
+        :type index: int
+        :type snap_id: int
+        :rtype: int
+        """
+        resArr = [0] * self.aLen
+        for i in range(0 ,snap_id+1):
+            for key,value in self.snapshots[i].items():
+                resArr[key] = value
+        return resArr[index]
 
-A = Solution()
-print(A.checkStraightLine(coordinates=coordinates))
+snapshotArr = SnapshotArray(3)
+snapshotArr.set(1,6)
+snapshotArr.snap()
+snapshotArr.snap()
+snapshotArr.set(1,19)
+snapshotArr.set(0,4)
+snapshotArr.get(2,1)
+snapshotArr.get(2,0)
+snapshotArr.get(0,1)

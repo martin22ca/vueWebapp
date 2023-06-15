@@ -159,7 +159,7 @@ export default {
             if (daysDiff === 0) {
                 return 'Online';
             } else {
-                return `Ultima conexión hace ${daysDiff} dia${daysDiff > 1 ? 's' : ''}`;
+                return `Ultima conexión: hace ${daysDiff} dia${daysDiff > 1 ? 's' : ''}`;
             }
         }, getColor(classStatus) {
             const today = new Date();
