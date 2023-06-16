@@ -16,11 +16,11 @@
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
                         <div class="msgText">{{ message.message }} </div>
                         <div>{{ message.info }}</div>
-                        <v-card-actions style="display: block;">
+                        <v-card-actions style="display: flex; flex-direction: row; justify-content: space-between;">
                             <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
-                                class="ma-2 ">marcar como leido</v-btn>
-                            <div style="float: right;">
-                                <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="pa-2 mb-2" rounded="lg"
+                                class="ma-2">marcar como leido</v-btn>
+                            <div style=" display: flex;align-items: center;">
+                                <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
                                     @click="deleteMessage(message.id)"></v-btn>
                             </div>
                         </v-card-actions>
@@ -208,13 +208,14 @@ export default {
      padding-top: 5%;
  }
 
- .msgBox{
-    overflow-y: scroll; 
-    max-height: 80vh; 
+ .msgBox {
+     overflow-y: scroll;
+     max-height: 80vh;
  }
+
  .msgBox::-webkit-scrollbar {
-  display: none;
-}
+     display: none;
+ }
 
  .cardTitle {
      padding: 10px;
