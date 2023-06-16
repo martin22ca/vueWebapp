@@ -14,14 +14,16 @@
                         subtitle="Mensaje de aistencia" :text="message.info"
                         :prepend-icon="message.viewd ? 'mdi-email-open' : 'mdi-email'" class="ma-1" variant="tonal"
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
-                        <div class="msgText">{{ message.message }} </div>
-                        <div>{{ message.info }}</div>
-                        <div class="cardAtctionsDiv">
+                        <v-card-text>
+                            <div class="msgText">{{ message.message }} </div>
+                            <div>{{ message.info }}</div>
+                        </v-card-text>
+                        <v-card-actions class="card-actions-cont">
                             <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
-                                class="ma-2 mt-4">marcar como leido</v-btn>
+                                class="ma-2 mt-4 trash-btn">marcar como leido</v-btn>
                             <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
                                 @click="deleteMessage(message.id)"></v-btn>
-                        </div>
+                        </v-card-actions>
                     </v-card>
                 </div>
             </div>
@@ -252,8 +254,13 @@ export default {
      font-weight: 300;
  }
 
- .cardAtctionsDiv {
+ .card-actions-cont {
      display: flex;
      justify-content: space-between;
+     align-items: center;
+ }
+
+ .trash-btn {
+     order: -1;
  }
 </style>

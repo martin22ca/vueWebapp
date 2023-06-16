@@ -1,6 +1,6 @@
 <template>
     <v-sheet :width="smallScreen ? '' : '80px'" color="transparent">
-        <v-btn v-if="!sidebarVisible" class="ma-3" icon="mdi-menu" size="x-large" @click="toggleSidebar" color="primary" style="position: absolute;"/>
+        <v-btn v-if="!sidebarVisible" class="ma-3 btnSide" icon="mdi-menu" size="x-large" @click="toggleSidebar" color="primary" style="position: absolute;"/>
         <v-navigation-drawer v-model="sidebarVisible" fixed width="100" :color="smallScreen ? 'surface' : 'transparent'"
             border="0" class="pa-1" disable-resize-watcher permanent>
             <v-list>
@@ -174,7 +174,7 @@ export default {
 }
 
 
-.v-btn {
+.btnSide {
     position: absolute;
     z-index: 9999;
 }
