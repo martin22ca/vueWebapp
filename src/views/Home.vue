@@ -17,21 +17,17 @@
                         <div class="msgText">{{ message.message }} </div>
                         <div>{{ message.info }}</div>
                         <v-card-actions style="display: flex; flex-direction: row; justify-content: space-between;">
-                            <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
-                                class="ma-2">marcar como leido</v-btn>
-                            <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
-                                @click="deleteMessage(message.id)"></v-btn>
+                            <v-row justify="space-between">
+                                <v-col class="pa-2">
+                                    <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)"
+                                        v-if="!message.viewd" class="ma-2">marcar como leido</v-btn>
+                                </v-col>
+                                <v-col class="pa-2" cols="auto">
+                                    <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
+                                        @click="deleteMessage(message.id)"></v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card-actions>
-                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                            <div>
-                                <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
-                                class="ma-2">marcar como leido</v-btn>
-                            </div>    
-                            <div>
-                                <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
-                                @click="deleteMessage(message.id)"></v-btn>     
-                            </div>
-                        </div>
                     </v-card>
                 </div>
             </div>
