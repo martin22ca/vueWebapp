@@ -19,10 +19,8 @@
                         <v-card-actions style="display: flex; flex-direction: row; justify-content: space-between;">
                             <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
                                 class="ma-2">marcar como leido</v-btn>
-                            <div style=" display: flex;align-items: center;">
-                                <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
-                                    @click="deleteMessage(message.id)"></v-btn>
-                            </div>
+                            <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
+                                @click="deleteMessage(message.id)"></v-btn>
                         </v-card-actions>
                     </v-card>
                 </div>
