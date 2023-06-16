@@ -16,18 +16,12 @@
                         :style="{ 'border-left': 'solid 2px ' + (message.viewd ? 'rgb(var(--v-theme-secondary)' : 'rgb(var(--v-theme-primary)') }">
                         <div class="msgText">{{ message.message }} </div>
                         <div>{{ message.info }}</div>
-                        <v-card-actions style="display: flex; flex-direction: row; justify-content: space-between;">
-                            <v-row justify="space-between">
-                                <v-col class="pa-2">
-                                    <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)"
-                                        v-if="!message.viewd" class="ma-2">marcar como leido</v-btn>
-                                </v-col>
-                                <v-col class="pa-2" cols="auto">
-                                    <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
-                                        @click="deleteMessage(message.id)"></v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card-actions>
+                        <div class="cardAtctionsDiv">
+                            <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
+                                class="ma-2 mt-4">marcar como leido</v-btn>
+                            <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
+                                @click="deleteMessage(message.id)"></v-btn>
+                        </div>
                     </v-card>
                 </div>
             </div>
@@ -256,5 +250,10 @@ export default {
  .classText {
      padding: 10px;
      font-weight: 300;
+ }
+
+ .cardAtctionsDiv {
+     display: flex;
+     justify-content: space-between;
  }
 </style>
