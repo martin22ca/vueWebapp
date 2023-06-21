@@ -64,8 +64,8 @@
                             <v-col align-self="center">
                                 <div class="text"> Tarde </div>
                                 <v-btn class="mb-4 pa-2 ml-4" variant="outlined" :icon="late.value.value ? 'mdi-check' : ''"
-                                    @click="late.value.value = !late.value.value" rounded="lg"
-                                    :color="late.value.value ? 'secondary' : ''" :disabled="!present.value.value" />
+                                    @click="late.value.value = !late.value.value; present.value.value = true; " rounded="lg"
+                                    :color="late.value.value ? 'secondary' : ''" />
                             </v-col>
                             <v-col />
                         </v-row>

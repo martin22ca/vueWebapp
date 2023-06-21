@@ -26,7 +26,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth(2)
+        checkAuth([1,3])
     },
     setup() {
         const store = useStore()
@@ -34,7 +34,12 @@ export default {
     },
     methods: {
         onDateClick(date) {
-            this.storage.commit('setDate', { date: date })
+            const day = date.getDate();
+            const month = date.getMonth() + 1; // Months are zero-based
+            const year = date.getFullYear();
+            const formattedDate = `${day}-${month}-${year}`;
+
+            this.storage.commit('setDate', { date: formattedDate })
             this.$router.push({
                 name: 'Attendances',
             })

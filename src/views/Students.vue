@@ -1,5 +1,5 @@
 <template>
-    <div class="fadeInLeft">
+    <BaseContainer>
         <v-dialog v-model="registerDialog" max-width="100vh">
             <v-card rounded="xl">
                 <template v-slot:title>
@@ -17,7 +17,7 @@
             </v-card>
         </v-dialog>
         <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar informacion de los Estudiantes"
-            color="surface-lighter-1" class="ma-2 mr-5">
+            color="surface-lighter-1" class="pa-2">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
                     Registrar Estudiante
@@ -39,7 +39,7 @@
                             </template>
                             <v-list>
                                 <v-list-item v-for="item in  myClasses " value="value"
-                                    @click="currentClassId = item.value; currentClass = item.text; fetchStudents()">
+                                    @click="currentClassId = item.sc; currentClass = item.text; fetchStudents()">
                                     <v-list-item-title>{{ item.text }}</v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -113,8 +113,8 @@
                         </v-btn>
                         <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
-                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado" rounded="xl" color="warning"
-                                    subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
+                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado" rounded="xl"
+                                    color="warning" subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
                             </v-tooltip>
                             Habilitar
                         </v-btn>
@@ -122,7 +122,8 @@
                 </v-data-table>
                 <div v-else>
                     <v-card variant="elevated">
-                        <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{ currentClass
+                        <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{
+                            currentClass
                         }}</v-card-title>
                         <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
                         <v-card-item>
@@ -133,21 +134,24 @@
         </v-card>
         <v-card v-else title="Reconocimiento Facial" subtitle="Control" class="ma-2 mr-5" prepend-icon="mdi-image">
             <template v-slot:append>
-                <v-btn @click=" currentStudId = -1; fetchStudents()" prepend-icon="mdi-arrow-left" color="primary"> Regresar
+                <v-btn @click=" currentStudId = -1; fetchStudents()" prepend-icon="mdi-arrow-left" color="primary">
+                    Regresar
                 </v-btn>
             </template>
             <AISetup />
         </v-card>
-    </div>
+    </BaseContainer>
 </template>
 
 <script>
 import store from 'storejs';
 import { useStore } from 'vuex'
+import { checkAuth } from '@/plugins/auth';
+import BaseContainer from '@/components/BaseContainer.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { axiosClient } from '@/plugins/axiosClient';
-import UpdateStudent from './UpdateStudent.vue';
-import RegisterStudent from './RegisterStudent.vue';
+import UpdateStudent from '@/components/StudentManage/UpdateStudent.vue';
+import RegisterStudent from '@/components/StudentManage/RegisterStudent.vue';
 import AISetup from '@/components/faceRecog/AISetup.vue'
 
 export default {
@@ -183,6 +187,13 @@ export default {
     mounted() {
         this.fetchClasses()
     },
+    beforeCreate() {
+        checkAuth([1, 3])
+    },
+    setup() {
+        const storeX = useStore()
+        storeX.commit('setTitle', { title: 'Alumnos', icon: 'mdi-school' })
+    },
     watch: {
         dialog(newVal) {
             this.fetchStudents()
@@ -210,21 +221,20 @@ export default {
         },
         async fetchClasses() {
             const accessToken = store.get('accessToken');
+            const userId = store.get('userId');
 
             try {
                 let response = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: "/classes",
+                    url: "/classes/employee",
                     params: {
                         'accessToken': accessToken,
+                        'userId': userId,
                     }
                 })
                 if (response.status == 200) {
-                    this.myClasses = response.data.schoolClasses.map(item => ({
-                        text: item.school_year + ' " ' + item.school_section + ' "',
-                        value: item.id_sc,
-                    }));
+                    this.myClasses = response.data.classObjs
                 }
             } catch (error) {
                 console.log(error)
@@ -266,7 +276,7 @@ export default {
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
         }
     },
-    components: { VDataTable, UpdateStudent, RegisterStudent, AISetup }
+    components: { BaseContainer, VDataTable, UpdateStudent, RegisterStudent, AISetup }
 }
 
 </script>

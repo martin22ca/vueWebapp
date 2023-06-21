@@ -1,11 +1,12 @@
 <template>
     <v-sheet :width="smallScreen ? '' : '80px'" color="transparent">
-        <v-btn v-if="!sidebarVisible" class="ma-3 btnSide" icon="mdi-menu" size="x-large" @click="toggleSidebar" color="primary" style="position: absolute;"/>
+        <v-btn v-if="!sidebarVisible" class="ma-3 btnSide" icon="mdi-menu" size="x-large" @click="toggleSidebar"
+            color="primary" style="position: absolute;" />
         <v-navigation-drawer v-model="sidebarVisible" fixed width="100" :color="smallScreen ? 'surface' : 'transparent'"
             border="0" class="pa-1" disable-resize-watcher permanent>
             <v-list>
-                <v-sheet rounded="lg" class="pa-2" variant="">
-                    <img src="../assets/logo.png" width="70" class="image" />
+                <v-sheet rounded="lg" class="pa-2" :style="currentRouteName == 'Home' ? 'border: solid 2px rgb(var(--v-theme-primary)); ':'border: solid 2px rgb(var(--v-theme-surface)); '" >
+                    <img src="../assets/logo.png" width="70" class="image" @click="goTo('Home')"/>
                 </v-sheet>
             </v-list>
             <v-sheet rounded="lg">
@@ -13,8 +14,8 @@
                     <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
                         :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-1 pb-1" rounded
                         @click="goTo(item.route)" variant="text">
-                        <div class="iconS">
-                            <v-icon :icon="item.icon" size="large" />
+                        <div class="iconS" >
+                            <v-icon :icon="item.icon" size="2.1vw"/>
                         </div>
                         <h4 class="sideText">{{ item.name }}</h4>
                     </v-list-item>
@@ -58,40 +59,40 @@ export default {
             themeVal: store.get('theme'),
             menuItems: [
                 {
-                    name: 'Home',
-                    icon: 'mdi-home',
-                    route: 'Home',
-                    roleNeeded: 1,
-                },
-                {
                     name: 'Asistencia',
                     icon: 'mdi-table-network',
                     route: 'Attendances',
-                    roleNeeded: 1,
-                },
-                {
-                    name: 'Calendar',
-                    icon: 'mdi-calendar',
-                    route: 'Calendar',
-                    roleNeeded: 1,
+                    roleNeeded: [1, 3]
                 },
                 {
                     name: 'Analisis',
                     icon: 'mdi-chart-line',
-                    route: 'Classes',
-                    roleNeeded: 1,
+                    route: 'Analysis',
+                    roleNeeded: [1, 3]
                 },
                 {
-                    name: 'Gestion',
-                    icon: 'mdi-cog',
-                    route: 'Management',
-                    roleNeeded: 2,
+                    name: 'Alumnos',
+                    icon: 'mdi-school',
+                    route: 'Students',
+                    roleNeeded: [1, 3]
+                },
+                {
+                    name: 'Personal',
+                    icon: 'mdi-briefcase',
+                    route: 'Personnel',
+                    roleNeeded: [2, 3]
+                },
+                {
+                    name: 'Cursos',
+                    icon: 'mdi-google-classroom',
+                    route: 'Curso',
+                    roleNeeded: [2, 3]
                 },
                 {
                     name: 'APP',
                     icon: 'mdi-download-box',
                     route: 'Daemon',
-                    roleNeeded: 2,
+                    roleNeeded: [2, 3]
                 }
             ]
 
@@ -113,7 +114,7 @@ export default {
             return this.$route.name;
         },
         filteredMenuItems() {
-            return this.menuItems.filter(item => item.roleNeeded <= this.role);
+            return this.menuItems.filter(item => item.roleNeeded.includes(this.role));
         }
     },
     methods: {
@@ -146,7 +147,6 @@ export default {
 
         },
     }
-
 }
 
 </script>
@@ -160,11 +160,19 @@ export default {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    transition: transform 0.3s;
+    cursor: pointer;
+    background-color: rgb(var(--v-theme-surface));
+    border-radius: 5%;
+}
+
+.image:hover {
+    transform: scale(1.2);
+    /* Increase the size of the image */
 }
 
 .iconS {
-    padding-bottom: 10px;
-    padding-left: 25%;
+    text-align: center;
 }
 
 .sideText {

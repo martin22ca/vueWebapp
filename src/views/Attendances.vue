@@ -7,7 +7,9 @@
                         <v-col cols="4">
                             <v-sheet color="transparent">
                                 <h3 style="padding: 5px;">
-                                    Dia: <v-chip variant="elevated" color="primary">{{ currentDate }}</v-chip>
+                                    Dia: <v-chip variant="elevated" color="primary" @click="goToCalendar"
+                                        append-icon="mdi-menu-down">{{ currentDate
+                                        }}</v-chip>
                                 </h3>
                             </v-sheet>
                         </v-col>
@@ -58,7 +60,7 @@
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="editDialog" max-width="70%" >
+                    <v-dialog v-model="editDialog" max-width="70%">
                         <v-card rounded="xl" style="overflow-y: auto; padding-top: 0;">
                             <template v-slot:title>
                                 <h1 style="color:rgb(var(--v-theme-secondary)); overflow-y: hidden;">
@@ -117,9 +119,11 @@
                 <template v-slot:item.certainty="{ item }">
                     <v-chip :color="getColor(item.value.certainty)">
                         <v-tooltip activator="parent" location="left" color="#000000">
-                                <v-card prepend-icon="mdi-information-variant" title="Distancia euclidiana" subtitle="indicador de certeza" max-width="300px" variant="elevated" color="surface-lighter-2" rounded="xl"
-                                    class="pa-0 ma-0"  text="La distancia indica que tan seguro esta el sistema del reconocimiento. Los valores normales estan alrededor de 1"/>
-                            </v-tooltip>
+                            <v-card prepend-icon="mdi-information-variant" title="Distancia euclidiana"
+                                subtitle="indicador de certeza" max-width="300px" variant="elevated"
+                                color="surface-lighter-2" rounded="xl" class="pa-0 ma-0"
+                                text="La distancia indica que tan seguro esta el sistema del reconocimiento. Los valores normales estan alrededor de 1" />
+                        </v-tooltip>
                         {{ getPercentage(item.value.certainty) }}
                     </v-chip>
                 </template>
@@ -139,6 +143,7 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import updateAttendance from '@/components/updateAttendance.vue';
 import BaseContainer from '@/components/BaseContainer.vue';
@@ -154,6 +159,7 @@ export default {
             deleteDialog: false,
             editDialog: false,
             status: false,
+            router: useRouter(),
             storeX: useStore(),
             attDate: useStore().state.attDate,
             myClasses: useStore().state.myClasses,
@@ -189,7 +195,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth(1)
+        checkAuth([1, 3])
     },
     mounted() {
         if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
@@ -288,6 +294,11 @@ export default {
             } catch (error) {
                 console.log(error)
             }
+        },
+        goToCalendar() {
+            this.$router.push({
+                name: 'Calendar',
+            })
         },
         manageClassUpdate(idx) {
             this.classId = this.myClasses[idx].sc
@@ -391,7 +402,7 @@ export default {
     z-index: 1;
 }
 
-.v-tooltip > .v-overlay__content {
-  background-color: transparent!important;
+.v-tooltip>.v-overlay__content {
+    background-color: transparent !important;
 }
 </style>

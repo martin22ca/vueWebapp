@@ -21,43 +21,15 @@
                         <v-card-actions class="card-actions-cont">
                             <v-btn color="primary" variant="tonal" @click="markAsRead(message.id)" v-if="!message.viewd"
                                 class="ma-2 mt-4 trash-btn">marcar como leido</v-btn>
-                            <v-btn icon="mdi-trash-can" variant="elevated" color="error" class="ma-2" rounded="lg"
-                                @click="deleteMessage(message.id)"></v-btn>
+                            <v-btn prepend-icon="mdi-trash-can" variant="elevated" color="error" class="ma-2"
+                                @click="deleteMessage(message.id)"> Eliminar</v-btn>
                         </v-card-actions>
                     </v-card>
                 </div>
             </div>
             <div class="right-panel">
-                <h3><v-icon icon="mdi-table-network" class="pa-8" />Asistencias Hoy</h3>
-                <div class="classesContainer">
-                    <div v-if="classes.length === 0">
-                        <div class="noList">
-                            <h3>No hay classes asignadas.</h3>
-                        </div>
-                    </div>
-                    <div v-else class="scroll">
-                        <v-row>
-                            <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
-                                <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section"
-                                    class="ma-2 pa-1" subtitle="Curso Secundario" color="surface-lighter-2" rounded="xl">
-                                    <v-divider thickness="3"></v-divider>
-                                    <h4 class="classText"> Estudiantes presentes: <v-chip> {{ schoolClass.present }}
-                                        </v-chip></h4>
-                                    <h4 class="classText"> Estudiantes Totales: <v-chip>{{ schoolClass.total }} </v-chip>
-                                    </h4>
-                                    <h4 class="classText"> Porcentaje: <v-chip
-                                            :color="getColor(schoolClass.present, schoolClass.total)">
-                                            {{ this.getPercentage(schoolClass.present, schoolClass.total) }} </v-chip></h4>
-                                    <v-card-actions>
-                                        <v-btn variant="tonal" color="primary"
-                                            @click="viewClass(schoolClass.sc, schoolClass.school_year, schoolClass.school_section)">Ver
-                                            Asistencias</v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </div>
-                </div>
+                <homePrecep v-if="userRole == 1" />
+                <homeAdmin v-else />
             </div>
         </div>
     </BaseContainer>
@@ -68,6 +40,8 @@ import { useRouter } from 'vue-router';
 import store from 'storejs';
 import { axiosClient } from '@/plugins/axiosClient';
 import BaseContainer from '@/components/BaseContainer.vue';
+import homePrecep from '@/components/homeComp/homePrecep.vue';
+import homeAdmin from '@/components/homeComp/homeAdmin.vue'
 import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
 
@@ -77,13 +51,13 @@ export default {
     data() {
         return {
             messages: [],
-            classes: [],
+            userRole: store.get('role'),
             storage: useStore(),
             router: useRouter()
         }
     },
     beforeCreate() {
-        checkAuth(1)
+        checkAuth([1, 2, 3])
     },
     mounted() {
         this.fetchClasses();
@@ -198,7 +172,7 @@ export default {
             return percent
         }
     },
-    components: { BaseContainer }
+    components: { BaseContainer, homePrecep, homeAdmin }
 }
 
 </script>
@@ -244,14 +218,9 @@ export default {
  }
 
  .msgText {
-     font-size: 16px;
+     font-size: 1vw;
      line-height: 1.5;
      padding-left: 20px;
- }
-
- .classText {
-     padding: 10px;
-     font-weight: 300;
  }
 
  .card-actions-cont {

@@ -137,7 +137,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth(1)
+        checkAuth([1,3])
     },
     setup() {
         const store = useStore()

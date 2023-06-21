@@ -1,26 +1,25 @@
 <template>
-    <div class="fadeInLeft">
-        <v-dialog v-model="registerDialog" >
+    <BaseContainer>
+        <v-dialog v-model="registerDialog" max-width="100vh">
             <v-card rounded="xl">
                 <template v-slot:title>
                     <h1 style="color:rgb(var(--v-theme-primary));">
-                        Registrar Empleado
+                        Registrar Curso
                     </h1>
                 </template>
                 <template v-slot:append>
-                    <v-btn color="primary" @click="fetchEmployees(); registerDialog = false"
+                    <v-btn color="primary" @click="fetchClasses(); registerDialog = false"
                         prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
                         Regresar
                     </v-btn>
                 </template>
-                <Register />
+                <RegisterClasses />
             </v-card>
         </v-dialog>
-        <v-card title="Empleados" subtitle="Editar informacion de los empleados" color="surface-lighter-1"
-            class="ma-2 mr-5">
+        <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="ma-2 mr-5">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
-                    Registrar Empleado
+                    Registrar Curso
                 </v-btn>
             </template>
             <v-sheet>
@@ -28,31 +27,37 @@
                     <template v-slot:top>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="90%" style="position: fixed; margin-left: auto;">
+                        <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
                             <v-card rounded="xl">
                                 <template v-slot:title>
                                     <h1 style="color:rgb(var(--v-theme-secondary));">
-                                        Modificar Empleado
+                                        Modificar Curso
                                     </h1>
                                 </template>
                                 <template v-slot:append>
-                                    <v-btn color="secondary" @click="fetchEmployees(); dialog = false"
+                                    <v-btn color="secondary" @click="fetchClasses(); dialog = false"
                                         prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
                                         Regresar
                                     </v-btn>
                                 </template>
-                                <UpdatePersonnel />
+                                <update-classes />
                             </v-card>
                         </v-dialog>
                         <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
-                            <v-card title="Estas seguro que quiere eliminar el curso?"
-                                subtitle="Esta accion no es revertible." prepend-icon="mdi-alert" align="center"
-                                class="pb-4" rounded="xl">
+                            <v-card title="Estas seguro que quiere eliminar el curso?" subtitle="" prepend-icon="mdi-alert"
+                                align="center" class="pb-4" rounded="xl">
+                                <v-card-text style="font-style: italic; padding: 2px;">
+                                    Esta accion eliminara los estudiantes dentro del curso.
+                                </v-card-text>
+                                <v-card-text style="font-style: italic; padding: 5px;">
+                                    Desea continuear?
+                                </v-card-text>
                                 <v-card-item class="pb-4">
                                     <v-btn class="ma-2" variant="tonal" @click="dailogDel = false"
                                         color="grey">Cancelar</v-btn>
                                     <v-btn class="ma-2" variant="tonal" @click="deleteItem()" color="error">Eliminar</v-btn>
                                 </v-card-item>
+
                             </v-card>
                         </v-dialog>
                     </template>
@@ -60,7 +65,7 @@
                         <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                             mdi-pencil
                         </v-icon>
-                        <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_emp">
+                        <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_cls">
                             mdi-trash-can
                         </v-icon>
                     </template>
@@ -69,86 +74,85 @@
                             No data
                         </div>
                     </template>
-                    <template v-slot:item.email="{ item }">
-                        <div v-if="item.value.email != null"> {{ item.value.email }}</div>
-                        <div v-else class="noEmail"> No email</div>
-                    </template>
-                    <template v-slot:item.id_role="{ item }">
-                        {{ this.roles[item.value.id_role] }}
+                    <template v-slot:item.preceptor="{ item }">
+                        <div v-if="item.value.preceptor != null"> {{ item.value.preceptor }}</div>
+                        <div v-else class="noEmail"> Ningun preceptor asociado</div>
                     </template>
                 </v-data-table>
             </v-sheet>
         </v-card>
-    </div>
+    </BaseContainer>
 </template>
 
 <script>
+import BaseContainer from '@/components/BaseContainer.vue';
+import { checkAuth } from '@/plugins/auth';
 import store from 'storejs';
 import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { axiosClient } from '@/plugins/axiosClient';
-import UpdatePersonnel from './UpdatePersonnel.vue';
-import Register from './Register.vue';
-
+import UpdateClasses from '@/components/ClassManage/UpdateClasses.vue';
+import RegisterClasses from '@/components/ClassManage/RegisterClasses.vue';
 
 export default {
     name: 'Attendances',
     data() {
         return {
-            dialog: false,
             storeX: useStore(),
-            dailogDel: false,
+            dialog: false,
             registerDialog: false,
-            status: false,
-            roles: {
-                1: "Preceptor",
-                2: "Administrador",
-            },
+            dailogDel: false,
+            deleteItemIdx: -1,
 
             headers: [
-                { title: 'id', key: 'id_emp', align: 'start', width: '3%' },
-                { title: 'Username', key: 'user_name', sortable: true, align: 'center', width: '10%' },
-                { title: 'Apellido', key: 'last_name', align: 'center' },
-                { title: 'Nombre', key: 'first_name', align: 'center', width: '10%' },
-                { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
-                { title: 'Email', key: 'email', align: 'center', width: '25%' },
-                { title: 'Rol', key: 'id_role', align: 'center', width: '3%' },
+                { title: 'id', key: 'id_cls', align: 'start', width: '3%' },
+                { title: 'Año', key: 'school_year', sortable: true, align: 'center', width: '10%' },
+                { title: 'Seccion', key: 'school_section', align: 'center' },
+                { title: 'Preceptor Asignado', key: 'preceptor', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
-            deleteItemIdx: -1,
             editedItem: {},
         }
     },
+    beforeCreate() {
+        checkAuth([2, 3])
+    },
+    setup() {
+        const storeX = useStore()
+        storeX.commit('setTitle', { title: 'Cursos', icon: 'mdi-google-classroom' })
+    },
     mounted() {
-        this.fetchEmployees()
+        this.fetchClasses()
     },
     watch: {
         dialog(newVal) {
-            this.fetchEmployees()
-        }
+            this.fetchClasses()
+        },
     },
     methods: {
-        async fetchEmployees() {
+        async fetchClasses() {
             const accessToken = store.get('accessToken');
 
             try {
                 let result = await axiosClient({
                     method: 'get',
                     timeout: 5000,
-                    url: "/employees",
+                    url: "/classes/person",
                     params: {
                         'accessToken': accessToken,
                     }
                 })
                 if (result.status == 200) {
-                    this.items = result.data.employeesInfo;
+
+                    this.items = result.data.schoolClasses
                 }
             } catch (error) {
                 console.log(error)
             }
         },
-        editItem(item) {
+        async editItem(item) {
+
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
@@ -162,14 +166,14 @@ export default {
                 let result = await axiosClient({
                     method: 'put',
                     timeout: 5000,
-                    url: "/employees/remove",
+                    url: "/classes/remove",
                     params: {
                         'accessToken': accessToken,
-                        'idEmp': this.deleteItemIdx,
+                        'idClass': this.deleteItemIdx,
                     }
                 })
                 if (result.status == 200) {
-                    this.fetchEmployees()
+                    this.fetchClasses()
                     this.dailogDel = false
                 }
             } catch (error) {
@@ -177,15 +181,12 @@ export default {
             }
         }
     },
-    components: { VDataTable, UpdatePersonnel, Register }
+    components: { BaseContainer, VDataTable, UpdateClasses, RegisterClasses }
 }
 
 </script>
 <style>
 .noEmail {
     color: rgb(var(--v-theme-warning));
-}
-.v-container{
-    max-width: 100%;
 }
 </style>

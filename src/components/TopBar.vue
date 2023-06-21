@@ -5,10 +5,10 @@
                 <v-col>
                     <v-card variant="text" prepend-icon="mdi-account">
                         <template v-slot:prepend>
-                            <v-icon icon="mdi-account" style="font-size: 50px;"/>
+                            <v-icon icon="mdi-account" style="font-size: 5vw;"/>
                         </template>
                         <template v-slot:title>
-                            <h2 style="font-size: 33px; ">
+                            <h2>
                                 {{ this.lastName }}, {{ this.firstName }}
                             </h2>
                         </template>

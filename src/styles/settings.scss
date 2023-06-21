@@ -12,8 +12,28 @@
 body {
     display: block;
     background-color: rgb(var(--v-theme-background));
+	font-size: 1vw;
 }
 
+h1{
+	font-size: 2.5vw;
+}
+
+h2 {
+	font-size: 1.9vw;
+}
+
+h3 {
+	font-size: 1.3vw;
+}
+
+.v-chip{
+	font-size: 1.0vw;
+}
+
+.v-btn__content {
+	font-size: 0.8vw;
+}
 
 .fadeInCenter{
     animation: fadeIn 0.3s ease-out 0s 1 normal forwards;

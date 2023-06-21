@@ -2,7 +2,7 @@ import store from 'storejs';
 import { useRouter } from 'vue-router'
 import axiosClient from './axiosClient';
 
-export async function checkAuth(minRole = 2) {
+export async function checkAuth(reqRole = []) {
     const router = useRouter()
 
     try {
@@ -23,10 +23,16 @@ export async function checkAuth(minRole = 2) {
             params: {
                 'accessToken': token,
                 'userId': id,
-                'minRole': minRole
             }
         });
         if (result.status == 304 || result.status == 200) {
+            const userRole = result.data.userRole
+            for (let item of reqRole) {
+                if (userRole == item){
+                    return null
+                }
+            }
+            router.push({ name: "Home", forceReload: true })
             return null
         }
 

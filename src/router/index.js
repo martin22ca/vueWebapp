@@ -13,9 +13,9 @@ const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
-    path: '/management',
-    name: 'Management',
-    component: () => import('@/views/Management.vue')
+    path: '/personnel',
+    name: 'Personnel',
+    component: () => import('@/views/Personnel.vue')
   },
   {
     path: '/attendances',
@@ -23,9 +23,9 @@ const routes = [
     component: () => import('@/views/Attendances.vue')
   },
   {
-    path: '/class',
-    name: 'Classes',
-    component: () => import('@/views/Classes.vue')
+    path: '/analisis',
+    name: 'Analysis',
+    component: () => import('@/views/Analysis.vue')
   },
   {
     path: '/calendar',
@@ -33,9 +33,19 @@ const routes = [
     component: () => import('@/views/Calendar.vue')
   },
   {
+    path: '/students',
+    name: 'Students',
+    component: () => import('@/views/Students.vue')
+  },
+  {
     path: '/aplication',
     name: 'Daemon',
     component: () => import('@/views/Daemon.vue')
+  },
+  {
+    path: '/curso',
+    name: 'Curso',
+    component: () => import('@/views/Curso.vue')
   },
   {
     path: '/test',
