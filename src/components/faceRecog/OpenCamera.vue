@@ -89,16 +89,16 @@ export default {
         const dialog = ref(false);
         const dialogText = ref('');
         const capturedFaces = ref([
-            { src: "", instruction: "Mirra Hacia Arriba", icon: 'mdi-arrow-up' },
-            { src: "", instruction: "Mirra Hacia Arriba Derecha", icon: 'mdi-arrow-top-right' },
-            { src: "", instruction: "Mirra Hacia Medio Derecha", icon: 'mdi-arrow-right' },
-            { src: "", instruction: "Mirra Hacia Abajo Derecha", icon: 'mdi-arrow-bottom-right' },
-            { src: "", instruction: "Mirra Hacia Abajo ", icon: 'mdi-arrow-down' },
-            { src: "", instruction: "Mirra Hacia Abajo Izquierda", icon: 'mdi-arrow-bottom-left' },
-            { src: "", instruction: "Mirra Hacia Medio Izquierda", icon: 'mdi-arrow-left' },
-            { src: "", instruction: "Mirra Hacia Arriba Izquierda", icon: 'mdi-arrow-top-left' },
-            { src: "", instruction: "Mirra Hacia Centro", icon: 'mdi-emoticon-neutral' },
-            { src: "", instruction: "Mirra Hacia Centro Sonriendo", icon: 'mdi-emoticon' },
+            { src: "", instruction: "Mirar Hacia Arriba", icon: 'mdi-arrow-up' },
+            { src: "", instruction: "Mirar Hacia Arriba Derecha", icon: 'mdi-arrow-top-right' },
+            { src: "", instruction: "Mirar Hacia Medio Derecha", icon: 'mdi-arrow-right' },
+            { src: "", instruction: "Mirar Hacia Abajo Derecha", icon: 'mdi-arrow-bottom-right' },
+            { src: "", instruction: "Mirar Hacia Abajo ", icon: 'mdi-arrow-down' },
+            { src: "", instruction: "Mirar Hacia Abajo Izquierda", icon: 'mdi-arrow-bottom-left' },
+            { src: "", instruction: "Mirar Hacia Medio Izquierda", icon: 'mdi-arrow-left' },
+            { src: "", instruction: "Mirar Hacia Arriba Izquierda", icon: 'mdi-arrow-top-left' },
+            { src: "", instruction: "Mirar Hacia Centro", icon: 'mdi-emoticon-neutral' },
+            { src: "", instruction: "Mirar Hacia Centro Sonriendo", icon: 'mdi-emoticon' },
         ]);
         let currentImageIndex = reactive({ value: 0 })
         let shutterValue = reactive({ val: false })

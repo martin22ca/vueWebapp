@@ -1,7 +1,7 @@
 <template>
     <v-sheet class="fadeInCenter">
         <v-row>
-            <v-col cols="3" class="ml-3">
+            <v-col cols="4" class="ml-3">
                 <v-col>
                     <v-sheet style="border-bottom: solid 1px;" class="pa-2">
                         ID: <v-chip>{{ editedObj.id_stud }}</v-chip>

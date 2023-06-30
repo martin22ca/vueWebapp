@@ -27,6 +27,7 @@ export async function checkAuth(reqRole = []) {
         });
         if (result.status == 304 || result.status == 200) {
             const userRole = result.data.userRole
+            console.log(userRole)
             for (let item of reqRole) {
                 if (userRole == item){
                     return null
