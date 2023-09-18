@@ -118,7 +118,7 @@ export default {
                 let result = await axiosClient({
                     method: 'put',
                     timeout: 2000,
-                    url: '/messages/delete',
+                    url: '/messages/remove',
                     params: {
                         'accessToken': accessToken,
                         'idMessage': id
@@ -153,9 +153,9 @@ export default {
             } catch (error) {
                 console.log(error)
             }
-        }, async viewClass(id, year, section) {
+        }, async viewClass(id) {
             this.storage.commit('setDate', { date: "" })
-            this.storage.commit('setClass', { classId: id, year: year, section: section })
+            this.storage.commit('setClass', { classId: id })
             this.$router.push({
                 name: 'Attendances',
             })

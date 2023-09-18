@@ -10,8 +10,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <div class="loginContainer">
-            <div class="left">
+        <div class="loginContainer" style="min-width: 65%;">
+            <div class="left" style="min-width: 65%;">
                 <h1 class="h1Log">Login</h1>
                 <form @submit.prevent="submit">
                     <v-text-field class="mr-4" variant="outlined" v-model="username.value.value"
@@ -39,8 +39,8 @@
                 </form>
             </div>
             <div class="right">
-                <h1 class="h1Log">Colegio del Espiritu Santo</h1>
-                <img :width="250" cover src="../assets/logo.png" />
+                <h1 class="h1Log">Del Espiritu Santo</h1>
+                <img style="width: 12vw;" cover src="../assets/logo.png" />
             </div>
         </div>
     </div>

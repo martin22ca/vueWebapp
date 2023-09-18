@@ -103,7 +103,7 @@ export default {
                 const response = await axiosClient({
                     method: 'get',
                     timeout: 2000,
-                    url: '/employees',
+                    url: '/employees/precept',
                     params: {
                         'accessToken': accessToken
                     }
@@ -137,7 +137,6 @@ export default {
                     }
                 });
                 if (result.status == 200) {
-                    console.log('success');
                     dialogText.value = result.data.message;
                     dialog.value = true;
                 } else {

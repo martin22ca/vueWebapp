@@ -6,7 +6,8 @@
                 <v-divider thickness="5"></v-divider>
                 <v-card-text style="padding-left: 50px;"><v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
                         :color="dialogSucces ? 'primary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
-                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="primary"> Ok</v-btn></v-card-item>
+                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="primary">
+                        Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
@@ -18,14 +19,14 @@
                         :error-messages="firstName.errorMessage.value" label="Nombre"
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
-                <v-col align-self="center" >
+                <v-col align-self="center">
                     <v-text-field class="pa-2" variant="outlined" v-model="lastName.value.value"
                         :error-messages="lastName.errorMessage.value" label="Apellido"
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
             </v-row>
             <div class="text"> Identificacion </div>
-            <v-row >
+            <v-row>
                 <v-col align-self="center" cols="5">
                     <v-text-field class="pa-2" variant="outlined" v-model="dni.value.value"
                         :error-messages="dni.errorMessage.value" label="DNI"
@@ -43,8 +44,8 @@
                 <v-col align-self="center">
                     <div class="text"> Curso </div>
                     <v-select class="pa-2" clearable label="Curso" variant="outlined" :items="options"
-                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-title="text" item-value="value"
-                        prepend-inner-icon="mdi-alert-circle"></v-select>
+                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-title="text"
+                        item-value="value" prepend-inner-icon="mdi-alert-circle"></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -103,20 +104,23 @@ export default {
 
         const fetchOptions = async () => {
             const accessToken = store.get('accessToken');
+            const userId = store.get('userId');
+
             try {
                 let response = await axiosClient({
                     method: 'get',
                     timeout: 5000,
-                    url: "/classes/person",
+                    url: "/classes/employee",
                     params: {
                         'accessToken': accessToken,
+                        'userId': userId
                     }
                 })
                 if (response.status == 200) {
                     options.value = response.data.schoolClasses.map(item => ({
-                    text: item.school_year + ' "' + item.school_section+'"',
-                    value: item.id_cls,
-                }));
+                        text: item.school_year + ' "' + item.school_section + '"',
+                        value: item.sc,
+                    }))
                 }
             } catch (error) {
                 console.log(error)
@@ -141,7 +145,6 @@ export default {
                     }
                 });
                 if (response.status == 200) {
-                    console.log('success');
                     dialogText.value = response.data.message
                     dialog.value = true
                     dialogSucces.value = true

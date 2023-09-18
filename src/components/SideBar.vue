@@ -5,8 +5,8 @@
         <v-navigation-drawer v-model="sidebarVisible" fixed width="100" :color="smallScreen ? 'surface' : 'transparent'"
             border="0" class="pa-1" disable-resize-watcher permanent>
             <v-list>
-                <v-sheet rounded="lg" class="pa-2" :style="currentRouteName == 'Home' ? 'border: solid 2px rgb(var(--v-theme-primary)); ':'border: solid 2px rgb(var(--v-theme-surface)); '" >
-                    <img src="../assets/logo.png" width="70" class="image" @click="goTo('Home')"/>
+                <v-sheet rounded="lg" class="pa-2">
+                    <img src="../assets/logo.png" width="70" class="image" @click="goTo('Home')" />
                 </v-sheet>
             </v-list>
             <v-sheet rounded="lg">
@@ -14,8 +14,8 @@
                     <v-list-item v-for="item in filteredMenuItems" :key="item.name" :value="item.name"
                         :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-1 pb-1" rounded
                         @click="goTo(item.route)" variant="text">
-                        <div class="iconS" >
-                            <v-icon :icon="item.icon" size="2.1vw"/>
+                        <div class="iconS">
+                            <v-icon :icon="item.icon" size="2.1vw" />
                         </div>
                         <h4 class="sideText">{{ item.name }}</h4>
                     </v-list-item>
@@ -59,13 +59,19 @@ export default {
             themeVal: store.get('theme'),
             menuItems: [
                 {
+                    name: 'Home',
+                    icon: 'mdi-home',
+                    route: 'Home',
+                    roleNeeded: [1, 2, 3]
+                },
+                {
                     name: 'Asistencia',
                     icon: 'mdi-table-network',
                     route: 'Attendances',
                     roleNeeded: [1, 3]
                 },
                 {
-                    name: 'Analisis',
+                    name: 'Análisis',
                     icon: 'mdi-chart-line',
                     route: 'Analysis',
                     roleNeeded: [1, 3]
@@ -86,6 +92,12 @@ export default {
                     name: 'Cursos',
                     icon: 'mdi-google-classroom',
                     route: 'Curso',
+                    roleNeeded: [2, 3]
+                },
+                {
+                    name: 'Aulas',
+                    icon: 'mdi-domain',
+                    route: 'Classroom',
                     roleNeeded: [2, 3]
                 },
                 {
@@ -167,7 +179,7 @@ export default {
 }
 
 .image:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
     /* Increase the size of the image */
 }
 

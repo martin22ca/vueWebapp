@@ -5,7 +5,7 @@
                 <v-row no-gutters>
                     <v-col>
                         <v-card color="surface-lighter-1" prepend-icon="mdi-information-variant"
-                            title="Informacion del curso" subtitle="Info" class="mb-2 ">
+                            title="Información del curso" subtitle="Info" class="mb-2 ">
                             <div v-if="classYear != -1">
                                 <h4 style="padding-left: 20px;">
                                     Curso: <v-menu transition="scale-transition">
@@ -20,8 +20,8 @@
                                             </v-chip>
                                         </template>
                                         <v-list>
-                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
-                                                @click="fetchClassInfo(item.sc)">
+                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item"
+                                                @click="fetchClassInfo(item)">
                                                 <v-list-item-title>{{ item.text }}</v-list-item-title>
                                             </v-list-item>
                                         </v-list>
@@ -49,8 +49,8 @@
                                         </v-chip>
                                     </template>
                                     <v-list>
-                                        <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
-                                            @click="fetchClassInfo(item.sc)">
+                                        <v-list-item v-for="(item, i) in myClasses" 
+                                            @click="fetchClassInfo(item)">
                                             <v-list-item-title>{{ item.text }} </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
@@ -137,11 +137,11 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([1,3])
+        checkAuth([1, 3])
     },
     setup() {
         const store = useStore()
-        store.commit('setTitle', { title: 'Analisis', icon: 'mdi-chart-line' })
+        store.commit('setTitle', { title: 'Análisis', icon: 'mdi-chart-line' })
     },
     mounted() {
         if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
@@ -165,16 +165,22 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-                    this.myClasses = result.data.classObjs;
+                    this.myClasses = result.data.schoolClasses.map(item => ({
+                        text: item.school_year + ' "' + item.school_section + '"',
+                        year: item.school_year,
+                        section: item.school_section,
+                        status: item.status,
+                        value: item.sc,
+                    }))
                 }
             } catch (error) {
                 console.log(error)
             }
         },
-        async fetchClassInfo(classId) {
-            this.classYear = this.myClasses[classId].school_year
-            this.classSection = this.myClasses[classId].school_section
-            this.classStatus = this.myClasses[classId].status
+        async fetchClassInfo(item) {
+            this.classYear = item.year
+            this.classSection = item.section
+            this.classStatus = item.status
             const accessToken = store.get('accessToken');
 
             try {
@@ -184,7 +190,7 @@ export default {
                     url: "/classes/info",
                     params: {
                         'accessToken': accessToken,
-                        'classId': classId
+                        'classId': item.value
                     }
                 })
                 if (result.status == 200) {

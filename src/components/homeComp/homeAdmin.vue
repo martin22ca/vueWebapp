@@ -3,13 +3,32 @@
     <v-row>
         <v-col v-for="classroom in classrooms" cols="4">
             <v-card-item>
-                <v-card color="surface-lighter-2" class="ma-0" align="start"
-                    :title="classroom.class_name != null ?  classroom.class_name : 'No Name'"
-                    :subtitle="'numero: ' + classroom.class_number">
-                    <v-card-text>
-                        <v-sheet rounded="lg" :color="getColor(classroom.status)" class="pa-2">{{
-                            getStatus(classroom.status) }}</v-sheet>
-                    </v-card-text>
+                <v-card color="surface-lighter-2" class="ma-0" align="start" :title="'Aula Nro: ' + classroom.class_number"
+                    :subtitle="classroom.class_name != null ? classroom.class_name : 'Sin Nombre'"
+                    :prepend-icon="classroom.id_default_class != null ? 'mdi-office-building' : 'mdi-office-building-remove'">
+                    <v-divider thickness="3"></v-divider>
+                    <v-row>
+                        <v-col>
+                            <v-menu transition="scale-transition">
+                                <template v-slot:activator="{ props }">
+                                    <v-sheet rounded="lg" v-bind="props" color="surface-lighter-1"
+                                        :style="{ 'border-bottom': 'solid 1px ' + (classroom.id_default_class != null ? 'rgb(var(--v-theme-primary)' : 'rgb(var(--v-theme-warning)') }"
+                                        class="pa-2 ma-2" variant="elevated">
+                                        {{ classroom.id_default_class != null ? 'Curso Asignado: ' +
+                                            classroom.school_year + ':'
+                                            + classroom.school_section : 'No hay curso asignado' }}
+                                    </v-sheet>
+                                </template>
+                            </v-menu>
+                        </v-col>
+                    </v-row>
+                    <v-row class="mt-0">
+                        <v-col>
+                            <v-sheet rounded="lg" color="surface-lighter-1" class="pa-2 ma-2"
+                                :style="'border-bottom: solid 1px ' + (getColor(classroom.last_online))">
+                                Estado: {{ getStatus(classroom.last_online) }}</v-sheet>
+                        </v-col>
+                    </v-row>
                 </v-card>
             </v-card-item>
         </v-col>

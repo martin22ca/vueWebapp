@@ -16,7 +16,7 @@
                 <RegisterClasses />
             </v-card>
         </v-dialog>
-        <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="ma-2 mr-5">
+        <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="fadeInCenter pa-2">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
                     Registrar Curso
@@ -105,9 +105,8 @@ export default {
             deleteItemIdx: -1,
 
             headers: [
-                { title: 'id', key: 'id_cls', align: 'start', width: '3%' },
                 { title: 'Año', key: 'school_year', sortable: true, align: 'center', width: '10%' },
-                { title: 'Seccion', key: 'school_section', align: 'center' },
+                { title: 'Seccion', key: 'school_section', align: 'center', width: '10%' },
                 { title: 'Preceptor Asignado', key: 'preceptor', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
@@ -144,7 +143,6 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-
                     this.items = result.data.schoolClasses
                 }
             } catch (error) {

@@ -3,10 +3,8 @@ export function setTitle(state, { title,icon }) {
   state.titleIcon = icon
 }
 
-export function setClass(state, { classId, year, section }) {
+export function setClass(state, { classId }) {
   state.classId = classId
-  state.classYear = year
-  state.classSection = section
 }
 
 export function setDate(state, { date }) {

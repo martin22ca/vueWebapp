@@ -1,6 +1,6 @@
 <template>
     <BaseContainer>
-        <div class="classContainer">
+        <div class="classContainer fadeInCenter">
             <v-card class="pt-2 pb-2" variant="tonal">
                 <v-card-title>
                     <v-row>
@@ -21,14 +21,12 @@
                                     <v-menu transition="scale-transition">
                                         <template v-slot:activator="{ props }">
                                             <v-chip v-bind:="props" variant="elevated" color="primary"
-                                                append-icon="mdi-menu-down">{{ classYear }} - "{{
-                                                    classSection
-                                                }}"
+                                                append-icon="mdi-menu-down">{{ classYear }} - "{{ classSection }}"
                                             </v-chip>
                                         </template>
                                         <v-list>
-                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item.sc"
-                                                @click="manageClassUpdate(i)">
+                                            <v-list-item v-for="(item, i) in myClasses" :key="i" 
+                                                @click="manageClassUpdate(item)">
                                                 <v-list-item-title>{{ item.text }}</v-list-item-title>
                                             </v-list-item>
                                         </v-list>
@@ -80,10 +78,7 @@
                         <v-card title="Estas seguro que quieres eliminar la asistencia?" subtitle=""
                             prepend-icon="mdi-alert" align="center" class="pb-4" rounded="xl">
                             <v-card-text style="font-style: italic; padding: 2px;">
-                                Esta accion eliminara los estudiantes dentro del curso.
-                            </v-card-text>
-                            <v-card-text style="font-style: italic; padding: 5px;">
-                                Desea continuear?
+                                Esta accion no es revertible. Desea continuear?
                             </v-card-text>
                             <v-card-item class="pb-4">
                                 <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
@@ -198,23 +193,11 @@ export default {
         checkAuth([1, 3])
     },
     mounted() {
-        if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
-            this.fetchClasses()
-            return
-        } else if (this.classId == -1 || this.classId == undefined) {
-            let firstKey = Object.keys(this.myClasses)[0];
-            this.classId = this.myClasses[firstKey].sc
-            this.classSection = this.myClasses[firstKey].school_section
-            this.classYear = this.myClasses[firstKey].school_year
-        } else {
-            this.classSection = this.myClasses[this.classId].school_section
-            this.classYear = this.myClasses[this.classId].school_year
-        }
-        this.fetchAttendences()
+        console.log('aca',this.classId)
+        this.fetchClasses()
     },
     setup() {
         const store = useStore()
-
         store.commit('setTitle', { title: 'Asistencias', icon: 'mdi-table-network' })
         const attDate = store.state.attDate
         if (attDate == '') {
@@ -263,7 +246,6 @@ export default {
             }
         },
         async fetchClasses() {
-            const storeX = useStore()
             const accessToken = store.get('accessToken');
             const userId = store.get('userId');
 
@@ -278,16 +260,22 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-                    this.myClasses = result.data.classObjs;
-                    storeX.commit('setMyClasses', { myClasses: result.data.classObjs })
-                    if (this.classId == -1 || this.classId == undefined) {
-                        let firstKey = Object.keys(this.myClasses)[0];
-                        this.classId = this.myClasses[firstKey].sc
-                        this.classSection = this.myClasses[firstKey].school_section
-                        this.classYear = this.myClasses[firstKey].school_year
-                    } else {
-                        this.classSection = this.myClasses[this.classId].school_section
-                        this.classYear = this.myClasses[this.classId].school_year
+                    this.myClasses = result.data.schoolClasses.map(item => ({
+                        text: item.school_year + ' "' + item.school_section + '"',
+                        year: item.school_year,
+                        section: item.school_section,
+                        status: item.status,
+                        value: item.sc,
+                    }))
+                    for (const i in this.myClasses) {
+                        if (Object.hasOwnProperty.call(this.myClasses, i)) {
+                            const element = this.myClasses[i];
+                            if (element.value == this.classId){
+                                this.classSection = element.section
+                                this.classYear = element.year
+                                break
+                            }
+                        }
                     }
                     this.fetchAttendences()
                 }
@@ -300,10 +288,11 @@ export default {
                 name: 'Calendar',
             })
         },
-        manageClassUpdate(idx) {
-            this.classId = this.myClasses[idx].sc
-            this.classSection = this.myClasses[idx].school_section
-            this.classYear = this.myClasses[idx].school_year
+        manageClassUpdate(item) {
+            console.log(item)
+            this.classId = item.value
+            this.classSection = item.section
+            this.classYear = item.year
             this.fetchAttendences()
         },
         decodeImage(encoded) {

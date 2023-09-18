@@ -16,8 +16,8 @@
                 <RegisterStudent />
             </v-card>
         </v-dialog>
-        <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar informacion de los Estudiantes"
-            color="surface-lighter-1" class="pa-2">
+        <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar información de los Estudiantes"
+            color="surface-lighter-1" class="pa-2 fadeInCenter">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
                     Registrar Estudiante
@@ -39,7 +39,7 @@
                             </template>
                             <v-list>
                                 <v-list-item v-for="item in  myClasses " value="value"
-                                    @click="currentClassId = item.sc; currentClass = item.text; fetchStudents()">
+                                    @click="currentClassId = item.value; currentClass = item.text; fetchStudents()">
                                     <v-list-item-title>{{ item.text }}</v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -101,15 +101,15 @@
                         <div v-if="item.value.email != null"> {{ item.value.email }}</div>
                         <div v-else class="noEmail"> No email</div>
                     </template>
-                    <template v-slot:item.status="{ item }">
-                        <v-btn v-if="item.value.status != null" :color="this.recogStatus[item.value.status].color"
+                    <template v-slot:item.id_status="{ item }">
+                        <v-btn v-if="item.value.id_status != null" :color="this.recogStatus[item.value.id_status].color"
                             variant="tonal" @click=" enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
                                 <v-card prepend-icon="mdi-information-variant" title="Registrado" rounded="xl"
-                                    :subtitle="this.recogStatus[item.value.status].info"
-                                    :color="this.recogStatus[item.value.status].color" class="pa-0 ma-0" />
+                                    :subtitle="this.recogStatus[item.value.id_status].info"
+                                    :color="this.recogStatus[item.value.id_status].color" class="pa-0 ma-0" />
                             </v-tooltip>
-                            {{ this.recogStatus[item.value.status].text }}
+                            {{ this.recogStatus[item.value.id_status].text }}
                         </v-btn>
                         <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
@@ -167,9 +167,9 @@ export default {
             currentClassId: -1,
             currentStudId: -1,
             recogStatus: {
-                1: { text: 'Trabajando', color: 'secondary', info: 'El sitema esta validando las fotos.' },
-                2: { text: 'Habilitado', color: 'primary', info: 'El sitema ya registro las fotos en el sistema.' },
-                3: { text: 'Error', color: 'error', info: 'Hubo un error en el sistema se deben registrar las fotos otra vez.' },
+                1: { text: 'Error', color: 'error', info: 'Hubo un error en el sistema se deben registrar las fotos otra vez.' },
+                2: { text: 'Trabajando', color: 'secondary', info: 'El sitema esta validando las fotos.' },
+                3: { text: 'Activo', color: 'primary', info: 'El sitema ya registro las fotos en el sistema' },
             },
             headers: [
                 { title: 'id', key: 'id_stud', align: 'start', width: '3%' },
@@ -177,7 +177,7 @@ export default {
                 { title: 'Nombre', key: 'first_name', align: 'center' },
                 { title: 'Email', key: 'email', align: 'center' },
                 { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
-                { title: 'Reconocimiento', key: 'status', align: 'center' },
+                { title: 'Reconocimiento', key: 'id_status', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
@@ -234,7 +234,13 @@ export default {
                     }
                 })
                 if (response.status == 200) {
-                    this.myClasses = response.data.classObjs
+                    this.myClasses = response.data.schoolClasses.map(item => ({
+                        text: item.school_year + ' "' + item.school_section + '"',
+                        year: item.school_year,
+                        section: item.school_section,
+                        status: item.status,
+                        value: item.sc,
+                    }))
                 }
             } catch (error) {
                 console.log(error)
@@ -272,7 +278,6 @@ export default {
             this.currentStudId = item.id_stud
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
-            console.log(this.editedItem)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
         }
     },
