@@ -218,7 +218,7 @@ export default {
  }
 
  .msgText {
-     font-size: 1vw;
+     font-size: 15px;
      line-height: 1.5;
      padding-left: 20px;
  }

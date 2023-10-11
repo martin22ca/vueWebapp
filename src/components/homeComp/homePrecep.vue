@@ -12,16 +12,11 @@
                     <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section" class="ma-2 pa-1"
                         subtitle="Curso Secundario" color="surface-lighter-2" rounded="xl">
                         <v-divider thickness="3"></v-divider>
-                        <h4 class="classText"> Estudiantes presentes: <v-chip class="homeChip"> {{ schoolClass.present }}
-                            </v-chip></h4>
-                        <h4 class="classText"> Estudiantes Totales: <v-chip class="homeChip">{{ schoolClass.total }}
-                            </v-chip>
-                        </h4>
                         <h4 class="classText"> Porcentaje: <v-chip class="homeChip"
                                 :color="getColor(schoolClass.present, schoolClass.total)">
                                 {{ this.getPercentage(schoolClass.present, schoolClass.total) }} </v-chip></h4>
                         <v-card-actions>
-                            <v-btn variant="tonal" color="primary"
+                            <v-btn variant="tonal" color="primary" style="font-size: 15px;"
                                 @click="viewClass(schoolClass.sc, schoolClass.school_year, schoolClass.school_section)">Ver
                                 Asistencias</v-btn>
                         </v-card-actions>
@@ -96,7 +91,7 @@ export default {
 
 <style>
 .classText {
-    font-size: 1vw;
+    font-size: 15px;
     padding: 10px;
     font-weight: 300;
 }

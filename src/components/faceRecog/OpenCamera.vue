@@ -23,7 +23,8 @@
                 </template>
             </v-card>
         </div>
-        <video ref="videoEl" autoplay="true" playsinline @loadedmetadata="runModel" style="transform: scaleX(-1);"  :class="shutterValue.val ? 'shutter' : ''" />
+        <video ref="videoEl" autoplay="true" playsinline @loadedmetadata="runModel" style="transform: scaleX(-1);"
+            :class="shutterValue.val ? 'shutter' : ''" />
         <canvas ref="canvasEl" style="transform: scaleX(-1);" />
         <div class="bottom-bar">
             <v-card class="pa-4" color="transparent" variant="flat"
@@ -62,10 +63,10 @@
 </template>
   
 <script>
+import axios from 'axios'
 import * as faceAPI from 'face-api.js'
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { axiosClient } from '@/plugins/axiosClient';
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 export default {
     name: 'Video',
@@ -237,41 +238,39 @@ export default {
             }
             const imagesToUpload = capturedFaces.value.filter((face) => face.src);
 
-            const cleanPrevious = await axiosClient({
-                method: 'put',
+            // Create an array of Promises that upload each image using Axios
+            const formData = new FormData();
+            formData.append('images', JSON.stringify(imagesToUpload.map(face => face.src)));
+
+            formData.append('accessToken', accessToken);
+            formData.append('idStud', editedObj.id_stud);
+
+            const axiosClient = axios.create({
+                baseURL: 'http://192.168.0.133:3001',
+            });
+
+            const imageArray = imagesToUpload.map((face) => face.src);
+
+            axiosClient({
+                method: 'POST',
                 timeout: 2000,
-                url: "/students/clean",
+                url: "/recog/registerAi",
                 data: {
                     'accessToken': accessToken,
+                    'images': imageArray, // Send the array of image sources
                     'idStud': editedObj.id_stud
                 }
             })
-
-            // Create an array of Promises that upload each image using Axios
-            const uploadPromises = imagesToUpload.map((face) => axiosClient({
-                method: 'post',
-                timeout: 2000,
-                url: "/students/ai",
-                data: {
-                    'accessToken': accessToken,
-                    'image': face.src,
-                    'idStud': editedObj.id_stud
-                }
-            }))
-
-            // Wait for all Promises to resolve before executing any further code
-            Promise.all(uploadPromises)
-                .then((responses) => {
-                    console.log('Images uploaded successfully:', responses);
+                .then((response) => {
+                    console.log('Images uploaded successfully:', response);
                     dialogText.value = 'Las fotos se subieron Exitosamente!'
-                    dialog.value = true
+                    dialog.value = true;
                 })
                 .catch((error) => {
                     console.log('Error uploading images:', error);
-                    dialogText.value = 'Error de servidor. Porfavor intente mas tarde.'
-                    dialog.value = true
+                    dialogText.value = 'Error de servidor. Por favor, inténtelo más tarde.'
+                    dialog.value = true;
                 });
-
         }
 
         onMounted(() => {

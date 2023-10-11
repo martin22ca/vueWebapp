@@ -172,8 +172,7 @@ export default {
                 3: { text: 'Activo', color: 'primary', info: 'El sitema ya registro las fotos en el sistema' },
             },
             headers: [
-                { title: 'id', key: 'id_stud', align: 'start', width: '3%' },
-                { title: 'Apellido', key: 'last_name', align: 'center' },
+                { title: 'Apellido', key: 'last_name', align: 'left' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
                 { title: 'Email', key: 'email', align: 'center' },
                 { title: 'DNI', key: 'dni', align: 'center', width: '8%' },

@@ -1,9 +1,6 @@
 <template>
-    <v-sheet :width="smallScreen ? '' : '80px'" color="transparent">
-        <v-btn v-if="!sidebarVisible" class="ma-3 btnSide" icon="mdi-menu" size="x-large" @click="toggleSidebar"
-            color="primary" style="position: absolute;" />
-        <v-navigation-drawer v-model="sidebarVisible" fixed width="100" :color="smallScreen ? 'surface' : 'transparent'"
-            border="0" class="pa-1" disable-resize-watcher permanent>
+    <v-sheet :width="smallScreen ? '' : '105px'" color="transparent">
+        <v-navigation-drawer width="125" color="transparent" border="0" class="pa-1" disable-resize-watcher permanent>
             <v-list>
                 <v-sheet rounded="lg" class="pa-2">
                     <img src="../assets/logo.png" width="70" class="image" @click="goTo('Home')" />
@@ -15,7 +12,7 @@
                         :class="currentRouteName == item.route ? 'text-primary' : undefined" class="mt-2 pt-1 pb-1" rounded
                         @click="goTo(item.route)" variant="text">
                         <div class="iconS">
-                            <v-icon :icon="item.icon" size="2.1vw" />
+                            <v-icon :icon="item.icon" size="30px" />
                         </div>
                         <h4 class="sideText">{{ item.name }}</h4>
                     </v-list-item>
@@ -115,8 +112,6 @@ export default {
             this.theme.global.name = 'lightTheme'
             return null
         }
-        window.addEventListener('resize', this.handleResize);
-        this.sidebarVisible = !this.smallScreen
     },
     beforeUnmount() {
         window.removeEventListener('resize', this.handleResize);
@@ -146,17 +141,6 @@ export default {
             this.theme.global.name = this.theme.global.current.dark ? 'lightTheme' : 'darkTheme'
             this.themeVal = !this.themeVal
             store({ theme: this.themeVal })
-        }, toggleSidebar() {
-            this.sidebarVisible = !this.sidebarVisible;
-        }, handleResize() {
-            if (window.innerWidth < 970) {
-                this.smallScreen = true
-                this.sidebarVisible = false
-            } else {
-                this.smallScreen = false
-                this.sidebarVisible = true
-            }
-
         },
     }
 }
@@ -191,11 +175,5 @@ export default {
     font-size: 13px;
     text-align: center;
     font-weight: 300;
-}
-
-
-.btnSide {
-    position: absolute;
-    z-index: 9999;
 }
 </style>

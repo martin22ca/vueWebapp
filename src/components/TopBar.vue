@@ -1,6 +1,6 @@
 <template>
-    <div class="Top">
-        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="surface-lighter-1" rounded="lg">
+    <div class="Top " >
+        <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="surface" rounded="lg">
             <v-row>
                 <v-col>
                     <v-card variant="text" prepend-icon="mdi-account">

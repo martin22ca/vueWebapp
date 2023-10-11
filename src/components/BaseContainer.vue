@@ -1,13 +1,12 @@
 <template>
-  <v-row>
-    <v-col cols="auto">
+  <v-row class="ma-0">
+    <v-col cols="auto" >
       <SideBar />
     </v-col>
-    <v-col>
+    <v-col class="ma-0 pa-0">
       <div class="containerB">
         <TopBar />
         <slot></slot>
-        <Footer />
       </div>
     </v-col>
   </v-row>
@@ -28,10 +27,6 @@ export default {
 </script>
 
 <style>
-.gradient {
-  height: 100vh;
-
-}
 
 .containerB {
   flex-direction: column;
@@ -44,10 +39,4 @@ export default {
   line-height: 1.5;
 }
 
-.bottom-section {
-  display: flex;
-  border-radius: 5%;
-  height: calc(100% - 112px);
-  /* subtract top section height and padding */
-}
 </style>
