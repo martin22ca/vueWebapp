@@ -30,7 +30,7 @@
 <script>
 import { useRouter } from 'vue-router';
 import store from 'storejs';
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 import { useStore } from 'vuex'
 
 
@@ -52,7 +52,7 @@ export default {
             const id = store.get('userId')
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/classes/home",

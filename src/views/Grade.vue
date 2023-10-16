@@ -90,7 +90,7 @@ import { checkAuth } from '@/plugins/auth';
 import store from 'storejs';
 import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosExpressClient';
 import UpdateClasses from '@/components/ClassManage/UpdateClasses.vue';
 import RegisterClasses from '@/components/ClassManage/RegisterClasses.vue';
 
@@ -134,7 +134,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/classes/person",
@@ -161,7 +161,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'put',
                     timeout: 5000,
                     url: "/classes/remove",

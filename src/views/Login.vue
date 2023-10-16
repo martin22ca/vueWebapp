@@ -33,7 +33,7 @@
                         Log in
                     </v-btn>
 
-                    <v-btn  class="me-4 mt-4" @click="handleReset">
+                    <v-btn class="me-4 mt-4" @click="handleReset">
                         Limpiar
                     </v-btn>
                 </form>
@@ -47,10 +47,9 @@
 </template>
   
 <script>
-import axiosClient from '@/plugins/axiosClient.js';
 import store from 'storejs';
 import * as Yup from "yup";
-import { checkLoged } from '@/plugins/auth';
+import { checkLoged, login } from '@/services/api/admission';
 import { useField, useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue';
@@ -83,26 +82,16 @@ export default {
         const showDialog = ref(false);
 
         const submit = handleSubmit(async (values) => {
-            try {
-                const result = await axiosClient.post('login', {
-                    username: values.username,
-                    password: values.password,
-                });
-                console.log(result);
-                if (result.status == 200) {
-                    console.log('success');
-                    store(result.data);
-                    store({theme:true})
-
-                    router.push({
-                        name: 'Home',
-                    })
-
-                }
-            } catch (error) {
-                console.log(error)
+            const [result, error] = await login(values.username, values.password)
+            if (result) {
+                store(result);
+                store({ theme: true })
+                router.push({
+                    name: 'Home',
+                })
+            } else {
                 showDialog.value = true;
-                if (error.response != undefined) showError.value = error.response.data.message
+                if (error.message != undefined) showError.value = error.message
                 else showError.value = "Error de Servidor. \n Porfavor consultar administrador"
             }
         });

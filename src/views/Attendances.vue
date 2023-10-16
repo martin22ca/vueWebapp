@@ -145,7 +145,7 @@ import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
 import { checkAuth } from '@/plugins/auth';
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosExpressClient';
 
 export default {
     name: 'Attendances',
@@ -227,7 +227,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/attendance",
@@ -250,7 +250,7 @@ export default {
             const userId = store.get('userId');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/classes/employee",
@@ -317,7 +317,7 @@ export default {
             const delId = this.editedIndex
             this.editedIndex = -1
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'put',
                     timeout: 5000,
                     url: "/attendance/remove",

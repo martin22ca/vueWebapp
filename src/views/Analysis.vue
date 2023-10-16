@@ -105,7 +105,7 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import store from 'storejs';
 import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
-import { axiosClient } from '@/plugins/axiosClient';
+import {axiosExpressClient} from '@/plugins/axiosClient'
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
@@ -155,7 +155,7 @@ export default {
             const userId = store.get('userId');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classes/employee",
@@ -184,7 +184,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classes/info",

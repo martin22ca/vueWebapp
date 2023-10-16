@@ -37,7 +37,7 @@
 
 <script>
 import store from 'storejs';
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
@@ -49,7 +49,7 @@ export default {
         async checkCursos() {
             const accessToken = store.get('accessToken');
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classroom",

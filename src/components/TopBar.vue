@@ -1,11 +1,11 @@
 <template>
-    <div class="Top " >
+    <div class="Top ">
         <v-sheet class="ma-0 mr-2 pt-2" prepend-icon="mdi-account" color="surface" rounded="lg">
-            <v-row>
-                <v-col>
+            <v-row justify="space-between"> 
+                <v-col cols="auto">
                     <v-card variant="text" prepend-icon="mdi-account">
                         <template v-slot:prepend>
-                            <v-icon icon="mdi-account" style="font-size: 5vw;"/>
+                            <v-icon icon="mdi-account" style="font-size: 60px;" />
                         </template>
                         <template v-slot:title>
                             <h2>
@@ -14,18 +14,16 @@
                         </template>
                         <template v-slot:subtitle>
                             <h3 class="subBase">
-                            {{ this.email }}
-                        </h3>
+                                {{ this.email }}
+                            </h3>
                         </template>
                     </v-card>
                 </v-col>
-                <v-col>
+                <v-col cols="auto">
                     <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
                 </v-col>
-                <v-col align="center" >
-                    <v-sheet color="surface-lighter-2" rounded="lg" class="ma-2 pa-2">
-                        <DigitalClock />
-                    </v-sheet>
+                <v-col class="ma-2 " align="end" cols="auto">
+                    <DigitalClock />
                 </v-col>
             </v-row>
         </v-sheet>
@@ -65,7 +63,7 @@ export default {
 .h1Top {
     font-weight: bold;
     text-align: center;
-    padding-top: 3px;
+    padding-top: 12px;
     padding-bottom: 3px;
 
 }

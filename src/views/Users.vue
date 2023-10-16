@@ -8,8 +8,7 @@
                     </h1>
                 </template>
                 <template v-slot:append>
-                    <v-btn color="primary" @click="fetchEmployees(); registerDialog = false"
-                        prepend-icon="mdi-keyboard-return">
+                    <v-btn color="primary" @click="getUsers(); registerDialog = false" prepend-icon="mdi-keyboard-return">
                         Regresar
                     </v-btn>
                 </template>
@@ -36,7 +35,7 @@
                                     </h1>
                                 </template>
                                 <template v-slot:append>
-                                    <v-btn color="secondary" @click="fetchEmployees(); dialog = false"
+                                    <v-btn color="secondary" @click="getUsers(); dialog = false"
                                         prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
                                         Regresar
                                     </v-btn>
@@ -56,13 +55,8 @@
                             </v-card>
                         </v-dialog>
                     </template>
-                    <template v-slot:item.actions="{ item }">
-                        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-                            mdi-pencil
-                        </v-icon>
-                        <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_emp">
-                            mdi-trash-can
-                        </v-icon>
+                    <template v-slot:item.active="{ item }">
+                        <v-checkbox v-model="item.value.active" readonly></v-checkbox>
                     </template>
                     <template v-slot:no-data>
                         <div class="noList">
@@ -73,8 +67,14 @@
                         <div v-if="item.value.email != null"> {{ item.value.email }}</div>
                         <div v-else class="noEmail"> No email</div>
                     </template>
-                    <template v-slot:item.id_role="{ item }">
-                        {{ this.roles[item.value.id_role] }}
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon icon="mdi-pencil" class="me-2 h-20" @click="editItem(item.raw)" />
+                        <v-icon v-if="item.value.active" icon="mdi-cancel" class="me-2" color="warning"
+                            @click="changeUserState(item.raw, false)" />
+                        <v-icon v-if="!item.value.active" icon="mdi-check" class="me-2" color="success"
+                            @click="changeUserState(item.raw, true)" />
+                        <v-icon v-if="!item.value.active" icon="mdi-trash-can" class="me-2" color="error"
+                            @click="dailogDel = true; this.deleteItemIdx = item.value.id_user" />
                     </template>
                 </v-data-table>
             </v-sheet>
@@ -84,13 +84,13 @@
 
 <script>
 import store from 'storejs';
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admission';
 import { useStore } from 'vuex'
 import BaseContainer from '@/components/BaseContainer.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { axiosClient } from '@/plugins/axiosClient';
-import UpdatePersonnel from '@/components/Personnel/UpdatePersonnel.vue';
-import Register from '@/components/Personnel/Register.vue';
+import { fetchUsers, changeState, deleteUser } from '@/services/api/users'
+import UpdatePersonnel from '@/components/Users/UpdatePersonnel.vue';
+import Register from '@/components/Users/Register.vue';
 
 export default {
     name: 'Attendances',
@@ -101,18 +101,15 @@ export default {
             dailogDel: false,
             registerDialog: false,
             status: false,
-            roles: {
-                1: "Preceptor",
-                2: "Administrador",
-                3: "Owner"
-            },
             headers: [
-                { title: 'Apellido', key: 'last_name', align: 'center', width: '15%' },
-                { title: 'Nombre', key: 'first_name', align: 'center', width: '15%' },
-                { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
+                { title: 'Id', key: 'id_user', align: 'start', width: '3%' },
+                { title: 'Apellido', key: 'last_name', align: 'center', width: 'auto' },
+                { title: 'Nombre', key: 'first_name', align: 'center', width: 'auto' },
+                { title: 'DNI', key: 'dni', align: 'center', width: 'auto' },
                 { title: 'Email', key: 'email', align: 'center' },
-                { title: 'Rol', key: 'id_role', align: 'center', width: '3%' },
-                { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
+                { title: 'Rol', key: 'value', align: 'center', width: 'auto' },
+                { title: 'Estado', key: 'active', align: 'center', width: '4%' },
+                { title: 'Editar', key: 'actions', sortable: false, align: 'end', width: 'auto' },
             ],
             items: [],
             deleteItemIdx: -1,
@@ -120,39 +117,29 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([2, 3])
+        checkAuth([0, 1, 2])
     },
     setup() {
         const storeX = useStore()
         storeX.commit('setTitle', { title: 'Empleados', icon: 'mdi-briefcase' })
     },
     mounted() {
-        this.fetchEmployees()
+        this.getUsers()
     },
     watch: {
         dialog(newVal) {
-            this.fetchEmployees()
+            this.getUsers()
         }
     },
     methods: {
-        async fetchEmployees() {
+        async getUsers() {
             const accessToken = store.get('accessToken');
-
-            try {
-                let result = await axiosClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/employees",
-                    params: {
-                        'accessToken': accessToken,
-                    }
-                })
-                if (result.status == 200) {
-                    this.items = result.data.employeesInfo;
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            this.items = await fetchUsers(accessToken)
+        },
+        async changeUserState(item, status) {
+            const accessToken = store.get('accessToken');
+            item.active = status
+            await changeState(accessToken, item.id_user, status)
         },
         editItem(item) {
             this.editedIndex = this.items.indexOf(item)
@@ -163,23 +150,9 @@ export default {
         },
         async deleteItem() {
             const accessToken = store.get('accessToken');
-
-            try {
-                let result = await axiosClient({
-                    method: 'put',
-                    timeout: 5000,
-                    url: "/employees/remove",
-                    params: {
-                        'accessToken': accessToken,
-                        'idEmp': this.deleteItemIdx,
-                    }
-                })
-                if (result.status == 200) {
-                    this.fetchEmployees()
-                    this.dailogDel = false
-                }
-            } catch (error) {
-                console.log(error)
+            if (await deleteUser(accessToken, this.deleteItemIdx)) {
+                this.getUsers()
+                this.dailogDel = false
             }
         }
     },

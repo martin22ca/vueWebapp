@@ -39,14 +39,22 @@ export default {
 
 <template>
     <div class="Clockcontainer">
-        <div class="hours">{{ hours }}</div>
-        <div class="divider blinking" style="padding-left: 3px;padding-right: 3px;">:</div>
-        <div class="minutes">{{ minutes }}</div>
-        <div class="ampm" style="padding-left: 10px ;">{{ ampm }}</div>
+        <div class="test">
+            <div class="hours">{{ hours }}</div>
+            <div class="divider blinking" style="padding-left: 3px;padding-right: 3px;">:</div>
+            <div class="minutes">{{ minutes }}</div>
+            <div class="ampm" style="padding-left: 10px ;">{{ ampm }}</div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.test{
+    padding: 10px 2em;
+    border-radius: 1em;
+    display: flex;
+    background-color: rgb(var(--v-theme-surface-lighter-2));
+}
 .Clockcontainer {
     align-items: center;
     justify-content: center;
@@ -64,9 +72,11 @@ export default {
     0% {
         opacity: 1;
     }
+
     50% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }

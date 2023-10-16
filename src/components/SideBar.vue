@@ -59,49 +59,49 @@ export default {
                     name: 'Home',
                     icon: 'mdi-home',
                     route: 'Home',
-                    roleNeeded: [1, 2, 3]
+                    roleNeeded: [0, 1, 2, 3]
                 },
                 {
                     name: 'Asistencia',
                     icon: 'mdi-table-network',
                     route: 'Attendances',
-                    roleNeeded: [1, 3]
+                    roleNeeded: [0, 1, 3]
                 },
                 {
                     name: 'Análisis',
                     icon: 'mdi-chart-line',
                     route: 'Analysis',
-                    roleNeeded: [1, 3]
+                    roleNeeded: [0, 1, 3]
                 },
                 {
                     name: 'Alumnos',
                     icon: 'mdi-school',
                     route: 'Students',
-                    roleNeeded: [1, 3]
+                    roleNeeded: [0, 1, 3]
                 },
                 {
                     name: 'Personal',
                     icon: 'mdi-briefcase',
-                    route: 'Personnel',
-                    roleNeeded: [2, 3]
+                    route: 'Users',
+                    roleNeeded: [0, 2, 3]
                 },
                 {
                     name: 'Cursos',
                     icon: 'mdi-google-classroom',
                     route: 'Curso',
-                    roleNeeded: [2, 3]
+                    roleNeeded: [0, 2, 3]
                 },
                 {
-                    name: 'Aulas',
+                    name: 'Modulos IA',
                     icon: 'mdi-domain',
-                    route: 'Classroom',
-                    roleNeeded: [2, 3]
+                    route: 'aiModules',
+                    roleNeeded: [0, 2, 3]
                 },
                 {
                     name: 'APP',
                     icon: 'mdi-download-box',
                     route: 'Daemon',
-                    roleNeeded: [2, 3]
+                    roleNeeded: [0, 2, 3]
                 }
             ]
 

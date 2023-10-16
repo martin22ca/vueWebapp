@@ -62,8 +62,8 @@
 <script>
 import { useStore } from 'vuex'
 import store from 'storejs';
-import { checkAuth } from '@/plugins/auth';
-import { axiosClient } from '@/plugins/axiosClient';
+import { checkAuth } from '@/services/api/admission';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
@@ -77,13 +77,13 @@ export default {
         store.commit('setTitle', { title: 'Aplicacion', icon: 'mdi-download-box' })
     },
     beforeCreate() {
-        checkAuth([2, 3])
+        checkAuth([0, 2, 3])
     },
     methods: {
         async checkDaemonStatus() {
             const accessToken = store.get('accessToken');
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classroom/daemon",

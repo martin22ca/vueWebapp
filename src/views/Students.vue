@@ -149,7 +149,7 @@ import { useStore } from 'vuex'
 import { checkAuth } from '@/plugins/auth';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosExpressClient';
 import UpdateStudent from '@/components/StudentManage/UpdateStudent.vue';
 import RegisterStudent from '@/components/StudentManage/RegisterStudent.vue';
 import AISetup from '@/components/faceRecog/AISetup.vue'
@@ -202,7 +202,7 @@ export default {
         async fetchStudents() {
             const accessToken = store.get('accessToken');
             try {
-                let response = await axiosClient({
+                let response = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/students",
@@ -223,7 +223,7 @@ export default {
             const userId = store.get('userId');
 
             try {
-                let response = await axiosClient({
+                let response = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classes/employee",
@@ -256,7 +256,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'put',
                     timeout: 5000,
                     url: "/students/remove",

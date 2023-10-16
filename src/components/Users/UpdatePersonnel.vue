@@ -49,8 +49,9 @@
                         <v-col align-self="center">
                             <div class="text">Cambiar Rol </div>
                             <v-select class="pa-2" clearable label="Rol" variant="outlined" :items="items"
-                                v-model="select.value.value" :error-messages="select.errorMessage.value"
-                                prepend-inner-icon="mdi-alert-circle"></v-select>
+                                v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
+                                item-value="id" prepend-inner-icon="mdi-alert-circle"
+                                @click:prepend-inner="log()"></v-select>
                         </v-col>
                     </v-row>
                     <div class="text">Identificacion</div>
@@ -96,15 +97,17 @@
 </template>
   
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import store from 'storejs';
 import { useStore } from 'vuex'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { fetchRoles } from '@/services/api/roles'
+import { updateUser } from '@/services/api/users'
+import { axiosExpressClient } from '@/plugins/axiosClient';
 import { useField, useForm } from 'vee-validate'
 
 export default {
-    name: "UpdatePersonnel",
+    name: "UpdateUser",
     data: () => ({
         visible: false,
         visibleC: false,
@@ -128,7 +131,7 @@ export default {
         });
 
         const editedObj = storeX.state.editedObj
-        const idEmp = editedObj.id_emp
+        const idUser = editedObj.id_user
         const firstName = useField('firstName');
         const lastName = useField('lastName');
         const dni = useField('dni');
@@ -150,56 +153,36 @@ export default {
         const dialogSucces = ref(false)
         const dialogText = ref('');
 
-        const items = ref([
-            {
-                title: 'Admin',
-                value: 2
-            },
-            {
-                title: 'Preceptor',
-                value: 1
-            },
-        ]);
+        const items = ref([]);
+
+        const fetchData = async () => {
+            const accessToken = store.get('accessToken')
+            items.value = await fetchRoles(accessToken) // Assuming your API response is an array of items
+        };
+
+        const log = async () => {
+            console.log(editedObj.id_role, select.value.value)
+        }
 
         const submit = handleSubmit(async (values) => {
-            try {
-                const accessToken = store.get('accessToken');
-                let result = await axiosClient({
-                    method: 'put',
-                    timeout: 2000,
-                    url: "/employees/update",
-                    data: {
-                        'accessToken': accessToken,
-                        'id_emp': idEmp,
-                        'firstName': values.firstName,
-                        'lastName': values.lastName,
-                        'dni': values.dni,
-                        'email': values.email,
-                        'username': values.username,
-                        'password': values.password,
-                        'role': values.select,
-                    }
-                });
-                console.log(result);
-                if (result.status == 200) {
-                    console.log('success');
-                    dialogText.value = result.data.message
-                    dialog.value = true
-                    dialogSucces.value = true
-
-                } else {
-                    alert(JSON.stringify(result.status));
-                }
-            } catch (error) {
-                console.log(error);
-                if (error.response != undefined)
-                    dialogText.value = error.response.data.message;
+            const accessToken = store.get('accessToken');
+            const [result, error] = await updateUser(accessToken, idUser, values)
+            if (result) {
+                dialogText.value = 'Usuario Actualizado'
+                dialog.value = true
+                dialogSucces.value = true
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
                 else {
                     dialogText.value = ' Error en la base de datos'
                 }
                 dialogSucces.value = false
                 dialog.value = true;
             }
+        });
+        onMounted(() => {
+            fetchData();
         });
 
         return {
@@ -215,6 +198,7 @@ export default {
             dialog,
             dialogText,
             dialogSucces,
+            log,
             submit,
             handleReset,
             errors

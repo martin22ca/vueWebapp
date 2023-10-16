@@ -30,9 +30,10 @@
                                                 </v-sheet>
                                             </template>
                                             <v-list>
-                                                <v-list-item @click="setupClass(null, classroom.id_classroom)" 
+                                                <v-list-item @click="setupClass(null, classroom.id_classroom)"
                                                     v-if="classroom.id_default_class != null">
-                                                    <v-list-item-title >Desasginar Clase <v-icon icon="mdi-trash-can" class="ma-2"> </v-icon></v-list-item-title>
+                                                    <v-list-item-title>Desasginar Clase <v-icon icon="mdi-trash-can"
+                                                            class="ma-2"> </v-icon></v-list-item-title>
                                                 </v-list-item>
                                                 <v-list-item v-for="(item, i) in classes" :key="i" :value="item.id"
                                                     @click="setupClass(item.id, classroom.id_classroom)">
@@ -68,10 +69,10 @@
 
 <script>
 import BaseContainer from '@/components/BaseContainer.vue';
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admission';
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 
 export default {
     name: 'Attendances',
@@ -83,11 +84,11 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([2, 3])
+        checkAuth([0, 1, 2, 3])
     },
     setup() {
         const storeX = useStore()
-        storeX.commit('setTitle', { title: 'Aulas', icon: 'mdi-domain' })
+        storeX.commit('setTitle', { title: 'Modulos IA', icon: 'mdi-domain' })
     },
     mounted() {
         this.fetchClassrooms()
@@ -97,7 +98,7 @@ export default {
         async fetchClassrooms() {
             const accessToken = store.get('accessToken');
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 2000,
                     url: "/classroom",
@@ -117,7 +118,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/classes/classroom",
@@ -174,7 +175,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'put',
                     timeout: 5000,
                     url: "/classroom/class",

@@ -1,12 +1,12 @@
 <template>
     <form @submit.prevent="submit" class="registerPersonnelContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
-            <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
-                align="start" rounded="true">
+            <v-card title="Informacion" prepend-icon="mdi-information-variant" style="min-width: 50vh;" align="start"
+                rounded="true">
                 <v-divider thickness="5"></v-divider>
-                <v-card-text style="padding-left: 50px;"><v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
+                <v-card-text style="padding-left: 50px; font-size: large;"><v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
                         :color="dialogSucces ? 'primary' : 'error'"> </v-icon> {{ dialogText }} </v-card-text>
-                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" variant="outlined" color="primary">
+                <v-card-item> <v-btn style="margin: 20px;" size="large" @click="dialog = false" variant="outlined" color="primary">
                         Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
@@ -37,7 +37,7 @@
                     </v-row>
                     <div class="text"> Email </div>
                     <v-row>
-                        <v-col align-self="center" >
+                        <v-col align-self="center">
                             <v-text-field class="pa-2" variant="outlined" v-model="email.value.value"
                                 :error-messages="email.errorMessage.value" label="E-mail (Opcional)"
                                 prepend-inner-icon="mdi-email"></v-text-field>
@@ -49,8 +49,8 @@
                         <v-col align-self="center">
                             <div class="text">Seleccionar Rol </div>
                             <v-select class="pa-2" clearable label="Rol" variant="outlined" :items="items"
-                                v-model="select.value.value" :error-messages="select.errorMessage.value"
-                                prepend-inner-icon="mdi-alert-circle"></v-select>
+                                v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
+                                item-value="id" prepend-inner-icon="mdi-alert-circle"></v-select>
                         </v-col>
                     </v-row>
 
@@ -59,8 +59,7 @@
                         <v-col align-self="center">
                             <v-text-field class="pa-2" variant="outlined" v-model="username.value.value" autocomplete="off"
                                 :error-messages="username.errorMessage.value" prepend-inner-icon="mdi-account"
-                                hint=" El nombre de usuario debe tener al menos 4 digitos"
-                                label="Usuario"></v-text-field>
+                                hint=" El nombre de usuario debe tener al menos 4 digitos" label="Usuario"></v-text-field>
                         </v-col>
                     </v-row>
                     <div class="text"> Contraseña </div>
@@ -84,7 +83,7 @@
             </v-row>
             <v-row>
                 <v-col align-self="center">
-                    <v-btn class="ma-2" type="submit" variant="outlined" color="primary">
+                    <v-btn class="ma-2" size="large" type="submit" variant="outlined" color="primary">
                         Registrar
                     </v-btn>
                     <v-btn class="ma-2" @click="handleReset" variant="tonal">
@@ -97,9 +96,11 @@
 </template>
   
 <script>
-import { ref } from 'vue'
+import store from 'storejs';
+import { registerUser } from '@/services/api/users';
+import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { fetchRoles } from '@/services/api/roles'
 import { useField, useForm } from 'vee-validate'
 
 export default {
@@ -137,53 +138,34 @@ export default {
         const dialogSucces = ref(false)
         const dialogText = ref('');
 
-        const items = ref([
-            {
-                title: 'Admin',
-                value: 2
-            },
-            {
-                title: 'Preceptor',
-                value: 1
-            },
-        ]);
+        const items = ref([]);
+
+        const fetchData = async () => {
+            const accessToken = store.get('accessToken')
+            items.value = await fetchRoles(accessToken) // Assuming your API response is an array of items
+        };
 
         const submit = handleSubmit(async (values) => {
-            try {
-                let result = await axiosClient({
-                    method: 'post',
-                    timeout: 2000,
-                    url: "/register",
-                    data: {
-                        'firstName': values.firstName,
-                        'lastName': values.lastName,
-                        'dni': values.dni,
-                        'email': values.email,
-                        'username': values.username,
-                        'password': values.password,
-                        'role': values.select,
-                    }
-                });
-                console.log(result);
-                if (result.status == 200) {
-                    console.log('success');
-                    dialogText.value = 'Usuario Creado Exitosamente'
-                    dialog.value = true
-                    dialogSucces.value = true
+            const accessToken = store.get('accessToken')
+            const [result, error] = await registerUser(accessToken, values)
 
-                } else {
-                    alert(JSON.stringify(result.status));
-                }
-            } catch (error) {
-                console.log(error);
-                if (error.response != undefined)
-                    dialogText.value = error.response.data.message;
+            if (result) {
+                dialogText.value = 'Usuario Creado Exitosamente'
+                dialog.value = true
+                dialogSucces.value = true
+
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
                 else {
                     dialogText.value = ' Error en la base de datos'
                 }
                 dialogSucces.value = false
                 dialog.value = true;
             }
+        });
+        onMounted(() => {
+            fetchData();
         });
 
         return {
@@ -219,7 +201,7 @@ h1 {
 }
 
 .text {
-    font-size: medium;
+    font-size: 20px;
     font-weight: 300;
     padding-left: 10px;
 }
