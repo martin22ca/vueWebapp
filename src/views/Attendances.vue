@@ -8,57 +8,54 @@
                             <v-sheet color="transparent">
                                 <h3 style="padding: 5px;">
                                     Dia: <v-chip variant="elevated" color="primary" @click="goToCalendar"
-                                        append-icon="mdi-menu-down">{{ currentDate
-                                        }}</v-chip>
+                                        append-icon="mdi-menu-down">
+                                        {{ currentDate }}</v-chip>
                                 </h3>
                             </v-sheet>
                         </v-col>
                         <v-col cols="4">
-
                             <v-sheet style="text-align: center;" color="transparent">
                                 <h3 style="padding: 5px;">
                                     Curso:
                                     <v-menu transition="scale-transition">
                                         <template v-slot:activator="{ props }">
                                             <v-chip v-bind:="props" variant="elevated" color="primary"
-                                                append-icon="mdi-menu-down">{{ classYear }} - "{{ classSection }}"
+                                                append-icon="mdi-menu-down">
+                                                {{ Object.keys(selectedGrade) === 0 ? 'Select' : selectedGrade.title }}
                                             </v-chip>
                                         </template>
                                         <v-list>
-                                            <v-list-item v-for="(item, i) in myClasses" :key="i" 
+                                            <v-list-item v-for="(item, i) in myGrades" :key="i"
                                                 @click="manageClassUpdate(item)">
-                                                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                                <v-list-item-title>{{ item.title }}</v-list-item-title>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
                                 </h3>
                             </v-sheet>
-
                         </v-col>
                         <v-col cols="4">
                             <v-sheet style="text-align: end;" color="transparent">
                                 <h3 style="padding: 5px;">
                                     Estado Actual:
-
-                                    <v-chip :color="status ? 'secondary' : 'error'" variant="elevated">
-                                        {{ status ? "ABIERTO" : "CERRADO" }}
+                                    <v-chip :color="selectedGrade.closed ? 'secondary' : 'error'" variant="elevated">
+                                        {{ selectedGrade.closed ? "ABIERTO" : "CERRADO" }}
                                     </v-chip>
                                 </h3>
                             </v-sheet>
                         </v-col>
                     </v-row>
-
                 </v-card-title>
                 <v-spacer></v-spacer>
                 <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
                     class="pl-5 pr-5" variant="outlined"></v-text-field>
             </v-card>
-            <v-data-table v-if="items.length > 0" :headers="headers" :items="items" class="elevation-1 border-1"
+            <v-data-table v-if="attendances.length > 0" :headers="headers" :items="attendances" class="elevation-1 border-1"
                 density="compact" :search="search" hover>
                 <template v-slot:top>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="editDialog" max-width="70%">
+                    <v-dialog v-model="editDialog" max-width="90%">
                         <v-card rounded="xl" style="overflow-y: auto; padding-top: 0;">
                             <template v-slot:title>
                                 <h1 style="color:rgb(var(--v-theme-secondary)); overflow-y: hidden;">
@@ -71,7 +68,7 @@
                                     Regresar
                                 </v-btn>
                             </template>
-                            <updateAttendance />
+                            <AttendanceInfo/>
                         </v-card>
                     </v-dialog>
                     <v-dialog v-model="deleteDialog" max-width="70%" style="position: fixed; margin-left: auto;">
@@ -84,7 +81,6 @@
                                 <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
                                 <v-btn class="ma-2" variant="tonal" @click="removeAtt()" color="error">Eliminar</v-btn>
                             </v-card-item>
-
                         </v-card>
                     </v-dialog>
                 </template>
@@ -99,7 +95,7 @@
                 </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-                        mdi-pencil
+                        mdi-information
                     </v-icon>
                     <v-icon v-if="item.value.id_att != null" size="small"
                         @click="editedIndex = item.value.id_att; deleteDialog = true;">
@@ -113,7 +109,7 @@
                 </template>
                 <template v-slot:item.certainty="{ item }">
                     <v-chip :color="getColor(item.value.certainty)">
-                        <v-tooltip activator="parent" location="left" color="#000000">
+                        <v-tooltip activator="parent" location="left" color="#000">
                             <v-card prepend-icon="mdi-information-variant" title="Distancia euclidiana"
                                 subtitle="indicador de certeza" max-width="300px" variant="elevated"
                                 color="surface-lighter-2" rounded="xl" class="pa-0 ma-0"
@@ -125,6 +121,9 @@
                 <template v-slot:item.present="{ item }">
                     <v-checkbox-btn v-model="item.value.present" readonly
                         :color="item.value.present ? 'primary' : 'surface'" />
+                </template>
+                <template v-slot:item.arrival="{ item }">
+                    <strong>{{ item.value.arrival == null ? '-- : --' : item.value.arrival }}</strong>
                 </template>
                 <template v-slot:item.late="{ item }">
                     <v-checkbox-btn v-model="item.value.late" readonly :color="item.value.late ? 'primary' : 'surface'" />
@@ -140,11 +139,13 @@
 <script>
 import { useRouter } from 'vue-router';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import updateAttendance from '@/components/updateAttendance.vue';
+import AttendanceInfo from '@/components/AttendanceInfo.vue';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admissionService';
+import { fetchAttendances } from '@/services/api/attendancesService'
+import { ferchGradesUser } from '@/services/api/gradesService'
 import { axiosExpressClient } from '@/plugins/axiosClient';
 
 export default {
@@ -153,47 +154,32 @@ export default {
         return {
             deleteDialog: false,
             editDialog: false,
-            status: false,
             router: useRouter(),
             storeX: useStore(),
             attDate: useStore().state.attDate,
-            myClasses: useStore().state.myClasses,
+            myGrades: useStore().state.myClasses,
             classId: useStore().state.classId,
-            classYear: -1,
-            classSection: '',
-
+            selectedGrade: {},
             search: '',
             headers: [
-                { title: 'id', key: 'id_stud', align: 'start', width: '3%' },
+            { title: 'id', key: 'school_number', sortable: true, align: 'start' },
                 { title: 'Apellido', key: 'last_name', sortable: true, align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
-                { title: 'Hora entrada', key: 'time_arrival', align: 'center', width: '10%' },
+                { title: 'Hora entrada', key: 'arrival', align: 'center', width: '10%' },
                 { title: 'Foto', key: 'img_encoded', sortable: false, align: 'center', },
                 { title: 'Distancia', key: 'certainty', sortable: false, align: 'center', width: '10%' },
                 { title: 'Presente', key: 'present', align: 'center', width: '3%' },
-                { title: 'Tarde', key: 'late', align: 'center', width: '3%' },
-                { title: 'Acciones', key: 'actions', sortable: false, align: 'end', width: '8%' },
+                { title: 'Acciones', key: 'actions', sortable: false, align: 'end', width: 'fit-content' },
             ],
-            items: [],
-            idRollCall: -1,
+            attendances: [],
             editedIndex: -1,
-            editedItem: {
-                id_att: -1,
-                id_stud: -1,
-                first_name: '',
-                last_name: '',
-                present: false,
-                late: false,
-                img_encoded: '',
-                time_arrival: '',
-            },
+            editedItem: {},
         }
     },
     beforeCreate() {
-        checkAuth([1, 3])
+        checkAuth([0, 1, 3])
     },
     mounted() {
-        console.log('aca',this.classId)
         this.fetchClasses()
     },
     setup() {
@@ -202,13 +188,11 @@ export default {
         const attDate = store.state.attDate
         if (attDate == '') {
             const date = new Date();
-
             let day = date.getDate();
             let month = date.getMonth() + 1;
             let year = date.getFullYear();
 
-            // This arrangement can be altered based on how we want the date's format to appear.
-            let currentDate = `${day}-${month}-${year}`;
+            const currentDate = `${day}-${month}-${year}`;
             store.commit('setDate', { date: currentDate })
         }
     },
@@ -225,63 +209,15 @@ export default {
     methods: {
         async fetchAttendences() {
             const accessToken = store.get('accessToken');
-
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/attendance",
-                    params: {
-                        'accessToken': accessToken,
-                        'classId': this.classId,
-                        'attDate': this.attDate
-                    }
-                })
-                if (result.status == 200) {
-                    this.items = result.data.attendancesRows;
-                    this.status = result.data.status;
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            const currentDate = this.$store.state.attDate
+            this.attendances = await fetchAttendances(accessToken, this.selectedGrade.id, currentDate)
         },
         async fetchClasses() {
             const accessToken = store.get('accessToken');
-            const userId = store.get('userId');
-
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/classes/employee",
-                    params: {
-                        'accessToken': accessToken,
-                        'userId': userId
-                    }
-                })
-                if (result.status == 200) {
-                    this.myClasses = result.data.schoolClasses.map(item => ({
-                        text: item.school_year + ' "' + item.school_section + '"',
-                        year: item.school_year,
-                        section: item.school_section,
-                        status: item.status,
-                        value: item.sc,
-                    }))
-                    for (const i in this.myClasses) {
-                        if (Object.hasOwnProperty.call(this.myClasses, i)) {
-                            const element = this.myClasses[i];
-                            if (element.value == this.classId){
-                                this.classSection = element.section
-                                this.classYear = element.year
-                                break
-                            }
-                        }
-                    }
-                    this.fetchAttendences()
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            const idUser = store.get('userId');
+            this.myGrades = await ferchGradesUser(accessToken, idUser)
+            this.selectedGrade = this.myGrades[0]
+            this.fetchAttendences()
         },
         goToCalendar() {
             this.$router.push({
@@ -289,20 +225,15 @@ export default {
             })
         },
         manageClassUpdate(item) {
-            console.log(item)
-            this.classId = item.value
-            this.classSection = item.section
-            this.classYear = item.year
+            this.selectedGrade = item
             this.fetchAttendences()
         },
         decodeImage(encoded) {
             return "data:image/jpg;base64," + encoded;
         },
         editItem(item) {
-            this.editedIndex = this.items.indexOf(item)
-            this.editedItem = Object.assign({}, item)
+            this.editedItem = item
             this.editedItem['att_date'] = this.$store.state.attDate
-            console.log(this.editedItem)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
             this.editDialog = true
         },
@@ -346,7 +277,7 @@ export default {
             return value.toFixed(2)
         }
     },
-    components: { BaseContainer, VDataTable, updateAttendance }
+    components: { BaseContainer, VDataTable, AttendanceInfo }
 }
 
 </script>

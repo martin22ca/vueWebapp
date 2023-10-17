@@ -126,7 +126,7 @@ export default {
  }
 
  .left-panel {
-     flex: 1;
+     flex: 2;
      border-radius: 1%;
      margin: 7px;
      margin-left: 0;

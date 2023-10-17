@@ -23,7 +23,7 @@ export async function login(username, password) {
         }
     } catch (error) {
         console.log(error);
-        return [false, error.response.data];
+        return [false, error.message];
     }
 }
 

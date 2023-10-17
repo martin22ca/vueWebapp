@@ -108,7 +108,6 @@ export async function updateUser(accessToken, idUser, values) {
                 'role': values.select,
             }
         });
-        console.log(response)
         if (response.status === 200) {
             return [true, null];
         } else {

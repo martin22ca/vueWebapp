@@ -6,6 +6,9 @@
                 <h4> Imagen </h4>
                 <img v-if="img_encoded != null" class="attImgEdit" v-bind:src="this.decodeImage(img_encoded)" />
                 <img v-else class="attImgEdit" src="@/assets/Placeholder.png" />
+                <div style="text-align: start; padding-left: 20px;"> Certeza</div>
+                <v-text-field class="pa-4" v-model="certainty" variant="outlined" prepend-inner-icon="mdi-percent"
+                    readonly />
             </v-col>
             <v-col style="overflow-y: hidden;">
                 <form @submit.prevent="submit" style="margin-right: 20px;">
@@ -24,6 +27,17 @@
                     </v-dialog>
                     <v-container class="ma-3 mr-10">
                         <v-row>
+                            <v-col align-self="center">
+                                <div class="text"> Legajo </div>
+                                <v-row>
+                                    <v-col style="display: flex;">
+                                        <v-text-field class="pa-0" v-model="school_number" variant="outlined"
+                                            prepend-inner-icon="mdi-identifier" readonly></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                        <v-row>
                             <v-col align-self="center" cols="7">
                                 <div class="text"> Nombre </div>
                                 <v-row>
@@ -37,7 +51,7 @@
                                 <div class="text"> Apellido </div>
                                 <v-row>
                                     <v-col style="display: flex;">
-                                        <v-text-field class="pl-2" v-model="lastName" readonly variant="outlined"
+                                        <v-text-field v-model="lastName" readonly variant="outlined"
                                             prepend-inner-icon="mdi-card-account-details"></v-text-field>
                                     </v-col>
                                 </v-row>
@@ -47,31 +61,49 @@
                             <v-col align-self="center" cols="5">
                                 <div class="text" style="padding-bottom: 10px;"> Hora llegada </div>
                                 <v-row>
-                                    <v-text-field class="pa-2" v-model="time_arrival.value.value"
-                                        :error-messages="time_arrival.errorMessage.value" prepend-inner-icon="mdi-clock"
+                                    <v-text-field class="pa-2" v-model="arrival.value.value"
+                                        :error-messages="arrival.errorMessage.value" prepend-inner-icon="mdi-clock"
                                         type="time" variant="outlined"></v-text-field>
                                 </v-row>
                             </v-col>
-                            <v-col align-self="center">
-                                <div class="text"> Presente </div>
-                                <v-col style="display: flex;">
-                                    <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
-                                        :icon="present.value.value ? 'mdi-check' : ''"
-                                        @click="present.value.value = !present.value.value" rounded="lg"
-                                        :color="present.value.value ? 'secondary' : ''" />
-                                </v-col>
+                            <v-col align-self="center" cols="3">
+                                <div class="text" style="padding-bottom: 10px;"> Modulo IA</div>
+                                <v-row>
+                                    <v-text-field class="pa-2" v-model="module_number" prepend-inner-icon="mdi-domain"
+                                        readonly variant="outlined"></v-text-field>
+                                </v-row>
                             </v-col>
-                            <v-col align-self="center">
-                                <div class="text"> Tarde </div>
+                            <v-col align-self="center" cols="auto">
+                                <div class="text textCheck"> Presente </div>
+                                <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
+                                    :icon="present.value.value ? 'mdi-check' : ''"
+                                    @click="present.value.value = !present.value.value" rounded="lg"
+                                    :color="present.value.value ? 'secondary' : ''" />
+                            </v-col>
+                            <v-col align-self="center" cols="auto">
+                                <div class=" text textCheck"> Tarde </div>
                                 <v-btn class="mb-4 pa-2 ml-4" variant="outlined" :icon="late.value.value ? 'mdi-check' : ''"
-                                    @click="late.value.value = !late.value.value; present.value.value = true; " rounded="lg"
+                                    @click="late.value.value = !late.value.value; present.value.value = true;" rounded="lg"
                                     :color="late.value.value ? 'secondary' : ''" />
                             </v-col>
                             <v-col />
                         </v-row>
                         <v-row>
+                            <v-col>
+                                <div class="text"> Observacion <strong>(Opcional)</strong></div>
+                                <v-textarea v-model="observation.value.value" :readonly="!readAble"
+                                    :error-messages="observation.errorMessage.value" prepend-inner-icon="mdi-text-long"
+                                    type="text" variant="outlined" counter>
+                                    <template v-slot:append-inner>
+                                        <v-btn icon="mdi-pencil" variant="outlined" rounded="lg"
+                                            @click="readAble = !readAble" :color="readAble ? 'secondary' : ''" />
+                                    </template>
+                                </v-textarea>
+                            </v-col>
+                        </v-row>
+                        <v-row>
                             <v-col align="end" style="display: flex; align-self: end; justify-content: end;">
-                                <v-btn class="ma-1" type="submit" variant="outlined" color="secondary">
+                                <v-btn class="ma-1" type="submit" @click="submit()" variant="outlined" color="secondary">
                                     Actualizar
                                 </v-btn>
                                 <v-btn class="ma-1" @click="handleReset" variant="tonal">
@@ -91,18 +123,18 @@ import store from 'storejs';
 import { useStore } from 'vuex'
 import { ref } from 'vue'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { updateAttendance } from '@/services/api/attendancesService'
 import { useField, useForm } from 'vee-validate'
 
 export default {
     data: () => ({
-        visible: false,
-        visibleC: false,
+        readAble: false,
     }),
     setup() {
         const storeX = useStore()
         const validationSchema = Yup.object().shape({
-            time_arrival: Yup.string().required('La hora de llegada es Requerida'),
+            observation: Yup.string('NO').nullable('No'),
+            arrival: Yup.string().required('La hora de llegada es Requerida'),
             present: Yup.bool(),
             late: Yup.bool(),
         });
@@ -112,33 +144,40 @@ export default {
             validateOnMount: false
         });
         const editedObj = storeX.state.editedObj
+
         const id_att = editedObj.id_att
         const id_stud = editedObj.id_stud
         const firstName = editedObj.first_name
+        const school_number = editedObj.school_number
         const lastName = editedObj.last_name
         const img_encoded = editedObj.img_encoded
         const att_date = editedObj.att_date
-        const time_arrival = useField('time_arrival');
+        let module_number = editedObj.module_number
+        let certainty = editedObj.certainty
+        const arrival = useField('arrival');
         const present = useField('present');
+        const observation = useField('observation');
         const late = useField('late');
 
-        time_arrival.value.value = editedObj.time_arrival
+        arrival.value.value = editedObj.arrival
         present.value.value = editedObj.present
         late.value.value = editedObj.late
+        observation.value.value = editedObj.observation
 
+        if (certainty == null) certainty = 'No Detectado'
+        else if (certainty == 0) certainty = 'Asistencia Manual'
 
-        if (time_arrival.value.value == null) {
+        if (module_number == null) module_number = 'No Detectado'
+
+        if (arrival.value.value == null) {
             let currDate = new Date();
             let hourMin = currDate.getHours() + ':' + currDate.getMinutes();
-            time_arrival.value.value = hourMin
+            arrival.value.value = hourMin
         }
-
 
         const dialog = ref(false);
         const dialogSucces = ref(false)
         const dialogText = ref('');
-
-        const options = ref([]);
 
         const decodeImage = (encoded) => {
             return "data:image/jpg;base64," + encoded;
@@ -146,34 +185,15 @@ export default {
 
         const submit = handleSubmit(async (values) => {
             const accessToken = store.get('accessToken');
-            try {
-                let response = await axiosClient({
-                    method: 'put',
-                    timeout: 2000,
-                    url: "/attendance/update",
-                    data: {
-                        'accessToken': accessToken,
-                        'id_att': id_att,
-                        'id_stud': id_stud,
-                        'att_date': att_date,
-                        'time_arrival': values.time_arrival,
-                        'present': values.present,
-                        'late': values.late,
-                    }
-                });
-                if (response.status == 200) {
-                    console.log('success');
-                    dialogText.value = response.data.message
-                    dialog.value = true
-                    dialogSucces.value = true
-
-                } else {
-                    alert(JSON.stringify(response.status));
-                }
-            } catch (error) {
-                console.log(error);
-                if (error.response != undefined)
-                    dialogText.value = error.response.data.message;
+            console.log('a')
+            const [result, error] = await updateAttendance(accessToken, id_att, id_stud, att_date, values.arrival, values.present, values.late, values.observation)
+            if (result) {
+                dialogText.value = 'asistencia registrada'
+                dialog.value = true
+                dialogSucces.value = true
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
                 else {
                     dialogText.value = ' Error en la base de datos'
                 }
@@ -183,13 +203,16 @@ export default {
         });
 
         return {
+            school_number,
             firstName,
             lastName,
-            time_arrival,
+            arrival,
             img_encoded,
+            module_number,
+            observation,
+            certainty,
             present,
             late,
-            options,
             dialog,
             dialogText,
             dialogSucces,
@@ -201,7 +224,6 @@ export default {
     },
 
 }
-
 </script>
   
 <style>
@@ -209,10 +231,11 @@ h1 {
     margin: 10px;
 }
 
-.text {
+.textCheck {
     font-size: medium;
     font-weight: 300;
     padding-left: 10px;
+    margin-bottom: 12px;
 }
 
 .attImgEdit {

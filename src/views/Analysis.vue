@@ -6,21 +6,17 @@
                     <v-col>
                         <v-card color="surface-lighter-1" prepend-icon="mdi-information-variant"
                             title="Información del curso" subtitle="Info" class="mb-2 ">
-                            <div v-if="classYear != -1">
+                            <div v-if="Object.keys(selectedGrade) === 0">
                                 <h4 style="padding-left: 20px;">
                                     Curso: <v-menu transition="scale-transition">
                                         <template v-slot:activator="{ props }">
-                                            <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated"
-                                                color="primary" append-icon="mdi-menu-down">{{ classYear }} - "{{
-                                                    classSection
-                                                }}"
-                                            </v-chip>
-                                            <v-chip v-else v-bind:="props" variant="elevated" color="primary"
-                                                append-icon="mdi-menu-down"> Select
+                                            <v-chip v-if="Object.keys(selectedGrade) === 0" v-bind:="props"
+                                                variant="elevated" color="primary" append-icon="mdi-menu-down">
+                                                {{ Object.keys(selectedGrade) === 0 ? 'Select' : selectedGrade.title }}
                                             </v-chip>
                                         </template>
                                         <v-list>
-                                            <v-list-item v-for="(item, i) in myClasses" :key="i" :value="item"
+                                            <v-list-item v-for="(item, i) in myGrades" :key="i" :value="item"
                                                 @click="fetchClassInfo(item)">
                                                 <v-list-item-title>{{ item.text }}</v-list-item-title>
                                             </v-list-item>
@@ -33,25 +29,21 @@
                                     </v-chip>
                                 </h4>
                             </div>
-                            <div v-else style="padding: 2%; ">
+                            <div v-else style="padding: 2%; display: flex; flex-direction: column;">
                                 <v-chip color="primary" class="ma-2">
                                     Ningun Curso Seleccionado
                                 </v-chip>
                                 <v-menu transition="scale-transition">
                                     <template v-slot:activator="{ props }">
-                                        <v-chip v-if="classYear != -1" v-bind:="props" variant="elevated" color="primary"
-                                            append-icon="mdi-menu-down">{{ classYear }} - "{{
-                                                classSection
-                                            }}"
-                                        </v-chip>
-                                        <v-chip v-else v-bind:="props" variant="elevated" color="primary"
-                                            append-icon="mdi-menu-down"> Selecionar
+                                        <v-chip class="ma-2" v-bind:="props" variant="elevated" color="primary"
+                                            append-icon="mdi-menu-down">
+                                            {{ Object.keys(selectedGrade) === 0 ? selectedGrade.title : 'Seleccionar Curso'
+                                            }}
                                         </v-chip>
                                     </template>
                                     <v-list>
-                                        <v-list-item v-for="(item, i) in myClasses" 
-                                            @click="fetchClassInfo(item)">
-                                            <v-list-item-title>{{ item.text }} </v-list-item-title>
+                                        <v-list-item v-for="(item, i) in myGrades" @click="fetchClassInfo(item)">
+                                            <v-list-item-title>{{ item.title }} </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
@@ -104,8 +96,8 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { checkAuth } from '@/plugins/auth';
-import {axiosExpressClient} from '@/plugins/axiosClient'
+import { checkAuth } from '@/services/api/admissionService';
+import { ferchGradesUser, fetchGradeInfo } from '@/services/api/gradesService'
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
@@ -115,11 +107,9 @@ export default {
             search: '',
             dialog: false,
             currDate: '',
-            myClasses: {},
-            classYear: -1,
-            classSection: '',
+            myGrades: [],
+            selectedGrade: {},
             studentId: -1,
-            classStatus: false,
 
             headers: [
                 { title: 'id', key: 'id_stud', align: 'start', },
@@ -137,14 +127,14 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([1, 3])
+        checkAuth([0, 1, 3])
     },
     setup() {
         const store = useStore()
         store.commit('setTitle', { title: 'Análisis', icon: 'mdi-chart-line' })
     },
     mounted() {
-        if (typeof this.myClasses == 'undefined' || Object.keys(this.myClasses).length === 0) {
+        if (typeof this.myGrades == 'undefined' || Object.keys(this.myGrades).length === 0) {
             this.fetchClasses()
             return
         }
@@ -152,53 +142,15 @@ export default {
     methods: {
         async fetchClasses() {
             const accessToken = store.get('accessToken');
-            const userId = store.get('userId');
+            const idUser = store.get('userId');
 
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: "/classes/employee",
-                    params: {
-                        'accessToken': accessToken,
-                        'userId': userId
-                    }
-                })
-                if (result.status == 200) {
-                    this.myClasses = result.data.schoolClasses.map(item => ({
-                        text: item.school_year + ' "' + item.school_section + '"',
-                        year: item.school_year,
-                        section: item.school_section,
-                        status: item.status,
-                        value: item.sc,
-                    }))
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            this.myGrades = await ferchGradesUser(accessToken, idUser)
         },
         async fetchClassInfo(item) {
-            this.classYear = item.year
-            this.classSection = item.section
-            this.classStatus = item.status
+            this.selectedGrade = item
             const accessToken = store.get('accessToken');
 
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: "/classes/info",
-                    params: {
-                        'accessToken': accessToken,
-                        'classId': item.value
-                    }
-                })
-                if (result.status == 200) {
-                    this.items = result.data.classInfo;
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            this.items = await fetchGradeInfo(accessToken, item.id)
         }, getColor(present, late, total) {
             const pre = Number(present) - Number(late) * 0.5
             const tot = Number(total)

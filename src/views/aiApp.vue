@@ -59,8 +59,8 @@
 <script>
 import { useStore } from 'vuex'
 import store from 'storejs';
-import { checkAuth } from '@/services/api/admission';
-import { moduleStatus } from '@/services/api/aiModules'
+import { checkAuth } from '@/services/api/admissionService';
+import { moduleStatus } from '@/services/api/modulesService'
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {

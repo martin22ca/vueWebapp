@@ -52,8 +52,8 @@ import store from 'storejs';
 import { useStore } from 'vuex'
 import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
-import { updateGrade } from '@/services/api/grades'
-import { fetchUsersRole } from '@/services/api/users'
+import { updateGrade } from '@/services/api/gradesService'
+import { fetchUsersRole } from '@/services/api/usersService'
 import { useField, useForm } from 'vee-validate'
 
 export default {

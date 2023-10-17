@@ -108,3 +108,24 @@ export async function deleteGrade(accessToken, idGrade) {
         throw error;
     }
 }
+
+export async function fetchGradeInfo(accessToken, idGrade) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'get',
+            timeout: 5000,
+            url: baseUrl + '/info',
+            headers: { 'Authorization': accessToken },
+            params: {
+                'idGrade': idGrade,
+            }
+        });
+        if (response.status === 200) {
+            return true;
+        } else {
+            throw new Error('Failed to get Grade Info');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
