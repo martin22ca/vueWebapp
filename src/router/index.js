@@ -13,7 +13,7 @@ const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
-    path: '/users',
+    path: '/usuarios',
     name: 'Users',
     component: () => import('@/views/Users.vue')
   },
@@ -39,17 +39,17 @@ const routes = [
   },
   {
     path: '/aplication',
-    name: 'aiApps',
+    name: 'aiApp',
     component: () => import('@/views/aiApp.vue')
   },
   {
-    path: '/classroom',
+    path: '/Modules',
     name: 'aiModules',
     component: () => import('@/views/aiModules.vue')
   },
   {
-    path: '/grade',
-    name: 'Curso',
+    path: '/cursos',
+    name: 'Grades',
     component: () => import('@/views/Grade.vue')
   },
   {

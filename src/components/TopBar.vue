@@ -8,18 +8,18 @@
                             <v-icon icon="mdi-account" style="font-size: 60px;" />
                         </template>
                         <template v-slot:title>
-                            <h2>
+                            <h2 style="font-size: 1.8vw;">
                                 {{ this.lastName }}, {{ this.firstName }}
                             </h2>
                         </template>
                         <template v-slot:subtitle>
-                            <h3 class="subBase">
+                            <h3 class="subBase" style="font-size: 1vw;">
                                 {{ this.email }}
                             </h3>
                         </template>
                     </v-card>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" >
                     <h1 class="h1Top"> <v-icon :icon="pageIcon" class="pr-2" /> {{ pageTitle }}</h1>
                 </v-col>
                 <v-col class="ma-2 " align="end" cols="auto">
@@ -61,6 +61,7 @@ export default {
 }
 
 .h1Top {
+    font-size: 2.5vh;
     font-weight: bold;
     text-align: center;
     padding-top: 12px;

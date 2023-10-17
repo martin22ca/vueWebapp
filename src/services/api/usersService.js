@@ -7,13 +7,34 @@ export async function fetchUsers(accessToken) {
         const response = await axiosExpressClient({
             method: 'get',
             timeout: 5000,
-            url: "/users",
+            url: baseUrl + "/",
             headers: { 'Authorization': accessToken }
         });
         if (response.status === 200) {
-            return response.data.employeesInfo;
+            return response.data.users;
         } else {
             throw new Error('Failed to fetch Users');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function fetchUsersRole(accessToken, role) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'get',
+            timeout: 5000,
+            url: baseUrl + "/role",
+            headers: { 'Authorization': accessToken },
+            params: {
+                'role': role,
+            }
+        });
+        if (response.status === 200) {
+            return response.data.userRoles;
+        } else {
+            throw new Error('Failed to fetch of role' + role);
         }
     } catch (error) {
         throw error;

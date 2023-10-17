@@ -8,12 +8,12 @@
                     </h1>
                 </template>
                 <template v-slot:append>
-                    <v-btn color="primary" @click="fetchClasses(); registerDialog = false"
-                        prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                    <v-btn color="primary" @click="getGrades(); registerDialog = false" prepend-icon="mdi-keyboard-return"
+                        class="mt-0 ma-2">
                         Regresar
                     </v-btn>
                 </template>
-                <RegisterClasses />
+                <RegisterGrade />
             </v-card>
         </v-dialog>
         <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="fadeInCenter pa-2">
@@ -35,12 +35,12 @@
                                     </h1>
                                 </template>
                                 <template v-slot:append>
-                                    <v-btn color="secondary" @click="fetchClasses(); dialog = false"
+                                    <v-btn color="secondary" @click="getGrades(); dialog = false"
                                         prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
                                         Regresar
                                     </v-btn>
                                 </template>
-                                <update-classes />
+                                <UpdateGrade />
                             </v-card>
                         </v-dialog>
                         <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
@@ -65,7 +65,7 @@
                         <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                             mdi-pencil
                         </v-icon>
-                        <v-icon size="small" class="me-2" @click="dailogDel = true; this.deleteItemIdx = item.value.id_cls">
+                        <v-icon size="small" class="me-2" @click="dailogDel = true; this.itemToDelete = item.raw">
                             mdi-trash-can
                         </v-icon>
                     </template>
@@ -74,8 +74,8 @@
                             No data
                         </div>
                     </template>
-                    <template v-slot:item.preceptor="{ item }">
-                        <div v-if="item.value.preceptor != null"> {{ item.value.preceptor }}</div>
+                    <template v-slot:item.user="{ item }">
+                        <div v-if="item.value.id_user != null"> {{ item.value.user }}</div>
                         <div v-else class="noEmail"> Ningun preceptor asociado</div>
                     </template>
                 </v-data-table>
@@ -85,14 +85,14 @@
 </template>
 
 <script>
+import { ferchGrades, deleteGrade } from '@/services/api/gradesService'
 import BaseContainer from '@/components/BaseContainer.vue';
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admissionService';
 import store from 'storejs';
 import { useStore } from 'vuex'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { axiosExpressClient } from '@/plugins/axiosExpressClient';
-import UpdateClasses from '@/components/ClassManage/UpdateClasses.vue';
-import RegisterClasses from '@/components/ClassManage/RegisterClasses.vue';
+import UpdateGrade from '@/components/ClassManage/UpdateGrade.vue';
+import RegisterGrade from '@/components/ClassManage/RegisterGrade.vue';
 
 export default {
     name: 'Attendances',
@@ -102,12 +102,12 @@ export default {
             dialog: false,
             registerDialog: false,
             dailogDel: false,
-            deleteItemIdx: -1,
+            itemToDelete: {},
 
             headers: [
-                { title: 'Año', key: 'school_year', sortable: true, align: 'center', width: '10%' },
-                { title: 'Seccion', key: 'school_section', align: 'center', width: '10%' },
-                { title: 'Preceptor Asignado', key: 'preceptor', align: 'center' },
+                { title: 'Año', key: 'school_year', sortable: true, align: 'start', width: '5%' },
+                { title: 'Seccion', key: 'school_section', align: 'center', width: '5%' },
+                { title: 'Preceptor Asignado', key: 'user', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
@@ -115,71 +115,41 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([2, 3])
+        checkAuth([0, 2, 3])
     },
     setup() {
         const storeX = useStore()
         storeX.commit('setTitle', { title: 'Cursos', icon: 'mdi-google-classroom' })
     },
     mounted() {
-        this.fetchClasses()
+        this.getGrades()
     },
     watch: {
         dialog(newVal) {
-            this.fetchClasses()
+            this.getGrades()
         },
     },
     methods: {
-        async fetchClasses() {
+        async getGrades() {
             const accessToken = store.get('accessToken');
-
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/classes/person",
-                    params: {
-                        'accessToken': accessToken,
-                    }
-                })
-                if (result.status == 200) {
-                    this.items = result.data.schoolClasses
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            this.items = await ferchGrades(accessToken)
         },
         async editItem(item) {
-
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
-
             this.dialog = true
         },
         async deleteItem() {
             const accessToken = store.get('accessToken');
-
-            try {
-                let result = await axiosExpressClient({
-                    method: 'put',
-                    timeout: 5000,
-                    url: "/classes/remove",
-                    params: {
-                        'accessToken': accessToken,
-                        'idClass': this.deleteItemIdx,
-                    }
-                })
-                if (result.status == 200) {
-                    this.fetchClasses()
-                    this.dailogDel = false
-                }
-            } catch (error) {
-                console.log(error)
+            if (await deleteGrade(accessToken, this.itemToDelete.id_grade)) {
+                this.items.splice(this.items.indexOf(this.itemToDelete), 1)
+                this.dailogDel = false
             }
+            console.log(this.items)
         }
     },
-    components: { BaseContainer, VDataTable, UpdateClasses, RegisterClasses }
+    components: { BaseContainer, VDataTable, UpdateGrade, RegisterGrade }
 }
 
 </script>

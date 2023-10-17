@@ -43,9 +43,9 @@ import store from 'storejs';
 import BaseContainer from '@/components/BaseContainer.vue';
 import homePrecep from '@/components/homeComp/homePrecep.vue';
 import homeAdmin from '@/components/homeComp/homeAdmin.vue'
-import { fetchMessages, markAsRead, deleteMsg } from '@/services/api/messages'
+import { fetchMessages, markAsRead, deleteMsg } from '@/services/api/messagesService'
 import { useStore } from 'vuex'
-import { checkAuth } from '@/services/api/admission';
+import { checkAuth } from '@/services/api/admissionService';
 
 
 export default {

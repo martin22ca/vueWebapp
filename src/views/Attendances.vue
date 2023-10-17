@@ -145,7 +145,7 @@ import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
 import { checkAuth } from '@/plugins/auth';
-import { axiosExpressClient } from '@/plugins/axiosExpressClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 
 export default {
     name: 'Attendances',

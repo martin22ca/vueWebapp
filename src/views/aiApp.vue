@@ -2,7 +2,7 @@
     <base-container>
         <v-row style="display: flex;">
             <div class="daemonContainer fadeInCenter">
-                <v-sheet rounded="lg" color="transparent">
+                <v-sheet rounded="lg" color="transparent" class="pa-2">
                     <v-row>
                         <v-col class="pa-0 leftD" style="flex: 1;">
                             <v-card title="Descargar aplicacion" subtitle="Informacion" variant="flat" align="center"
@@ -16,7 +16,8 @@
                                         que se utilizarán para tomar asistencias en los cursos.
                                     </strong></v-list-item>
                                 <v-card-actions>
-                                    <v-btn class="ma-2" @click="download" variant="outlined" :disabled="daemonInstalled">
+                                    <v-btn class="ma-2" @click="download" variant="outlined" :disabled="daemonInstalled"
+                                        size="small">
                                         Descargar
                                     </v-btn>
                                 </v-card-actions>
@@ -25,30 +26,26 @@
                         <v-col class="pa-0 rightD">
                             <v-card title="Estado Aplicacion local"
                                 subtitle="Verificacion de la aplicacion en esta computadora" variant="flat"
-                                align-self-center align="center" color="transparent">
-
+                                align-self-center align="center" color="transparent" class="">
                                 Instalacion:
                                 <div v-if="daemonInstalled" style=" margin: 10px; padding: 10px;">
-                                    <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
+                                    <v-chip size="large" color="primary" prepend-icon="mdi-check">
                                         App instalada
                                     </v-chip>
                                 </div>
                                 <div v-else style=" margin: 10px; padding: 10px;">
-                                    <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
+                                    <v-chip size="large" color="error" prepend-icon="mdi-alert-box">
                                         App no encontrada
                                     </v-chip>
                                 </div>
                                 Estado:
-                                <div v-if="daemonWorking" class="aniWob" style=" margin: 10px; padding: 10px;">
-                                    <v-chip size="x-large" color="primary" prepend-icon="mdi-check">
-                                        En Funcionamiento!
+                                <div :class="daemonWorking ? 'aniWob' : ' '" style="margin: 10px; padding: 10px;">
+                                    <v-chip :color="daemonWorking ? 'primary' : 'error'"
+                                        :prepend-icon="daemonWorking ? 'mdi-check' : 'mdi-alert-box'">
+                                        {{ daemonWorking ? 'En Funcionamiento!' : 'App no está online' }}
                                     </v-chip>
                                 </div>
-                                <div v-else style=" margin: 10px; padding: 10px;">
-                                    <v-chip size="x-large" color="error" prepend-icon="mdi-alert-box">
-                                        App no esta online
-                                    </v-chip>
-                                </div>
+
                             </v-card>
                         </v-col>
                     </v-row>
@@ -63,7 +60,7 @@
 import { useStore } from 'vuex'
 import store from 'storejs';
 import { checkAuth } from '@/services/api/admission';
-import { axiosExpressClient } from '@/plugins/axiosClient';
+import { moduleStatus } from '@/services/api/aiModules'
 import BaseContainer from '@/components/BaseContainer.vue';
 
 export default {
@@ -82,23 +79,10 @@ export default {
     methods: {
         async checkDaemonStatus() {
             const accessToken = store.get('accessToken');
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: "/classroom/daemon",
-                    params: {
-                        'accessToken': accessToken,
-                        'clientIp': window.location.hostname
-                    }
-                })
-                if (result) {
-                    this.daemonInstalled = result.data.daemonInstalled;
-                    this.daemonWorking = result.data.daemonWorking;
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            const status = await moduleStatus(accessToken, window.location.hostname)
+            this.daemonInstalled = status[0]
+            this.daemonWorking = status[1]
+
         }, download() {
             const fileUrl = '/AIModuleSetup.exe'; // Replace with the correct path to your file
             const link = document.createElement('a');
@@ -129,7 +113,6 @@ export default {
 }
 
 .leftD {
-
     border-top-left-radius: 2%;
     border-bottom-left-radius: 2%;
     background: rgb(var(--v-theme-surface));
@@ -137,7 +120,7 @@ export default {
 }
 
 .rightD {
-
+    font-size: 15px;
     text-align: center;
     border-top-right-radius: 2%;
     border-bottom-right-radius: 2%;

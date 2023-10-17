@@ -1,8 +1,8 @@
 <template>
     <div class="gradient">
         <v-dialog v-model="showDialog" width="auto">
-            <v-card title="Login Error" rounded="xl">
-                <v-card-text>
+            <v-card title="Login Error" rounded="xl" min-width="50vw">
+                <v-card-text style="font-size: 12px;">
                     {{ showError }}
                 </v-card-text>
                 <v-card-actions>
@@ -49,7 +49,7 @@
 <script>
 import store from 'storejs';
 import * as Yup from "yup";
-import { checkLoged, login } from '@/services/api/admission';
+import { checkLoged, login } from '@/services/api/admissionService';
 import { useField, useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue';
@@ -115,6 +115,7 @@ export default {
   
 <style scoped>
 p {
+    font-size: 15px;
     margin: 20px;
     color: rgb(173, 173, 173);
     font-style: italic;
@@ -127,6 +128,7 @@ p {
 }
 
 .h1Log {
+    font-size: 30px;
     padding: 10px;
     text-align: center;
     text-decoration: underline;

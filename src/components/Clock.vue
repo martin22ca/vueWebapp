@@ -60,7 +60,7 @@ export default {
     justify-content: center;
     margin-left: auto;
     display: flex;
-    font-size: xx-large;
+    font-size: 2vw;
     color: rgb(var(--v-theme-primary));
 }
 

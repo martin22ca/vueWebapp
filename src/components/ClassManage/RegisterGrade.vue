@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submit" class="registerClassContainer" style="margin-right: 20px;" >
+    <form @submit.prevent="submit" class="registerClassContainer" style="margin-right: 20px;">
         <v-dialog v-model="dialog" width="auto">
             <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
@@ -8,10 +8,11 @@
                     <v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
                         :color="dialogSucces ? 'primary' : 'error'">
                     </v-icon> {{ dialogText }} </v-card-text>
-                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" color="primary" variant="outlined"> Ok</v-btn></v-card-item>
+                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" color="primary" variant="outlined">
+                        Ok</v-btn></v-card-item>
             </v-card>
         </v-dialog>
-        <v-container class="ma-3 mr-10" >
+        <v-container class="ma-3 mr-10">
             <v-divider :thickness="7" class="pa-2"></v-divider>
             <div class="text"> Datos del curso </div>
             <v-row>
@@ -29,9 +30,9 @@
             <div class="text"> Selecionar preceptor <strong> (opcional)</strong> </div>
             <v-row>
                 <v-col align-self="center">
-                    <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="options"
-                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-title="text"
-                        :maxlength="1" item-value="value" prepend-inner-icon="mdi-alert-circle"></v-select>
+                    <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="items"
+                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
+                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle"></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -49,26 +50,24 @@
 </template>
   
 <script>
-;
-import { useStore } from 'vuex'
 import store from 'storejs';
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { registerGrade } from '@/services/api/gradesService'
+import { fetchUsersRole } from '@/services/api/usersService'
 import { useField, useForm } from 'vee-validate'
 
 export default {
-    name: 'RegisterClass',
+    name: 'RegisterGrade',
     data: () => ({
         visible: false,
         visibleC: false,
     }),
     setup() {
-        const sotreX = useStore()
         const validationSchema = Yup.object().shape({
             year: Yup.number("Debe ser un Numero").typeError('Año Debe ser un Numero').required('Selecionar Año').positive("El Año debe ser positivo").integer(),
             section: Yup.string().required('La seccion es requerida').max(1, 'Solo un Caracter'),
-            select: Yup.string().required('Select an item')
+            select: Yup.string().nullable(),
         });
 
         const { handleSubmit, handleReset, errors } = useForm({
@@ -83,7 +82,7 @@ export default {
         const dialogSucces = ref(false)
         const dialogText = ref('');
 
-        const options = ref([]);
+        const items = ref([]);
 
 
         const onYearInput = (event) => {
@@ -98,66 +97,40 @@ export default {
         }
 
         const fetchOptions = async () => {
-            try {
-                const accessToken = store.get('accessToken');
-                const response = await axiosClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: '/employees/precept',
-                    params: {
-                        'accessToken': accessToken
-                    }
-                });
-                options.value = response.data.employeesInfo.map(item => ({
-                    text: item.first_name + " " + item.last_name,
-                    value: item.id_emp,
-                }));
-            } catch (error) {
-                console.log(error);
-            }
+            const accessToken = store.get('accessToken');
+            items.value = await fetchUsersRole(accessToken, 3)
         };
-
-        fetchOptions();
 
         const submit = handleSubmit(async (values) => {
             const accessToken = store.get('accessToken');
             const upperSection = values.section.toUpperCase()
 
-            try {
-                let result = await axiosClient({
-                    method: 'post',
-                    timeout: 2000,
-                    url: "/classes/register",
-                    data: {
-                        'accessToken': accessToken,
-                        'year': values.year,
-                        'section': upperSection,
-                        'id_emp': values.select,
-                    }
-                });
-                if (result.status == 200) {
-                    dialogText.value = result.data.message;
-                    dialogSucces.value = true;
-                    dialog.value = true;
-                } else {
-                    alert(JSON.stringify(result.status));
-                }
-            } catch (error) {
-                console.log(error);
-                if (error.response != undefined) { dialogText.value = 'Error del servidor'; }
+            const [result, error] = await registerGrade(accessToken, values.year, upperSection, values.select)
+
+            if (result) {
+                dialogText.value = 'Curso creado Exitosamente'
+                dialog.value = true
+                dialogSucces.value = true
+
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
                 else {
-                    dialogText.value = error.response.data.message;
+                    dialogText.value = 'Error en la base de datos'
                 }
                 dialogSucces.value = false
                 dialog.value = true;
             }
+        });
+        onMounted(() => {
+            fetchOptions();
         });
 
         return {
             year,
             section,
             select,
-            options,
+            items,
             dialog,
             dialogSucces,
             dialogText,

@@ -4,9 +4,10 @@
             <v-card title="Informacion" prepend-icon="mdi-information" style="font-size: large; min-width: 50vh;"
                 align="start" rounded="true">
                 <v-card-text style="padding-left: 50px;">
-                  <v-icon icon="mdi-check" color="secondary"></v-icon>  {{ dialogText }} 
+                    <v-icon icon="mdi-check" color="secondary"></v-icon> {{ dialogText }}
                 </v-card-text>
-                <v-card-item class="pb-2"> <v-btn title="Ok" @click="dialog=false" variant="outlined" color="secondary">OK</v-btn></v-card-item>
+                <v-card-item class="pb-2"> <v-btn title="Ok" @click="dialog = false" variant="outlined"
+                        color="secondary">OK</v-btn></v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
@@ -27,9 +28,9 @@
             <div class="text"> Selecionar preceptor <strong> (opcional)</strong> </div>
             <v-row>
                 <v-col align-self="center">
-                    <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="options"
-                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-title="text"
-                        :maxlength="1" item-value="value" prepend-inner-icon="mdi-alert-circle"></v-select>
+                    <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="items"
+                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
+                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle"></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -49,13 +50,14 @@
 <script>
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { updateGrade } from '@/services/api/grades'
+import { fetchUsersRole } from '@/services/api/users'
 import { useField, useForm } from 'vee-validate'
 
 export default {
-    name: 'UpdateClass',
+    name: 'UpdateGrade',
     data: () => ({
         visible: false,
         visibleC: false,
@@ -65,7 +67,7 @@ export default {
         const validationSchema = Yup.object().shape({
             year: Yup.number("Debe ser un Numero").typeError('Año Debe ser un Numero').required('Selecionar Año').positive("El Año debe ser positivo").integer(),
             section: Yup.string().required('La seccion es requerida').max(1, 'Solo un Caracter'),
-            select: Yup.string().required('Select an item')
+            select: Yup.string().nullable()
         });
 
         const { handleSubmit, handleReset, errors } = useForm({
@@ -77,15 +79,15 @@ export default {
         const year = useField('year');
         const section = useField('section');
         const select = useField('select');
-        const idClass = editedObj.id_cls
+        const idGrade = editedObj.id_grade
 
         year.value.value = editedObj.school_year
         section.value.value = editedObj.school_section
-        select.value.value = editedObj.id_emp
+        select.value.value = editedObj.id_user
 
         const dialog = ref(false);
         const dialogText = ref('');
-        const options = ref([]);
+        const items = ref([]);
 
         const onYearInput = (event) => {
             const input = event.target.value;
@@ -98,65 +100,43 @@ export default {
             }
         }
         const fetchOptions = async () => {
-            try {
-                const accessToken = store.get('accessToken');
-                const response = await axiosClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: '/employees/precept',
-                    params: {
-                        'accessToken': accessToken
-                    }
-                });
-                options.value = response.data.employeesInfo.map(item => ({
-                    text: item.first_name + " " + item.last_name,
-                    value: item.id_emp,
-                }));
-            } catch (error) {
-                console.log(error);
-            }
+            const accessToken = store.get('accessToken');
+            items.value = await fetchUsersRole(accessToken, 3)
         };
 
-        fetchOptions();
-
         const submit = handleSubmit(async (values) => {
+
             const accessToken = store.get('accessToken');
             const upperSection = values.section.toUpperCase()
 
-            try {
-                const result = await axiosClient({
-                    method: 'put',
-                    timeout: 2000,
-                    url: '/classes/update',
-                    params: {
-                        'accessToken': accessToken,
-                        'idClass': idClass,
-                        'year': values.year,
-                        'section': upperSection,
-                        'id_emp': values.select
-                    }
-                });
-                if (result.status == 200) {
-                    dialogText.value = result.data.message;
-                    dialog.value = true;
-                } else {
-                    alert(JSON.stringify(result.status));
+            const [result, error] = await updateGrade(accessToken, idGrade, values.year, upperSection, values.select)
+
+            if (result) {
+                dialogText.value = 'Curso Actualizado Exitosamente'
+                dialog.value = true
+                dialog.value = true
+
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
+                else {
+                    dialogText.value = 'Error en la base de datos'
                 }
-            } catch (error) {
-                console.log(error);
-                if (error.response.m)
-                    dialogText.value = 'Error message goes here';
+                dialog.value = false
                 dialog.value = true;
             }
         });
 
+        onMounted(() => {
+            fetchOptions();
+        });
         return {
             year,
             editedObj,
             section,
-            idClass,
+            idGrade,
             select,
-            options,
+            items,
             dialog,
             dialogText,
             onYearInput,

@@ -67,7 +67,7 @@ import store from 'storejs';
 import { useStore } from 'vuex'
 import { ref } from 'vue'
 import * as Yup from "yup";
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 import { useField, useForm } from 'vee-validate'
 
 export default {
@@ -113,7 +113,7 @@ export default {
             const accessToken = store.get('accessToken');
             const userId = store.get('userId');
             try {
-                let response = await axiosClient({
+                let response = await axiosExpressClient({
                     method: 'get',
                     timeout: 5000,
                     url: "/classes/employee",
@@ -138,7 +138,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let response = await axiosClient({
+                let response = await axiosExpressClient({
                     method: 'put',
                     timeout: 2000,
                     url: "/students/update",

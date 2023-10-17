@@ -88,7 +88,7 @@ export default {
                 {
                     name: 'Cursos',
                     icon: 'mdi-google-classroom',
-                    route: 'Curso',
+                    route: 'Grades',
                     roleNeeded: [0, 2, 3]
                 },
                 {
@@ -100,7 +100,7 @@ export default {
                 {
                     name: 'APP',
                     icon: 'mdi-download-box',
-                    route: 'Daemon',
+                    route: 'aiApp',
                     roleNeeded: [0, 2, 3]
                 }
             ]

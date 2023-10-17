@@ -12,7 +12,7 @@
                         Regresar
                     </v-btn>
                 </template>
-                <Register />
+                <RegisterUser />
             </v-card>
         </v-dialog>
         <v-card title="Empleados" subtitle="Editar información de los empleados" color="surface-lighter-1"
@@ -40,7 +40,7 @@
                                         Regresar
                                     </v-btn>
                                 </template>
-                                <UpdatePersonnel />
+                                <UpdateUser />
                             </v-card>
                         </v-dialog>
                         <v-dialog v-model="dailogDel" max-width="55vh" style="position: fixed; margin-left: auto;">
@@ -74,7 +74,7 @@
                         <v-icon v-if="!item.value.active" icon="mdi-check" class="me-2" color="success"
                             @click="changeUserState(item.raw, true)" />
                         <v-icon v-if="!item.value.active" icon="mdi-trash-can" class="me-2" color="error"
-                            @click="dailogDel = true; this.deleteItemIdx = item.value.id_user" />
+                            @click="dailogDel = true; this.itemToDelete = item.raw" />
                     </template>
                 </v-data-table>
             </v-sheet>
@@ -84,13 +84,13 @@
 
 <script>
 import store from 'storejs';
-import { checkAuth } from '@/services/api/admission';
+import { checkAuth } from '@/services/api/admissionService';
 import { useStore } from 'vuex'
 import BaseContainer from '@/components/BaseContainer.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { fetchUsers, changeState, deleteUser } from '@/services/api/users'
-import UpdatePersonnel from '@/components/Users/UpdatePersonnel.vue';
-import Register from '@/components/Users/Register.vue';
+import { fetchUsers, changeState, deleteUser } from '@/services/api/usersService'
+import UpdateUser from '@/components/Users/UpdateUser.vue';
+import RegisterUser from '@/components/Users/RegisterUser.vue';
 
 export default {
     name: 'Attendances',
@@ -102,8 +102,7 @@ export default {
             registerDialog: false,
             status: false,
             headers: [
-                { title: 'Id', key: 'id_user', align: 'start', width: '3%' },
-                { title: 'Apellido', key: 'last_name', align: 'center', width: 'auto' },
+                { title: 'Apellido', key: 'last_name', align: 'start', width: 'auto' },
                 { title: 'Nombre', key: 'first_name', align: 'center', width: 'auto' },
                 { title: 'DNI', key: 'dni', align: 'center', width: 'auto' },
                 { title: 'Email', key: 'email', align: 'center' },
@@ -112,7 +111,7 @@ export default {
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end', width: 'auto' },
             ],
             items: [],
-            deleteItemIdx: -1,
+            itemToDelete: {},
             editedItem: {},
         }
     },
@@ -150,13 +149,13 @@ export default {
         },
         async deleteItem() {
             const accessToken = store.get('accessToken');
-            if (await deleteUser(accessToken, this.deleteItemIdx)) {
-                this.getUsers()
+            if (await deleteUser(accessToken, this.itemToDelete.id_user)) {
+                this.items.splice(this.items.indexOf(this.itemToDelete), 1)
                 this.dailogDel = false
             }
         }
     },
-    components: { VDataTable, BaseContainer, UpdatePersonnel, Register }
+    components: { VDataTable, BaseContainer, UpdateUser, RegisterUser }
 }
 
 </script>

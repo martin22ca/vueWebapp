@@ -8,8 +8,8 @@
                     </h1>
                 </template>
                 <template v-slot:append>
-                    <v-btn color="primary" @click="fetchStudents(); registerDialog = false"
-                        prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
+                    <v-btn color="primary" @click="getStudents(); registerDialog = false" prepend-icon="mdi-keyboard-return"
+                        class="mt-0 ma-2">
                         Regresar
                     </v-btn>
                 </template>
@@ -39,7 +39,7 @@
                             </template>
                             <v-list>
                                 <v-list-item v-for="item in  myClasses " value="value"
-                                    @click="currentClassId = item.value; currentClass = item.text; fetchStudents()">
+                                    @click="currentGradeId = item.value; currentClass = item.text; getStudents()">
                                     <v-list-item-title>{{ item.text }}</v-list-item-title>
                                 </v-list-item>
                             </v-list>
@@ -62,7 +62,7 @@
                                     </h1>
                                 </template>
                                 <template v-slot:append>
-                                    <v-btn color="secondary" @click="fetchStudents(); dialog = false"
+                                    <v-btn color="secondary" @click="getStudents(); dialog = false"
                                         prepend-icon="mdi-keyboard-return" class="mt-0 ma-2">
                                         Regresar
                                     </v-btn>
@@ -88,6 +88,10 @@
                             mdi-pencil
                         </v-icon>
                         <v-icon size="small" class="me-2"
+                            @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud">
+                            mdi-information
+                        </v-icon>
+                        <v-icon size="small" class="me-2" color="warning"
                             @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud">
                             mdi-trash-can
                         </v-icon>
@@ -122,19 +126,18 @@
                 </v-data-table>
                 <div v-else>
                     <v-card variant="elevated">
-                        <v-card-title> <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{
-                            currentClass
-                        }}</v-card-title>
+                        <v-card-title>
+                            <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{
+                                currentClass
+                            }}</v-card-title>
                         <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
-                        <v-card-item>
-                        </v-card-item>
                     </v-card>
                 </div>
             </v-sheet>
         </v-card>
         <v-card v-else title="Reconocimiento Facial" subtitle="Control" class="ma-2 mr-5" prepend-icon="mdi-image">
             <template v-slot:append>
-                <v-btn @click=" currentStudId = -1; fetchStudents()" prepend-icon="mdi-arrow-left" color="primary">
+                <v-btn @click=" currentStudId = -1; getStudents()" prepend-icon="mdi-arrow-left" color="primary">
                     Regresar
                 </v-btn>
             </template>
@@ -146,16 +149,18 @@
 <script>
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admissionService';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { axiosExpressClient } from '@/plugins/axiosExpressClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
+import { ferchGradesUser } from '@/services/api/gradesService'
+import { fetchStudents } from '@/services/api/studentsService'
 import UpdateStudent from '@/components/StudentManage/UpdateStudent.vue';
 import RegisterStudent from '@/components/StudentManage/RegisterStudent.vue';
 import AISetup from '@/components/faceRecog/AISetup.vue'
 
 export default {
-    name: 'Attendances',
+    name: 'Students',
     data() {
         return {
             dialog: false,
@@ -164,7 +169,7 @@ export default {
             registerDialog: false,
             myClasses: [],
             currentClass: '',
-            currentClassId: -1,
+            currentGradeId: -1,
             currentStudId: -1,
             recogStatus: {
                 1: { text: 'Error', color: 'error', info: 'Hubo un error en el sistema se deben registrar las fotos otra vez.' },
@@ -172,10 +177,10 @@ export default {
                 3: { text: 'Activo', color: 'primary', info: 'El sitema ya registro las fotos en el sistema' },
             },
             headers: [
-                { title: 'Apellido', key: 'last_name', align: 'left' },
+                { title: 'Legajo', key: 'school_number', align: 'start', width: '10%' },
+                { title: 'DNI', key: 'dni', align: 'center' },
+                { title: 'Apellido', key: 'last_name', align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
-                { title: 'Email', key: 'email', align: 'center' },
-                { title: 'DNI', key: 'dni', align: 'center', width: '8%' },
                 { title: 'Reconocimiento', key: 'id_status', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
@@ -184,66 +189,32 @@ export default {
         }
     },
     mounted() {
-        this.fetchClasses()
+        this.getGrades()
     },
     beforeCreate() {
-        checkAuth([1, 3])
+        checkAuth([0, 1, 3])
     },
     setup() {
         const storeX = useStore()
         storeX.commit('setTitle', { title: 'Alumnos', icon: 'mdi-school' })
     },
-    watch: {
-        dialog(newVal) {
-            this.fetchStudents()
-        }
-    },
     methods: {
-        async fetchStudents() {
+        async getStudents() {
             const accessToken = store.get('accessToken');
-            try {
-                let response = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/students",
-                    params: {
-                        'accessToken': accessToken,
-                        'idClass': this.currentClassId,
-                    }
-                })
-                if (response.status == 200) {
-                    this.items = response.data.students;
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            this.items = await fetchStudents(accessToken, this.currentGradeId)
         },
-        async fetchClasses() {
+        async getGrades() {
             const accessToken = store.get('accessToken');
-            const userId = store.get('userId');
+            const idUser = store.get('userId');
 
-            try {
-                let response = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 2000,
-                    url: "/classes/employee",
-                    params: {
-                        'accessToken': accessToken,
-                        'userId': userId,
-                    }
-                })
-                if (response.status == 200) {
-                    this.myClasses = response.data.schoolClasses.map(item => ({
-                        text: item.school_year + ' "' + item.school_section + '"',
-                        year: item.school_year,
-                        section: item.school_section,
-                        status: item.status,
-                        value: item.sc,
-                    }))
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            const results = await ferchGradesUser(accessToken, idUser)
+            this.myClasses = results.map(item => ({
+                text: item.school_year + ' "' + item.school_section + '"',
+                year: item.school_year,
+                section: item.school_section,
+                status: item.closed,
+                value: item.id,
+            }))
         },
         editItem(item) {
             this.editedIndex = this.items.indexOf(item)
@@ -266,7 +237,7 @@ export default {
                     }
                 })
                 if (result.status == 200) {
-                    this.fetchStudents()
+                    this.getStudents()
                     this.dailogDel = false
                 }
             } catch (error) {

@@ -53,7 +53,7 @@
 import store from 'storejs';
 import { useStore } from 'vuex'
 import OpenCamera from './OpenCamera.vue';
-import { axiosClient } from '@/plugins/axiosClient';
+import { axiosExpressClient } from '@/plugins/axiosClient';
 
 export default {
     name: "AiSetup",
@@ -75,7 +75,7 @@ export default {
             const accessToken = store.get('accessToken');
 
             try {
-                let result = await axiosClient({
+                let result = await axiosExpressClient({
                     method: 'put',
                     timeout: 5000,
                     url: "/students/removeAi",

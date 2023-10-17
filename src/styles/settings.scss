@@ -12,7 +12,9 @@
 body {
     display: block;
     background-color: rgb(var(--v-theme-background));
-	font-size: 1vw;
+}
+tr{
+	font-size: 1.6vh;
 }
 
 tr:nth-of-type(even) {
