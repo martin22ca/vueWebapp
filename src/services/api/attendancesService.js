@@ -20,23 +20,6 @@ export async function fetchAttendances(accessToken, idGrade, currentDate) {
             const attendances = response.data.attendances
             const rollCall = response.data.rollCall
 
-            for (const row in attendances) {
-                const arrival = attendances[row].arrival
-                const imgBuffer = attendances[row].img_encoded
-                const present = attendances[row].present
-
-                if (imgBuffer != null) {
-                    attendances[row].img_encoded = Buffer.from(imgBuffer).toString('base64')
-                }
-                if (arrival != null) {
-                    const words = arrival.split(':');
-                    attendances[row].arrival = words[0] + ":" + words[1]
-                }
-                if (present == null) {
-                    attendances[row].present = false
-                    attendances[row].late = false
-                }
-            }
             return [attendances, rollCall];
         } else {
             throw new Error('Failed to fetch Msgs');

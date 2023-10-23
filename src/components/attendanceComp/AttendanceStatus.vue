@@ -125,7 +125,7 @@ export default {
     data: () => ({
         readAble: false,
         confirmation: false,
-        dialogText: '',
+        dialogText: ' ',
         observation: '',
     }),
     props: {

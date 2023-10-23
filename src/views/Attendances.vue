@@ -63,7 +63,7 @@
                 </template>
                 <template v-slot:item.img_encoded="{ item }">
                     <img v-if="item.value.img_encoded != null" class="attImg"
-                        v-bind:src="this.decodeImage(item.value.img_encoded)" />
+                        v-bind:src="decodeImage(item.value.img_encoded)" />
                     <img v-else class="attImgP" src="@/assets/Placeholder.png" />
                 </template>
                 <template v-slot:item.actions="{ item }">

@@ -142,8 +142,8 @@ export default {
         async fetchClasses() {
             const accessToken = store.get('accessToken');
             const idUser = store.get('userId');
-
             this.myGrades = await ferchGradesUser(accessToken, idUser)
+            this.fetchClassInfo(this.myGrades[0])
         },
         async fetchClassInfo(item) {
             this.selectedGrade = item
