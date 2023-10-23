@@ -3,61 +3,58 @@
         <div class="classesContainer fadeInCenter">
             <v-sheet width="100%" color="transparent">
                 <v-row no-gutters>
-                    <v-col>
-                        <v-card color="surface-lighter-1" prepend-icon="mdi-information-variant"
-                            title="Información del curso" subtitle="Info" class="mb-2 ">
-                            <div v-if="Object.keys(selectedGrade) === 0">
-                                <h4 style="padding-left: 20px;">
-                                    Curso: <v-menu transition="scale-transition">
+                    <div style="display: flex; flex-wrap: wrap; width: 100%">
+                        <v-col class="pa-0 mb-2" >
+                            <v-card class="pb-8" color="surface-lighter-1" prepend-icon="mdi-information-variant"
+                                title="Información del curso" subtitle="Info">
+                                <div v-if="!(Object.keys(selectedGrade) == 0)">
+                                    <h4 style="padding-left: 20px;">
+                                        Curso: <v-menu transition="scale-transition">
+                                            <template v-slot:activator="{ props }">
+                                                <v-chip v-if="!(Object.keys(selectedGrade) == 0)" v-bind:="props"
+                                                    variant="elevated" color="primary" append-icon="mdi-menu-down">
+                                                    {{ Object.keys(selectedGrade) == 0 ? 'Select' : selectedGrade.title }}
+                                                </v-chip>
+                                            </template>
+                                            <v-list>
+                                                <v-list-item v-for="(item, i) in myGrades" @click="fetchClassInfo(item)">
+                                                    <v-list-item-title>{{ item.title }} </v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
+                                    </h4>
+                                </div>
+                                <div v-else style="padding: 2%; display: flex; flex-direction: column;">
+                                    <v-chip color="primary" class="ma-2">
+                                        Ningun Curso Seleccionado
+                                    </v-chip>
+                                    <v-menu transition="scale-transition">
                                         <template v-slot:activator="{ props }">
-                                            <v-chip v-if="Object.keys(selectedGrade) === 0" v-bind:="props"
-                                                variant="elevated" color="primary" append-icon="mdi-menu-down">
-                                                {{ Object.keys(selectedGrade) === 0 ? 'Select' : selectedGrade.title }}
+                                            <v-chip class="ma-2" v-bind:="props" variant="elevated" color="primary"
+                                                append-icon="mdi-menu-down">
+                                                {{ Object.keys(selectedGrade) == 0 ? 'Seleccionar Curso' :
+                                                    selectedGrade.title }}
                                             </v-chip>
                                         </template>
                                         <v-list>
-                                            <v-list-item v-for="(item, i) in myGrades" :key="i" :value="item"
-                                                @click="fetchClassInfo(item)">
-                                                <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                            <v-list-item v-for="(item, i) in myGrades" @click="fetchClassInfo(item)">
+                                                <v-list-item-title>{{ item.title }} </v-list-item-title>
                                             </v-list-item>
                                         </v-list>
                                     </v-menu>
-                                </h4>
-                                <h4 style="padding: 20px;">
-                                    Estado Actual: <v-chip :color="classStatus ? 'secondary' : 'error'" variant="elevated">
-                                        {{ classStatus ? "ABIERTO" : "CERRADO" }}
-                                    </v-chip>
-                                </h4>
-                            </div>
-                            <div v-else style="padding: 2%; display: flex; flex-direction: column;">
-                                <v-chip color="primary" class="ma-2">
-                                    Ningun Curso Seleccionado
-                                </v-chip>
-                                <v-menu transition="scale-transition">
-                                    <template v-slot:activator="{ props }">
-                                        <v-chip class="ma-2" v-bind:="props" variant="elevated" color="primary"
-                                            append-icon="mdi-menu-down">
-                                            {{ Object.keys(selectedGrade) === 0 ? selectedGrade.title : 'Seleccionar Curso'
-                                            }}
-                                        </v-chip>
-                                    </template>
-                                    <v-list>
-                                        <v-list-item v-for="(item, i) in myGrades" @click="fetchClassInfo(item)">
-                                            <v-list-item-title>{{ item.title }} </v-list-item-title>
-                                        </v-list-item>
-                                    </v-list>
-                                </v-menu>
-                            </div>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="8">
-                        <v-card color="surface-lighter-1" class="ml-2 mb-2" title="Buscar Estudiante" subtitle="Escribir">
-                            <div style="padding-bottom: 2%">
-                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
-                                    hide-details class="pl-5 pr-5" variant="outlined"></v-text-field>
-                            </div>
-                        </v-card>
-                    </v-col>
+                                </div>
+                            </v-card>
+                        </v-col>
+                        <v-col cols="8" class="pa-0">
+                            <v-card color="surface-lighter-1" class="ml-2 mb-2" title="Buscar Estudiante"
+                                subtitle="Escribir">
+                                <div style="padding-bottom: 2%">
+                                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                        hide-details class="pl-5 pr-5" variant="outlined"></v-text-field>
+                                </div>
+                            </v-card>
+                        </v-col>
+                    </div>
                 </v-row>
             </v-sheet>
             <v-row no-gutters>
@@ -73,6 +70,9 @@
                             density="compact" :search="search" hover>
                             <template v-slot:no-data>
                                 No data
+                            </template>
+                            <template v-slot:item.missing="{ item }">
+                                {{ item.value.total - item.value.present }}
                             </template>
                             <template v-slot:item.percentage="{ item }">
                                 <v-chip :color="getColor(item.value.present, item.value.late, item.value.total)">
@@ -112,7 +112,6 @@ export default {
             studentId: -1,
 
             headers: [
-                { title: 'id', key: 'id_stud', align: 'start', },
                 { title: 'Dni', key: 'dni', align: 'start', },
                 { title: 'Apellido', key: 'last_name', sortable: true, align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
@@ -148,8 +147,8 @@ export default {
         },
         async fetchClassInfo(item) {
             this.selectedGrade = item
+            console.log(this.selectedGrade.title)
             const accessToken = store.get('accessToken');
-
             this.items = await fetchGradeInfo(accessToken, item.id)
         }, getColor(present, late, total) {
             const pre = Number(present) - Number(late) * 0.5
@@ -165,7 +164,7 @@ export default {
             else {
                 return Math.round(100 * pre / tot)
             }
-        }
+        },
     },
     components: { BaseContainer, VDataTable }
 }

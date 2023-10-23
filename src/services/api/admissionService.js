@@ -17,13 +17,14 @@ export async function login(username, password) {
             }
         });
         if (response.status === 200) {
-            return [response.data,, null];
+            return [response.data, , null];
         } else {
             return [false, response.data];
         }
     } catch (error) {
-        console.log(error);
-        return [false, error.message];
+        console.log(error)
+        if (error.response != undefined) return [false, error.response.data];
+        else return [false, undefined]
     }
 }
 
@@ -54,7 +55,6 @@ export async function checkAuth(reqRole = []) {
         }
     } catch (error) {
         router.push({ name: "Login", forceReload: true })
-        console.log(error)
         console.log(error['response']['data']['message'])
     }
 }

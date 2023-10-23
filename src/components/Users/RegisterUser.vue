@@ -116,7 +116,7 @@ export default {
             dni: Yup.number().typeError('DNI debe ser un numero').required('DNI is required').test('len', 'El DNI debe contener al menos 8 digitos', val => (val.toString().length >= 8)),
             email: Yup.string().email('Email no valido'),
             username: Yup.string().required('El Username es requerido').min(4, 'El Username debe contener al menos 4 digitos'),
-            password: Yup.string().required('La contraseñas es requerido').min(8, 'L contraseña debe contener al menos 8 digitos').matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/, 'Debe tener al menos una Mayuscula, una Minuscula y un numero'),
+            password: Yup.string().required('La contraseñas es requerido').min(8, 'La contraseña debe contener al menos 8 digitos').matches(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/, 'Debe tener al menos una Mayuscula, una Minuscula y un numero'),
             passwordConfirmation: Yup.string().required('Confrimar contraseña').oneOf([Yup.ref('password'), null], 'Las contraseñas no coinciden'),
             select: Yup.string().required('Seleccionar rol')
         });

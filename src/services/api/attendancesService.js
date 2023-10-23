@@ -18,6 +18,7 @@ export async function fetchAttendances(accessToken, idGrade, currentDate) {
         });
         if (response.status === 200) {
             const attendances = response.data.attendances
+            const rollCall = response.data.rollCall
 
             for (const row in attendances) {
                 const arrival = attendances[row].arrival
@@ -36,7 +37,7 @@ export async function fetchAttendances(accessToken, idGrade, currentDate) {
                     attendances[row].late = false
                 }
             }
-            return attendances;
+            return [attendances, rollCall];
         } else {
             throw new Error('Failed to fetch Msgs');
         }
@@ -45,7 +46,7 @@ export async function fetchAttendances(accessToken, idGrade, currentDate) {
     }
 }
 
-export async function updateAttendance(accessToken, idAtt, idStud, attDate, arrival, present, late, observation) {
+export async function updateAttendance(accessToken, idAtt, arrival, present, late, observation) {
     try {
         const response = await axiosExpressClient({
             method: 'put',
@@ -54,8 +55,6 @@ export async function updateAttendance(accessToken, idAtt, idStud, attDate, arri
             headers: { 'Authorization': accessToken },
             data: {
                 'idAtt': idAtt,
-                'idStud': idStud,
-                'attDate': attDate,
                 'arrival': arrival,
                 'present': present,
                 'late': late,
@@ -73,22 +72,23 @@ export async function updateAttendance(accessToken, idAtt, idStud, attDate, arri
     }
 }
 
-export async function deleteMsg(accessToken, idMessage, idUser) {
+export async function closeAttendance(accessToken, idRoll, idUser, observation) {
     try {
         const response = await axiosExpressClient({
             method: 'put',
             timeout: 5000,
-            url: baseUrl + '/remove',
+            url: baseUrl + '/close',
             headers: { 'Authorization': accessToken },
             params: {
-                'idMessage': idMessage,
+                'idRoll': idRoll,
                 'idUser': idUser,
+                'observation': observation
             }
         });
         if (response.status === 200) {
-            return true;
+            return response.data.newRoll
         } else {
-            throw new Error('Failed to delete the Msg');
+            throw new Error('Failed to get grade Status');
         }
     } catch (error) {
         throw error;

@@ -1,12 +1,12 @@
 <template>
     <v-dialog v-model="dialog" width="auto">
         <v-card title="Informacion" prepend-icon="mdi-information-variant" style="font-size: large; min-width: 50vh;"
-            align="start" rounded="true">
+            align="start" rounded="xl">
             <v-divider thickness="5"></v-divider>
             <v-card-text style="padding-left: 50px; font-size: 20px;">
                 {{ dialogText }}
             </v-card-text>
-            <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false"> Ok</v-btn></v-card-item>
+            <v-card-item> <v-btn color="primary" style="margin: 20px;" @click="dialog = false; getBack()" > Ok</v-btn></v-card-item>
         </v-card>
     </v-dialog>
     <section class="display">
@@ -63,13 +63,16 @@
 </template>
   
 <script>
-import axios from 'axios'
 import * as faceAPI from 'face-api.js'
 import store from 'storejs';
 import { useStore } from 'vuex'
+import { pushPhotos } from '@/services/api/recognitionService'
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
 export default {
     name: 'Video',
+    props:{
+        getBack: Function,
+    },
     setup() {
         const initParams = reactive({
             modelUri: '/models',
@@ -195,7 +198,6 @@ export default {
                 capturedFaces.value[currentImageIndex.value].src = (resizedCanvas.toDataURL('image/jpeg', 0.8));
                 currentImage.value = capturedFaces.value[currentImageIndex.value].src
             }
-            console.log(shutterValue.val)
             shutterValue.val = true
             await new Promise(r => setTimeout(r, 500));
             shutterValue.val = false
@@ -245,32 +247,21 @@ export default {
             formData.append('accessToken', accessToken);
             formData.append('idStud', editedObj.id_stud);
 
-            const axiosClient = axios.create({
-                baseURL: 'http://192.168.0.133:3001',
-            });
-
             const imageArray = imagesToUpload.map((face) => face.src);
 
-            axiosClient({
-                method: 'POST',
-                timeout: 2000,
-                url: "/recog/registerAi",
-                data: {
-                    'accessToken': accessToken,
-                    'images': imageArray, // Send the array of image sources
-                    'idStud': editedObj.id_stud
+            const [result, error] = await pushPhotos(accessToken, imageArray, editedObj.id_stud)
+            console.log(result)
+            if (result) {
+                dialogText.value = 'Fotos Subidas existosamente'
+                dialog.value = true
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
+                else {
+                    dialogText.value = 'Error en la base de datos'
                 }
-            })
-                .then((response) => {
-                    console.log('Images uploaded successfully:', response);
-                    dialogText.value = 'Las fotos se subieron Exitosamente!'
-                    dialog.value = true;
-                })
-                .catch((error) => {
-                    console.log('Error uploading images:', error);
-                    dialogText.value = 'Error de servidor. Por favor, inténtelo más tarde.'
-                    dialog.value = true;
-                });
+                dialog.value = true;
+            }
         }
 
         onMounted(() => {

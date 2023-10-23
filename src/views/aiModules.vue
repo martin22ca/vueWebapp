@@ -8,32 +8,31 @@
             </template>
             <v-sheet class="ma-2" rounded="lg" min-height="50vh">
                 <v-row>
-                    <v-col v-for="classroom in classrooms" cols="4">
+                    <v-col v-for="aiModule in modules" cols="4">
                         <v-card-item>
                             <v-card color="surface-lighter-2" class="ma-0" align="start"
-                                :title="'Aula Nro: ' + classroom.module_number"
-                                :subtitle="classroom.class_name != null ? classroom.class_name : 'Sin Nombre'"
-                                :prepend-icon="classroom.id_default_class != null ? 'mdi-office-building' : 'mdi-office-building-remove'">
+                                :title="'Modulo Nro: ' + aiModule.module_number"
+                                :subtitle="aiModule.class_name != null ? aiModule.class_name : 'Modulo IA'"
+                                prepend-icon='mdi-office-building'>
                                 <v-divider thickness="3"></v-divider>
                                 <v-row class="mt-0">
                                     <v-col>
                                         <v-sheet color="surface-lighter-1" class="pa-2 ma-1"
-                                            :style="classroom.online ? 'border-bottom: solid 1px rgb(var(--v-theme-primary))' : 'border-bottom: solid 1px rgb(var(--v-theme-warning))'">
+                                            :style="aiModule.online ? 'border-bottom: solid 1px rgb(var(--v-theme-primary))' : 'border-bottom: solid 1px rgb(var(--v-theme-warning))'">
                                             <div class="moduleText">
-                                                <strong>Estado:</strong> {{ classroom.online ? 'Online' : 'Offline' }}
+                                                <strong>Estado:</strong> {{ aiModule.online ? 'Online' : 'Offline' }}
                                             </div>
                                         </v-sheet>
-
                                     </v-col>
                                 </v-row>
                                 <v-row class="mt-0">
                                     <v-col>
                                         <v-sheet color="surface-lighter-1" class="pa-2 ma-1" :style="{
-                                            'border-bottom': classroom.online ? 'solid 1px rgb(var(--v-theme-primary))' : 'solid 1px rgb(var(--v-theme-warning))'
+                                            'border-bottom': aiModule.online ? 'solid 1px rgb(var(--v-theme-primary))' : 'solid 1px rgb(var(--v-theme-warning))'
                                         }">
                                             <div sclass="moduleText">
-                                                <strong>Ultima conexión:</strong> {{ classroom.online ? 'Ahora' :
-                                                    getStatus(classroom.online_date)
+                                                <strong>Ultima conexión:</strong> {{ aiModule.online ? 'Ahora' :
+                                                    getStatus(aiModule.online_date)
                                                 }}
                                             </div>
                                         </v-sheet>
@@ -43,7 +42,7 @@
                                     <v-col>
                                         <v-sheet rounded class="pa-2 ma-1" color="surface-lighter-1" border>
                                             <div sclass="moduleText">
-                                                <strong>IP:</strong> {{ classroom.ip_module }}
+                                                <strong>IP:</strong> {{ aiModule.ip_module }}
                                             </div>
                                         </v-sheet>
                                     </v-col>
@@ -69,7 +68,7 @@ export default {
     data() {
         return {
             storeX: useStore(),
-            classrooms: []
+            modules: []
         }
     },
     beforeCreate() {
@@ -85,7 +84,7 @@ export default {
     methods: {
         async getModules() {
             const accessToken = store.get('accessToken');
-            this.classrooms = await fetchModules(accessToken);
+            this.modules = await fetchModules(accessToken);
         },
         getStatus(classStatus) {
             const today = new Date();
@@ -106,7 +105,7 @@ export default {
         },
         goToDaemon() {
             this.$router.push({
-                name: 'Daemon',
+                name: 'aiApp',
             })
         },
     },

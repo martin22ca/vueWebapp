@@ -1,4 +1,5 @@
 import { axiosExpressClient } from '@/plugins/axiosClient';
+import { capitalizeFirstLetter } from '@/services/utils'
 
 const baseUrl = '/students'
 
@@ -31,10 +32,36 @@ export async function registerStudent(accessToken, values) {
             url: baseUrl + '/register',
             headers: { 'Authorization': accessToken },
             data: {
-                'accessToken': accessToken,
                 'school_number': values.ledger,
-                'firstName': values.firstName,
-                'lastName': values.lastName,
+                'firstName': capitalizeFirstLetter(values.firstName),
+                'lastName': capitalizeFirstLetter(values.lastName),
+                'dni': values.dni,
+                'email': values.email,
+                'idGrade': values.select,
+            }
+        });
+        if (response.status === 200) {
+            return [true, null];
+        } else {
+            return [false, response.data];
+        }
+    } catch (error) {
+        console.log(error);
+        return [false, error.response.data];
+    }
+}
+
+export async function updateStudent(accessToken, idStud, values) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'PUT',
+            timeout: 5000,
+            url: baseUrl + '/update',
+            headers: { 'Authorization': accessToken },
+            data: {
+                'idStud': idStud,
+                'firstName': capitalizeFirstLetter(values.firstName),
+                'lastName': capitalizeFirstLetter(values.lastName),
                 'dni': values.dni,
                 'email': values.email,
                 'idGrade': values.select,
@@ -69,5 +96,26 @@ export async function deleteMsg(accessToken, idStudent) {
         }
     } catch (error) {
         throw error;
+    }
+}
+
+export async function deleteAi(accessToken, idStud) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'DELETE',
+            timeout: 2000,
+            url: baseUrl + "/removeAi",
+            headers: { 'Authorization': accessToken },
+            data: {
+                'idStud': idStud
+            }
+        });
+        if (response.status === 200) {
+            return true;
+        } else {
+            return response.data;
+        }
+    } catch (error) {
+        throw error
     }
 }

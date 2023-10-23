@@ -8,8 +8,11 @@
                     <v-icon :icon="dialogSucces ? 'mdi-check' : 'mdi-alert-circle'"
                         :color="dialogSucces ? 'primary' : 'error'">
                     </v-icon> {{ dialogText }} </v-card-text>
-                <v-card-item> <v-btn style="margin: 20px;" @click="dialog = false" color="primary" variant="outlined">
-                        Ok</v-btn></v-card-item>
+                <v-card-item>
+                    <v-btn style="margin: 20px;" @click="dialog = false" color="primary" variant="outlined">
+                        Ok
+                    </v-btn>
+                </v-card-item>
             </v-card>
         </v-dialog>
         <v-container class="ma-3 mr-10">
@@ -27,12 +30,12 @@
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
             </v-row>
-            <div class="text"> Selecionar preceptor <strong> (opcional)</strong> </div>
+            <div class="text">  Selecionar preceptor/es <strong> (opcional)</strong> </div>
             <v-row>
                 <v-col align-self="center">
                     <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="items"
                         v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
-                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle"></v-select>
+                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle" multiple></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -67,7 +70,7 @@ export default {
         const validationSchema = Yup.object().shape({
             year: Yup.number("Debe ser un Numero").typeError('Año Debe ser un Numero').required('Selecionar Año').positive("El Año debe ser positivo").integer(),
             section: Yup.string().required('La seccion es requerida').max(1, 'Solo un Caracter'),
-            select: Yup.string().nullable(),
+            select: Yup.array().nullable(),
         });
 
         const { handleSubmit, handleReset, errors } = useForm({
@@ -94,11 +97,12 @@ export default {
                 event.preventDefault();
                 year.value.value = input.replace(regex, '');
             }
-        }
+        }        
 
         const fetchOptions = async () => {
             const accessToken = store.get('accessToken');
             items.value = await fetchUsersRole(accessToken, 3)
+            console.log(items.value)
         };
 
         const submit = handleSubmit(async (values) => {

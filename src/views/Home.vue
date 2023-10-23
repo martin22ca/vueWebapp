@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="right-panel">
-                <homePrecep v-if="userRole == 1" />
+                <homePrecep  v-if="userRole > 1" />
                 <homeAdmin v-else />
             </div>
         </div>
@@ -137,7 +137,7 @@ export default {
      margin: 7px;
      margin-right: 10px;
      border-radius: 1%;
-     flex: 2;
+     flex: 3;
      background-color: rgb(var(--v-theme-surface-lighter-1));
  }
 

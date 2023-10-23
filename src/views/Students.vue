@@ -1,14 +1,14 @@
 <template>
     <BaseContainer>
-        <v-dialog v-model="registerDialog" max-width="100vh">
+        <v-dialog v-model="registerDialog" max-width="100vh" min-width="70vw">
             <v-card rounded="xl">
                 <template v-slot:title>
                     <h1 style="color:rgb(var(--v-theme-primary));">
-                        Registrar Estudiante
+                        Registrar Alumno
                     </h1>
                 </template>
                 <template v-slot:append>
-                    <v-btn color="primary" @click="getStudents(); registerDialog = false" prepend-icon="mdi-keyboard-return"
+                    <v-btn color="primary" @click="; registerDialog = false" prepend-icon="mdi-keyboard-return"
                         class="mt-0 ma-2">
                         Regresar
                     </v-btn>
@@ -16,11 +16,11 @@
                 <RegisterStudent />
             </v-card>
         </v-dialog>
-        <v-card v-if="currentStudId == -1" title="Estudiantes" subtitle="Editar información de los Estudiantes"
+        <v-card v-if="!faceRecognition" title="Estudiantes" subtitle="Editar información de los Estudiantes"
             color="surface-lighter-1" class="pa-2 fadeInCenter">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
-                    Registrar Estudiante
+                    Registrar Alumno
                 </v-btn>
             </template>
             <v-card-item>
@@ -54,7 +54,8 @@
                     <template v-slot:top>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;">
+                        <v-dialog v-model="dialog" max-width="100vh" style="position: fixed; margin-left: auto;"
+                            min-width="70vw">
                             <v-card rounded="xl">
                                 <template v-slot:title>
                                     <h1 style="color:rgb(var(--v-theme-secondary));">
@@ -84,11 +85,7 @@
                         </v-dialog>
                     </template>
                     <template v-slot:item.actions="{ item }">
-                        <v-icon size="small" class="me-2" @click=" editItem(item.raw)">
-                            mdi-pencil
-                        </v-icon>
-                        <v-icon size="small" class="me-2"
-                            @click=" dailogDel = true; this.deleteItemIdx = item.value.id_stud">
+                        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                             mdi-information
                         </v-icon>
                         <v-icon size="small" class="me-2" color="warning"
@@ -105,44 +102,29 @@
                         <div v-if="item.value.email != null"> {{ item.value.email }}</div>
                         <div v-else class="noEmail"> No email</div>
                     </template>
-                    <template v-slot:item.id_status="{ item }">
-                        <v-btn v-if="item.value.id_status != null" :color="this.recogStatus[item.value.id_status].color"
-                            variant="tonal" @click=" enableFaceRecog(item.raw)">
+                    <template v-slot:item.value="{ item }">
+                        <v-btn :color="item.value.color" variant="tonal" @click="enableFaceRecog(item.raw)">
                             <v-tooltip activator="parent" location="left">
-                                <v-card prepend-icon="mdi-information-variant" title="Registrado" rounded="xl"
-                                    :subtitle="this.recogStatus[item.value.id_status].info"
-                                    :color="this.recogStatus[item.value.id_status].color" class="pa-0 ma-0" />
+                                <v-card prepend-icon="mdi-information-variant" :title="item.value.value" rounded="xl"
+                                    :text="item.value.description" max-width="25vw" :color="item.value.color"
+                                    class="pa-0 ma-0" />
                             </v-tooltip>
-                            {{ this.recogStatus[item.value.id_status].text }}
-                        </v-btn>
-                        <v-btn v-else class="ma-1" color="warning" variant="tonal" @click=" enableFaceRecog(item.raw)">
-                            <v-tooltip activator="parent" location="left">
-                                <v-card prepend-icon="mdi-information-variant" title="No Habilitado" rounded="xl"
-                                    color="warning" subtitle="Para habiliar, debe registre 10 fotos del estudiante." />
-                            </v-tooltip>
-                            Habilitar
+                            {{ item.value.value }}
                         </v-btn>
                     </template>
                 </v-data-table>
                 <div v-else>
                     <v-card variant="elevated">
                         <v-card-title>
-                            <v-icon icon="mdi-information-variant" /> No hay alumnos en el curso: {{
-                                currentClass
-                            }}</v-card-title>
+                            <v-icon icon="mdi-information-variant" />
+                            No hay alumnos en el curso: {{ currentClass }}
+                        </v-card-title>
                         <v-card-subtitle> Selecione otra clase o asigne alumnos</v-card-subtitle>
                     </v-card>
                 </div>
             </v-sheet>
         </v-card>
-        <v-card v-else title="Reconocimiento Facial" subtitle="Control" class="ma-2 mr-5" prepend-icon="mdi-image">
-            <template v-slot:append>
-                <v-btn @click=" currentStudId = -1; getStudents()" prepend-icon="mdi-arrow-left" color="primary">
-                    Regresar
-                </v-btn>
-            </template>
-            <AISetup />
-        </v-card>
+        <AISetup :get-back="getBack" v-else />
     </BaseContainer>
 </template>
 
@@ -170,18 +152,13 @@ export default {
             myClasses: [],
             currentClass: '',
             currentGradeId: -1,
-            currentStudId: -1,
-            recogStatus: {
-                1: { text: 'Error', color: 'error', info: 'Hubo un error en el sistema se deben registrar las fotos otra vez.' },
-                2: { text: 'Trabajando', color: 'secondary', info: 'El sitema esta validando las fotos.' },
-                3: { text: 'Activo', color: 'primary', info: 'El sitema ya registro las fotos en el sistema' },
-            },
+            faceRecognition: false,
             headers: [
                 { title: 'Legajo', key: 'school_number', align: 'start', width: '10%' },
                 { title: 'DNI', key: 'dni', align: 'center' },
                 { title: 'Apellido', key: 'last_name', align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
-                { title: 'Reconocimiento', key: 'id_status', align: 'center' },
+                { title: 'Reconocimiento', key: 'value', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
@@ -215,6 +192,9 @@ export default {
                 status: item.closed,
                 value: item.id,
             }))
+            this.currentClass = this.myClasses[0].text
+            this.currentGradeId = this.myClasses[0].value
+            this.getStudents()
         },
         editItem(item) {
             this.editedIndex = this.items.indexOf(item)
@@ -245,10 +225,13 @@ export default {
             }
         },
         enableFaceRecog(item) {
-            this.currentStudId = item.id_stud
+            this.faceRecognition = true
             this.editedIndex = this.items.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
+        },getBack(){
+            this.faceRecognition = !this.faceRecognition
+            this.getStudents()
         }
     },
     components: { BaseContainer, VDataTable, UpdateStudent, RegisterStudent, AISetup }

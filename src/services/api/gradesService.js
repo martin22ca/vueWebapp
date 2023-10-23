@@ -41,7 +41,7 @@ export async function ferchGradesUser(accessToken, idUser) {
     }
 }
 
-export async function registerGrade(accessToken, year, section, idUser) {
+export async function registerGrade(accessToken, year, section, idUsers) {
     try {
         const response = await axiosExpressClient({
             method: 'POST',
@@ -51,7 +51,7 @@ export async function registerGrade(accessToken, year, section, idUser) {
             data: {
                 'year': year,
                 'section': section,
-                'idUser': idUser,
+                'idUsers': idUsers,
             }
         });
         if (response.status === 200) {
@@ -64,7 +64,7 @@ export async function registerGrade(accessToken, year, section, idUser) {
     }
 }
 
-export async function updateGrade(accessToken, idGrade, year, section, idUser) {
+export async function updateGrade(accessToken, idGrade, year, section, idUsers) {
     try {
         const response = await axiosExpressClient({
             method: 'PUT',
@@ -75,7 +75,7 @@ export async function updateGrade(accessToken, idGrade, year, section, idUser) {
                 'idGrade': idGrade,
                 'year': year,
                 'section': section,
-                'idUser': idUser,
+                'idUsers': idUsers,
             }
         });
         if (response.status === 200) {
@@ -121,7 +121,49 @@ export async function fetchGradeInfo(accessToken, idGrade) {
             }
         });
         if (response.status === 200) {
-            return true;
+            return response.data.gradeInfo;
+        } else {
+            throw new Error('Failed to get Grade Info');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function fetchUsersGrade(accessToken, idGrade) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'get',
+            timeout: 5000,
+            url: baseUrl + '/precept',
+            headers: { 'Authorization': accessToken },
+            params: {
+                'idGrade': idGrade,
+            }
+        });
+        if (response.status === 200) {
+            return response.data.gradeUsers;
+        } else {
+            throw new Error('Failed to get Grade Info');
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function fetchGradeHome(accessToken, idUser) {
+    try {
+        const response = await axiosExpressClient({
+            method: 'get',
+            timeout: 5000,
+            url: baseUrl + '/home',
+            headers: { 'Authorization': accessToken },
+            params: {
+                'idUser': idUser,
+            }
+        });
+        if (response.status === 200) {
+            return response.data.grades;
         } else {
             throw new Error('Failed to get Grade Info');
         }

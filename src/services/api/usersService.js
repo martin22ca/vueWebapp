@@ -1,4 +1,5 @@
 import { axiosExpressClient } from '@/plugins/axiosClient';
+import { capitalizeFirstLetter } from '@/services/utils'
 
 const baseUrl = '/users'
 
@@ -71,8 +72,8 @@ export async function registerUser(accessToken, values) {
             url: baseUrl + "/register",
             headers: { 'Authorization': accessToken },
             data: {
-                'firstName': values.firstName,
-                'lastName': values.lastName,
+                'firstName': capitalizeFirstLetter(values.firstName),
+                'lastName': capitalizeFirstLetter(values.lastName),
                 'dni': values.dni,
                 'email': values.email,
                 'username': values.username,
@@ -99,8 +100,8 @@ export async function updateUser(accessToken, idUser, values) {
             headers: { 'Authorization': accessToken },
             data: {
                 'idUser': idUser,
-                'firstName': values.firstName,
-                'lastName': values.lastName,
+                'firstName': capitalizeFirstLetter(values.firstName),
+                'lastName': capitalizeFirstLetter(values.lastName),
                 'dni': values.dni,
                 'email': values.email,
                 'username': values.username,

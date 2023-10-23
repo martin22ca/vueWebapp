@@ -12,6 +12,13 @@
         </v-dialog>
         <v-container class="ma-3 mr-10">
             <v-divider :thickness="7" class="pa-2"></v-divider>
+            <div class="text"> Legajo </div>
+            <v-row>
+                <v-col align-self="center">
+                    <v-text-field class="pa-2" variant="outlined" v-model="ledger" label="Legajo" readonly
+                        prepend-inner-icon="mdi-identifier"></v-text-field>
+                </v-col>
+            </v-row>
             <div class="text"> Nombre </div>
             <v-row>
                 <v-col align-self="center" cols="8">
@@ -43,9 +50,9 @@
             <v-row>
                 <v-col align-self="center">
                     <div class="text"> Curso </div>
-                    <v-select class="pa-2" clearable label="Curso" variant="outlined" :items="options"
-                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-title="text"
-                        item-value="value" prepend-inner-icon="mdi-alert-circle"></v-select>
+                    <v-select class="pa-2" clearable label="Curso" variant="outlined" :items="items"
+                        v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
+                        item-value="id" item-title="title" prepend-inner-icon="mdi-alert-circle"></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -65,9 +72,11 @@
 <script>
 import store from 'storejs';
 import { useStore } from 'vuex'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
 import { axiosExpressClient } from '@/plugins/axiosClient';
+import { ferchGradesUser } from '@/services/api/gradesService'
+import { updateStudent } from '@/services/api/studentsService'
 import { useField, useForm } from 'vee-validate'
 
 export default {
@@ -90,7 +99,8 @@ export default {
             validateOnMount: false
         });
         const editedObj = storeX.state.editedObj
-        const id_stud = editedObj.id_stud
+        const idStud = editedObj.id_stud
+        const ledger = editedObj.school_number;
         const firstName = useField('firstName');
         const lastName = useField('lastName');
         const dni = useField('dni');
@@ -101,7 +111,7 @@ export default {
         lastName.value.value = editedObj.last_name
         email.value.value = editedObj.email
         dni.value.value = editedObj.dni
-        select.value.value = editedObj.id_cls
+        select.value.value = editedObj.id_grade
 
         const dialog = ref(false);
         const dialogSucces = ref(false)
@@ -109,61 +119,29 @@ export default {
 
         const options = ref([]);
 
+        const items = ref([]);
+
         const fetchOptions = async () => {
             const accessToken = store.get('accessToken');
-            const userId = store.get('userId');
-            try {
-                let response = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/classes/employee",
-                    params: {
-                        'accessToken': accessToken,
-                        'userId': userId
-                    }
-                })
-                if (response.status == 200) {
-                    options.value = response.data.schoolClasses.map(item => ({
-                        text: item.school_year + ' "' + item.school_section + '"',
-                        value: item.sc,
-                    }))
-                }
-            } catch (error) {
-                console.log(error)
-            }
+            const idUser = store.get('userId');
+
+            items.value = await ferchGradesUser(accessToken, idUser)
+            console.log(editedObj)
         };
-        fetchOptions();
 
         const submit = handleSubmit(async (values) => {
             const accessToken = store.get('accessToken');
 
-            try {
-                let response = await axiosExpressClient({
-                    method: 'put',
-                    timeout: 2000,
-                    url: "/students/update",
-                    data: {
-                        'idStud': id_stud,
-                        'idCls': values.select,
-                        'accessToken': accessToken,
-                        'firstName': values.firstName,
-                        'lastName': values.lastName,
-                        'dni': values.dni,
-                        'email': values.email,
-                    }
-                });
-                if (response.status == 200) {
-                    dialogText.value = response.data.message
-                    dialog.value = true
-                    dialogSucces.value = true
+            const [result, error] = await updateStudent(accessToken, idStud, values)
 
-                } else {
-                    alert(JSON.stringify(response.status));
-                }
-            } catch (error) {
-                console.log(error);
-                if (error.response != undefined)
-                    dialogText.value = error.response.data.message;
+            if (result) {
+                dialogText.value = 'Estudiante Editado'
+                dialog.value = true
+                dialogSucces.value = true
+
+            } else {
+                if (error.message != undefined)
+                    dialogText.value = error.message;
                 else {
                     dialogText.value = ' Error en la base de datos'
                 }
@@ -171,14 +149,18 @@ export default {
                 dialog.value = true;
             }
         });
+        onMounted(() => {
+            fetchOptions();
+        });
 
         return {
+            ledger,
             firstName,
             lastName,
             dni,
             email,
             select,
-            options,
+            items,
             dialog,
             dialogText,
             dialogSucces,

@@ -17,14 +17,12 @@
                     <v-text-field class="mr-4" variant="outlined" v-model="username.value.value"
                         :error-messages="username.errorMessage.value" label="Username" prepend-inner-icon="mdi-account"
                         autocomplete="off"></v-text-field>
-
                     <v-text-field class="mr-4 mb-4" variant="outlined" label="Password"
                         prepend-inner-icon="mdi-lock-outline" v-model="password.value.value"
                         :error-messages="password.errorMessage.value"
                         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
                         @click:append-inner="visible = !visible" autocomplete="off">
                     </v-text-field>
-
                     <p>
                         Si no recuerda su contraseña y/o usuario comuníquese con un administrador para realizar un cambio de
                         contraseña.

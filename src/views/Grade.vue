@@ -74,8 +74,8 @@
                             No data
                         </div>
                     </template>
-                    <template v-slot:item.user="{ item }">
-                        <div v-if="item.value.id_user != null"> {{ item.value.user }}</div>
+                    <template v-slot:item.users="{ item }">
+                        <div v-if="item.value.users != ' '"> {{ item.value.users }}</div>
                         <div v-else class="noEmail"> Ningun preceptor asociado</div>
                     </template>
                 </v-data-table>
@@ -107,7 +107,7 @@ export default {
             headers: [
                 { title: 'Año', key: 'school_year', sortable: true, align: 'start', width: '5%' },
                 { title: 'Seccion', key: 'school_section', align: 'center', width: '5%' },
-                { title: 'Preceptor Asignado', key: 'user', align: 'center' },
+                { title: 'Preceptor Asignado', key: 'users', align: 'center' },
                 { title: 'Editar', key: 'actions', sortable: false, align: 'end' },
             ],
             items: [],
@@ -146,7 +146,6 @@ export default {
                 this.items.splice(this.items.indexOf(this.itemToDelete), 1)
                 this.dailogDel = false
             }
-            console.log(this.items)
         }
     },
     components: { BaseContainer, VDataTable, UpdateGrade, RegisterGrade }

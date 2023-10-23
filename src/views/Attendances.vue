@@ -38,8 +38,9 @@
                             <v-sheet style="text-align: end;" color="transparent">
                                 <h3 style="padding: 5px;">
                                     Estado Actual:
-                                    <v-chip :color="selectedGrade.closed ? 'secondary' : 'error'" variant="elevated">
-                                        {{ selectedGrade.closed ? "ABIERTO" : "CERRADO" }}
+                                    <v-chip :color="rollCall.status ? 'secondary' : 'error'" variant="elevated" size="large"
+                                        append-icon="mdi-information" @click="statusDialog = true">
+                                        {{ rollCall.status ? "ABIERTO" : "CERRADO" }}
                                     </v-chip>
                                 </h3>
                             </v-sheet>
@@ -53,36 +54,8 @@
             <v-data-table v-if="attendances.length > 0" :headers="headers" :items="attendances" class="elevation-1 border-1"
                 density="compact" :search="search" hover>
                 <template v-slot:top>
-                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-divider thickness="7px" class="mt-2 pb-2"></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="editDialog" max-width="90%">
-                        <v-card rounded="xl" style="overflow-y: auto; padding-top: 0;">
-                            <template v-slot:title>
-                                <h1 style="color:rgb(var(--v-theme-secondary)); overflow-y: hidden;">
-                                    Asistencia
-                                </h1>
-                            </template>
-                            <template v-slot:append>
-                                <v-btn color="secondary" @click="fetchAttendences(); editDialog = false"
-                                    prepend-icon="mdi-keyboard-return" class="mt-2 ma-2">
-                                    Regresar
-                                </v-btn>
-                            </template>
-                            <AttendanceInfo/>
-                        </v-card>
-                    </v-dialog>
-                    <v-dialog v-model="deleteDialog" max-width="70%" style="position: fixed; margin-left: auto;">
-                        <v-card title="Estas seguro que quieres eliminar la asistencia?" subtitle=""
-                            prepend-icon="mdi-alert" align="center" class="pb-4" rounded="xl">
-                            <v-card-text style="font-style: italic; padding: 2px;">
-                                Esta accion no es revertible. Desea continuear?
-                            </v-card-text>
-                            <v-card-item class="pb-4">
-                                <v-btn class="ma-2" variant="tonal" @click="dailogDel = false" color="grey">Cancelar</v-btn>
-                                <v-btn class="ma-2" variant="tonal" @click="removeAtt()" color="error">Eliminar</v-btn>
-                            </v-card-item>
-                        </v-card>
-                    </v-dialog>
                 </template>
                 <template v-slot:item.time_arrival="{ item }" type="time">
                     <v-text-field class="mt-5" v-model="item.value.time_arrival" readonly type="time"
@@ -96,10 +69,6 @@
                 <template v-slot:item.actions="{ item }">
                     <v-icon size="small" class="me-2" @click="editItem(item.raw)">
                         mdi-information
-                    </v-icon>
-                    <v-icon v-if="item.value.id_att != null" size="small"
-                        @click="editedIndex = item.value.id_att; deleteDialog = true;">
-                        mdi-trash-can
                     </v-icon>
                 </template>
                 <template v-slot:no-data>
@@ -133,36 +102,42 @@
                 <v-chip size="x-large" style="font-size: x-large;">No hay estudiantes en esta clase!</v-chip>
             </v-sheet>
         </div>
+        <v-dialog max-width="90%" v-model="editDialog">
+            <AttendanceInfo :close="close" :rollCall="rollCall" />
+        </v-dialog>
+        <v-dialog max-width="60%" v-model="statusDialog">
+            <AttendanceStatus :close="close" :rollCall="rollCall" :title="selectedGrade.title" />
+        </v-dialog>
     </BaseContainer>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import AttendanceInfo from '@/components/AttendanceInfo.vue';
+import AttendanceInfo from '@/components/attendanceComp/AttendanceInfo.vue';
+import AttendanceStatus from '@/components/attendanceComp/AttendanceStatus.vue';
 import BaseContainer from '@/components/BaseContainer.vue';
 import { useStore } from 'vuex'
 import store from 'storejs';
 import { checkAuth } from '@/services/api/admissionService';
 import { fetchAttendances } from '@/services/api/attendancesService'
 import { ferchGradesUser } from '@/services/api/gradesService'
-import { axiosExpressClient } from '@/plugins/axiosClient';
-
 export default {
     name: 'Attendances',
     data() {
         return {
-            deleteDialog: false,
             editDialog: false,
+            statusDialog: false,
             router: useRouter(),
             storeX: useStore(),
             attDate: useStore().state.attDate,
             myGrades: useStore().state.myClasses,
             classId: useStore().state.classId,
             selectedGrade: {},
+            rollCall: {},
             search: '',
             headers: [
-            { title: 'id', key: 'school_number', sortable: true, align: 'start' },
+                { title: 'id', key: 'school_number', sortable: true, align: 'start' },
                 { title: 'Apellido', key: 'last_name', sortable: true, align: 'center' },
                 { title: 'Nombre', key: 'first_name', align: 'center' },
                 { title: 'Hora entrada', key: 'arrival', align: 'center', width: '10%' },
@@ -180,7 +155,7 @@ export default {
         checkAuth([0, 1, 3])
     },
     mounted() {
-        this.fetchClasses()
+        this.getGrades()
     },
     setup() {
         const store = useStore()
@@ -207,17 +182,27 @@ export default {
         },
     },
     methods: {
-        async fetchAttendences() {
+        async getAttendences() {
             const accessToken = store.get('accessToken');
             const currentDate = this.$store.state.attDate
-            this.attendances = await fetchAttendances(accessToken, this.selectedGrade.id, currentDate)
+            const result = await fetchAttendances(accessToken, this.selectedGrade.id, currentDate)
+            this.attendances = result[0]
+            this.rollCall = result[1]
         },
-        async fetchClasses() {
+        async getGrades() {
             const accessToken = store.get('accessToken');
             const idUser = store.get('userId');
             this.myGrades = await ferchGradesUser(accessToken, idUser)
-            this.selectedGrade = this.myGrades[0]
-            this.fetchAttendences()
+            if (this.classId != undefined && this.classId != -1) {
+                for (let i = 0; i < this.myGrades.length; i++) {
+                    if (this.myGrades[i].id_grade === this.classId) {
+                        this.selectedGrade = this.myGrades[i];
+                    }
+                }
+            } else {
+                this.selectedGrade = this.myGrades[0]
+            }
+            this.getAttendences()
         },
         goToCalendar() {
             this.$router.push({
@@ -226,7 +211,7 @@ export default {
         },
         manageClassUpdate(item) {
             this.selectedGrade = item
-            this.fetchAttendences()
+            this.getAttendences()
         },
         decodeImage(encoded) {
             return "data:image/jpg;base64," + encoded;
@@ -237,33 +222,10 @@ export default {
             this.storeX.commit('setEditItem', { newEditedObj: this.editedItem })
             this.editDialog = true
         },
-        close() {
-            this.editDialog = false
-            this.$nextTick(() => {
-                this.editedIndex = -1
-            })
-        },
-        async removeAtt() {
-            const accessToken = store.get('accessToken');
-            const delId = this.editedIndex
-            this.editedIndex = -1
-            try {
-                let result = await axiosExpressClient({
-                    method: 'put',
-                    timeout: 5000,
-                    url: "/attendance/remove",
-                    params: {
-                        'accessToken': accessToken,
-                        'id_att': delId,
-                    }
-                })
-                if (result.status == 200) {
-                    this.fetchAttendences()
-                    this.deleteDialog = false
-                }
-            } catch (error) {
-                console.log(error)
-            }
+        close(dialog) {
+            if (dialog == 1) this.editDialog = false
+            else this.statusDialog = false
+            this.getAttendences()
         },
         getColor(value) {
             if (value == null) return 'secondary'
@@ -277,7 +239,7 @@ export default {
             return value.toFixed(2)
         }
     },
-    components: { BaseContainer, VDataTable, AttendanceInfo }
+    components: { BaseContainer, VDataTable, AttendanceInfo, AttendanceStatus }
 }
 
 </script>

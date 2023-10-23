@@ -1,23 +1,24 @@
 <template>
     <h3><v-icon icon="mdi-table-network" class="pa-8" />Asistencias Hoy</h3>
     <div class="classesContainer">
-        <div v-if="classes.length === 0">
-            <div class="noList">
-                <h3>No hay classes asignadas.</h3>
+        <div v-if="grades.length === 0">
+            <div class="noList" style="display: flex; flex-direction: row; justify-content: center; ">
+                <h2>No hay classes asignadas.</h2>
             </div>
         </div>
         <div v-else class="scroll">
             <v-row>
-                <v-col v-for="schoolClass in classes" :key="schoolClass.sc" cols="12" sm="6" md="6" lg="4">
-                    <v-card :title="'Curso ' + schoolClass.school_year + '-' + schoolClass.school_section" class="ma-2 pa-1"
+                <v-col v-for="grade in grades" :key="grade.id_grade" cols="12" sm="6" md="6" lg="4">
+                    <v-card :title="'Curso ' + grade.school_year + '-' + grade.school_section" class="ma-2 pa-1"
                         subtitle="Curso Secundario" color="surface-lighter-2" rounded="xl">
                         <v-divider thickness="3"></v-divider>
-                        <h4 class="classText"> Porcentaje: <v-chip class="homeChip"
-                                :color="getColor(schoolClass.present, schoolClass.total)">
-                                {{ this.getPercentage(schoolClass.present, schoolClass.total) }} </v-chip></h4>
+                        <h2 class="classText"> Estado:
+                            <v-chip class="ma-1 pa-2" :color="grade.status ? 'primary' : 'error'" variant="elevated" size="lg">
+                                {{ grade.status ? 'Abierto' : 'Cerrado' }} </v-chip>
+                        </h2>
                         <v-card-actions>
                             <v-btn variant="tonal" color="primary" style="font-size: 15px;"
-                                @click="viewClass(schoolClass.sc, schoolClass.school_year, schoolClass.school_section)">Ver
+                                @click="viewClass(grade.id_grade)">Ver
                                 Asistencias</v-btn>
                         </v-card-actions>
                     </v-card>
@@ -30,7 +31,7 @@
 <script>
 import { useRouter } from 'vue-router';
 import store from 'storejs';
-import { axiosExpressClient } from '@/plugins/axiosClient';
+import { fetchGradeHome } from '@/services/api/gradesService'
 import { useStore } from 'vuex'
 
 
@@ -38,7 +39,7 @@ export default {
     name: 'homePrecep',
     data() {
         return {
-            classes: [],
+            grades: [],
             storage: useStore(),
             router: useRouter()
         }
@@ -50,39 +51,15 @@ export default {
         async fetchClasses() {
             const accessToken = store.get('accessToken');
             const id = store.get('userId')
+            this.grades = await fetchGradeHome(accessToken, id)
+            console.log(this.grades)
 
-            try {
-                let result = await axiosExpressClient({
-                    method: 'get',
-                    timeout: 5000,
-                    url: "/classes/home",
-                    params: {
-                        'accessToken': accessToken,
-                        'userId': id
-                    }
-                })
-                if (result.status == 200)
-                    this.classes = result.data.schoolClasses;
-            } catch (error) {
-                console.log(error)
-            }
-        }, async viewClass(id, year, section) {
+        }, async viewClass(id) {
             this.storage.commit('setDate', { date: "" })
-            this.storage.commit('setClass', { classId: id, year: year, section: section })
+            this.storage.commit('setClass', { classId: id})
             this.$router.push({
                 name: 'Attendances',
             })
-
-        }, getColor(present, total) {
-            if (total == 0) return 'green'
-            const percent = present / total * 100
-            if (percent < 30) return 'red'
-            else if (percent < 50) return 'orange'
-            else return 'green'
-        }, getPercentage(present, total) {
-            if (total == 0) return 0
-            const percent = Math.round(100 * present / total)
-            return percent
         }
     },
 }
@@ -91,7 +68,7 @@ export default {
 
 <style>
 .classText {
-    font-size: 15px;
+    font-size: 18px;
     padding: 10px;
     font-weight: 300;
 }

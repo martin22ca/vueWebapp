@@ -12,7 +12,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import { checkAuth } from '@/plugins/auth';
+import { checkAuth } from '@/services/api/admissionService';
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import BaseContainer from '@/components/BaseContainer.vue';
@@ -26,7 +26,7 @@ export default {
         }
     },
     beforeCreate() {
-        checkAuth([1,3])
+        checkAuth([0,1,3])
     },
     setup() {
         const store = useStore()

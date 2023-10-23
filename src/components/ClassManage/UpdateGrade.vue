@@ -25,12 +25,12 @@
                         prepend-inner-icon="mdi-card-account-details"></v-text-field>
                 </v-col>
             </v-row>
-            <div class="text"> Selecionar preceptor <strong> (opcional)</strong> </div>
+            <div class="text"> Selecionar preceptor/es <strong> (opcional)</strong> </div>
             <v-row>
                 <v-col align-self="center">
                     <v-select class="pa-2" clearable label="Preceptor" variant="outlined" :items="items"
                         v-model="select.value.value" :error-messages="select.errorMessage.value" item-text="title"
-                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle"></v-select>
+                        item-value="id_user" item-title="title" prepend-inner-icon="mdi-alert-circle" multiple></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -52,7 +52,7 @@ import store from 'storejs';
 import { useStore } from 'vuex'
 import { ref, onMounted } from 'vue'
 import * as Yup from "yup";
-import { updateGrade } from '@/services/api/gradesService'
+import { updateGrade, fetchUsersGrade } from '@/services/api/gradesService'
 import { fetchUsersRole } from '@/services/api/usersService'
 import { useField, useForm } from 'vee-validate'
 
@@ -67,7 +67,7 @@ export default {
         const validationSchema = Yup.object().shape({
             year: Yup.number("Debe ser un Numero").typeError('Año Debe ser un Numero').required('Selecionar Año').positive("El Año debe ser positivo").integer(),
             section: Yup.string().required('La seccion es requerida').max(1, 'Solo un Caracter'),
-            select: Yup.string().nullable()
+            select: Yup.array().nullable()
         });
 
         const { handleSubmit, handleReset, errors } = useForm({
@@ -99,6 +99,11 @@ export default {
                 year.value.value = input.replace(regex, '');
             }
         }
+        const fetchPreceptGrade = async () => {
+            const accessToken = store.get('accessToken');
+            select.value.value = await fetchUsersGrade(accessToken, idGrade)
+        };
+
         const fetchOptions = async () => {
             const accessToken = store.get('accessToken');
             items.value = await fetchUsersRole(accessToken, 3)
@@ -129,6 +134,7 @@ export default {
 
         onMounted(() => {
             fetchOptions();
+            fetchPreceptGrade();
         });
         return {
             year,
