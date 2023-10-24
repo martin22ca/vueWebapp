@@ -2,7 +2,7 @@
     <base-container>
         <v-row style="display: flex;">
             <div class="daemonContainer fadeInCenter">
-                <v-sheet rounded="lg" color="transparent" class="pa-2">
+                <v-sheet rounded="lg" color="transparent" class="pa-2 mr-2">
                     <v-row>
                         <v-col class="pa-0 leftD" style="flex: 1;">
                             <v-card title="Descargar aplicacion" subtitle="Informacion" variant="flat" align="center"

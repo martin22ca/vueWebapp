@@ -16,7 +16,7 @@
                 <RegisterGrade />
             </v-card>
         </v-dialog>
-        <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="fadeInCenter pa-2">
+        <v-card title="Cursos" subtitle="Editar Cursos" color="surface-lighter-1" class="fadeInCenter pa-2 mr-2">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
                     Registrar Curso

@@ -1,6 +1,6 @@
 <template>
     <BaseContainer>
-        <div class="classContainer fadeInCenter">
+        <div class="classContainer fadeInCenter" style="margin-right: 10px;">
             <v-card class="pt-2 pb-2" variant="tonal">
                 <v-card-title>
                     <v-row>
@@ -52,7 +52,7 @@
                     class="pl-5 pr-5" variant="outlined"></v-text-field>
             </v-card>
             <v-data-table v-if="attendances.length > 0" :headers="headers" :items="attendances" class="elevation-1 border-1"
-                density="compact" :search="search" hover>
+                density="compact" :search="search" hover >
                 <template v-slot:top>
                     <v-divider thickness="7px" class="mt-2 pb-2"></v-divider>
                     <v-spacer></v-spacer>

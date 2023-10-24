@@ -1,6 +1,6 @@
 <template>
     <BaseContainer>
-        <v-card title="MODULOS IA" subtitle="Estado de Modulos de IA" color="surface-lighter-1" class="fadeInCenter pa-2">
+        <v-card title="MODULOS IA" subtitle="Estado de Modulos de IA" color="surface-lighter-1" class="fadeInCenter pa-2 mr-2">
             <template v-slot:append>
                 <v-btn color="primary" @click="goToDaemon" prepend-icon="mdi-download-box" class="mt-0 ma-2">
                     Registrar modulo

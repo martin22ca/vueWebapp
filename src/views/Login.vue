@@ -10,7 +10,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <div class="loginContainer" style="min-width: 65%;">
+        <div class="loginContainer" style="min-width: 75%;">
             <div class="left" style="min-width: 65%;">
                 <h1 class="h1Log">Login</h1>
                 <form @submit.prevent="submit">
@@ -126,7 +126,7 @@ p {
 }
 
 .h1Log {
-    font-size: 30px;
+    font-size: 25px;
     padding: 10px;
     text-align: center;
     text-decoration: underline;

@@ -22,7 +22,7 @@
                             <v-sheet color="surface-lighter-1" class="pa-2 ma-1" :style="{
                                 'border-bottom': aiModule.online ? 'solid 1px rgb(var(--v-theme-primary))' : 'solid 1px rgb(var(--v-theme-warning))'
                             }">
-                                <div sclass="moduleText">
+                                <div class="moduleText">
                                     <strong>Ultima conexión:</strong> {{ aiModule.online ? 'Ahora' :
                                         getStatus(aiModule.online_date)
                                     }}
@@ -33,7 +33,7 @@
                     <v-row class="mt-0">
                         <v-col>
                             <v-sheet rounded class="pa-2 ma-1" color="surface-lighter-1" border>
-                                <div sclass="moduleText">
+                                <div class="moduleText">
                                     <strong>IP:</strong> {{ aiModule.ip_module }}
                                 </div>
                             </v-sheet>
@@ -103,6 +103,6 @@ export default {
 }
 
 .moduleText {
-    font-size: 1.6vh;
+    font-size: 1.7vh;
 }
 </style>

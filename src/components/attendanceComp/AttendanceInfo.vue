@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card rounded="xl" style="overflow-y: auto; padding-top: 0;" class="textCheck">
+    <div style="height: 90vh; width: 90vh%;">
+        <v-card rounded="xl" style="padding-top: 0;" class="textCheck">
             <template v-slot:title>
                 <h1 style="color:rgb(var(--v-theme-secondary)); overflow-y: hidden;">
                     Asistencia
@@ -22,12 +22,12 @@
             <v-sheet class="ma-2 pb-1">
                 <v-row>
                     <v-col cols=3 align="center">
-                        <h4> Imagen </h4>
                         <img v-if="img_encoded != null" class="attImgEdit" v-bind:src="this.decodeImage(img_encoded)" />
                         <img v-else class="attImgEdit" src="@/assets/Placeholder.png" />
-                        <div style="text-align: start; padding-left: 20px;"> Certeza</div>
-                        <v-text-field class="pa-4" v-model="certainty" variant="outlined" prepend-inner-icon="mdi-percent"
-                            readonly />
+                        <v-text-field class="pa-2" v-model="school_number" variant="outlined" label="Legajo"
+                            prepend-inner-icon="mdi-identifier" readonly></v-text-field>
+                        <v-text-field class="pa-2" v-model="certainty" variant="outlined" prepend-inner-icon="mdi-percent"
+                            label="Certeza" readonly />
                     </v-col>
                     <v-col style="overflow-y: hidden;">
                         <form @submit.prevent="submit" style="margin-right: 20px;">
@@ -46,33 +46,22 @@
                                     </v-card-item>
                                 </v-card>
                             </v-dialog>
-                            <v-container class="ma-3 mr-10">
-                                <v-row>
-                                    <v-col align-self="center">
-                                        <div class="text"> Legajo </div>
-                                        <v-row>
-                                            <v-col style="display: flex;">
-                                                <v-text-field class="pa-0" v-model="school_number" variant="outlined"
-                                                    prepend-inner-icon="mdi-identifier" readonly></v-text-field>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
+                            <v-container>
                                 <v-row>
                                     <v-col align-self="center" cols="7">
-                                        <div class="text"> Nombre </div>
                                         <v-row>
-                                            <v-col style="display: flex;">
-                                                <v-text-field class="pa-0" v-model="firstName" variant="outlined"
-                                                    prepend-inner-icon="mdi-card-account-details" readonly></v-text-field>
+                                            <v-col>
+                                                <v-text-field class="pa-0 " v-model="firstName" variant="outlined"
+                                                    label="Nombre" prepend-inner-icon="mdi-card-account-details"
+                                                    readonly></v-text-field>
                                             </v-col>
                                         </v-row>
                                     </v-col>
                                     <v-col align-self="center">
-                                        <div class="text"> Apellido </div>
                                         <v-row>
                                             <v-col style="display: flex;">
                                                 <v-text-field v-model="lastName" readonly variant="outlined"
+                                                    label="Apellido"
                                                     prepend-inner-icon="mdi-card-account-details"></v-text-field>
                                             </v-col>
                                         </v-row>
@@ -80,33 +69,26 @@
                                 </v-row>
                                 <v-row>
                                     <v-col align-self="center" cols="5">
-                                        <div class="text" style="padding-bottom: 10px;"> Hora llegada </div>
                                         <v-row>
-                                            <v-text-field class="pa-2" v-model="arrival.value.value"
+                                            <v-text-field class="pa-2" v-model="arrival.value.value" label="Hora llegada"
                                                 :readonly="!rollCall.status" :error-messages="arrival.errorMessage.value"
-                                                prepend-inner-icon="mdi-clock" type="time"
-                                                variant="outlined"></v-text-field>
+                                                prepend-inner-icon="mdi-clock" type="time" variant="outlined" />
                                         </v-row>
                                     </v-col>
                                     <v-col align-self="center" cols="3">
-                                        <div class="text" style="padding-bottom: 10px;"> Modulo IA</div>
                                         <v-row>
-                                            <v-text-field class="pa-2" v-model="module_number"
+                                            <v-text-field class="pa-2" v-model="module_number" label="Modulo IA"
                                                 prepend-inner-icon="mdi-domain" readonly variant="outlined"></v-text-field>
                                         </v-row>
                                     </v-col>
                                     <v-col align-self="center" cols="auto">
-                                        <div class="text textCheck"> Presente </div>
-                                        <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
-                                            :icon="present.value.value ? 'mdi-check' : ''"
+                                        <v-checkbox label="Presente" v-model="present.value.value"
                                             @click="manageAtte(!present.value.value, late.value.value, rollCall.status)"
                                             rounded="lg" :color="present.value.value ? 'secondary' : ''"
                                             :active="!rollCall.status" />
                                     </v-col>
                                     <v-col align-self="center" cols="auto">
-                                        <div class=" text textCheck"> Tarde </div>
-                                        <v-btn class="mb-4 pa-2 ml-4" variant="outlined"
-                                            :icon="late.value.value ? 'mdi-check' : ''"
+                                        <v-checkbox label="Tarde" v-model="late.value.value"
                                             @click="manageAtte(present.value.value, !late.value.value, rollCall.status)"
                                             rounded="lg" :color="late.value.value ? 'secondary' : ''"
                                             :active="!rollCall.status" />
@@ -115,9 +97,8 @@
                                 </v-row>
                                 <v-row>
                                     <v-col>
-                                        <div class="text"> Observacion <strong>(Opcional)</strong></div>
                                         <v-textarea v-model="observation.value.value" :readonly="!readAble"
-                                            :error-messages="observation.errorMessage.value"
+                                            :error-messages="observation.errorMessage.value" label="Observacion (Opcional)"
                                             prepend-inner-icon="mdi-text-long" type="text" variant="outlined" counter>
                                             <template v-slot:append-inner>
                                                 <v-btn icon="mdi-pencil" variant="outlined" rounded="lg"
@@ -127,18 +108,10 @@
                                         </v-textarea>
                                     </v-col>
                                 </v-row>
-                                <v-row>
-                                    <v-col align="end" style="display: flex; align-self: end; justify-content: end;">
-                                        <v-btn class="ma-1" type="submit" @click="submit()" variant="outlined"
-                                            color="secondary">
-                                            Actualizar
-                                        </v-btn>
-                                        <v-btn class="ma-1" @click="handleReset" variant="tonal">
-                                            Limpiar
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
                             </v-container>
+                            <v-btn class="ma-1" type="submit" @click="submit()" variant="outlined" color="secondary" style="float: right;">
+                                Actualizar
+                            </v-btn>
                         </form>
                     </v-col>
                 </v-row>
@@ -296,7 +269,7 @@ h1 {
 .attImgEdit {
     position: relative;
     border-radius: 8px;
-    margin: 10%;
+    margin-bottom: 5px;
     padding: 5px;
     border: solid 1px;
     width: 100%;

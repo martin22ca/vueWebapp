@@ -16,7 +16,7 @@
             </v-card>
         </v-dialog>
         <v-card title="Empleados" subtitle="Editar información de los empleados" color="surface-lighter-1"
-            class="pa-2 fadeInCenter">
+            class="pa-2 fadeInCenter mr-2">
             <template v-slot:append>
                 <v-btn color="primary" @click="registerDialog = true" prepend-icon="mdi-plus" class="mt-0 ma-2">
                     Registrar Empleado

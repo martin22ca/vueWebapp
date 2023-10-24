@@ -1,5 +1,5 @@
 import axios from 'axios'
-import router from '@/router/index'
+import router from '@/router/index' 
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 const EXPRESS_PORT = import.meta.env.VITE_EXPRESS_PORT
