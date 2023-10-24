@@ -7,50 +7,7 @@
                 </v-btn>
             </template>
             <v-sheet class="ma-2" rounded="lg" min-height="50vh">
-                <v-row>
-                    <v-col v-for="aiModule in modules" cols="4">
-                        <v-card-item>
-                            <v-card color="surface-lighter-2" class="ma-0" align="start"
-                                :title="'Modulo Nro: ' + aiModule.module_number"
-                                :subtitle="aiModule.class_name != null ? aiModule.class_name : 'Modulo IA'"
-                                prepend-icon='mdi-office-building'>
-                                <v-divider thickness="3"></v-divider>
-                                <v-row class="mt-0">
-                                    <v-col>
-                                        <v-sheet color="surface-lighter-1" class="pa-2 ma-1"
-                                            :style="aiModule.online ? 'border-bottom: solid 1px rgb(var(--v-theme-primary))' : 'border-bottom: solid 1px rgb(var(--v-theme-warning))'">
-                                            <div class="moduleText">
-                                                <strong>Estado:</strong> {{ aiModule.online ? 'Online' : 'Offline' }}
-                                            </div>
-                                        </v-sheet>
-                                    </v-col>
-                                </v-row>
-                                <v-row class="mt-0">
-                                    <v-col>
-                                        <v-sheet color="surface-lighter-1" class="pa-2 ma-1" :style="{
-                                            'border-bottom': aiModule.online ? 'solid 1px rgb(var(--v-theme-primary))' : 'solid 1px rgb(var(--v-theme-warning))'
-                                        }">
-                                            <div sclass="moduleText">
-                                                <strong>Ultima conexión:</strong> {{ aiModule.online ? 'Ahora' :
-                                                    getStatus(aiModule.online_date)
-                                                }}
-                                            </div>
-                                        </v-sheet>
-                                    </v-col>
-                                </v-row>
-                                <v-row class="mt-0">
-                                    <v-col>
-                                        <v-sheet rounded class="pa-2 ma-1" color="surface-lighter-1" border>
-                                            <div sclass="moduleText">
-                                                <strong>IP:</strong> {{ aiModule.ip_module }}
-                                            </div>
-                                        </v-sheet>
-                                    </v-col>
-                                </v-row>
-                            </v-card>
-                        </v-card-item>
-                    </v-col>
-                </v-row>
+                <Modules :modules-num="4"/>
             </v-sheet>
         </v-card>
     </BaseContainer>
@@ -60,6 +17,7 @@
 import BaseContainer from '@/components/BaseContainer.vue';
 import { checkAuth } from '@/services/api/admissionService';
 import { fetchModules } from '@/services/api/modulesService'
+import Modules from '@/components/Modules.vue';
 import store from 'storejs';
 import { useStore } from 'vuex'
 
@@ -109,7 +67,7 @@ export default {
             })
         },
     },
-    components: { BaseContainer, }
+    components: { BaseContainer, Modules}
 }
 
 </script>
